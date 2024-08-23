@@ -1,7 +1,8 @@
 namespace Danom;
 
 /// <summary>
-/// Contains operations for working with values of type Result.
+/// Represents a result of an operation that can be either successful or not. It
+/// is typically used in monadic error handling.
 /// </summary>
 /// <typeparam name="T"></typeparam>
 /// <typeparam name="TError"></typeparam>
@@ -17,6 +18,7 @@ public interface IResult<T, TError>
     T DefaultWith(Func<T> defaultWith);
 }
 
+/// <inheritdoc />
 public sealed class Result<T, TError>
     : Choice<T, TError>, IResult<T, TError>
 {

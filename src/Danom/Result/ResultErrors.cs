@@ -2,6 +2,11 @@ namespace Danom;
 
 using System.Collections;
 
+/// <summary>
+/// Represents a collection of optionally keyed errors.
+/// </summary>
+/// <param name="Key"></param>
+/// <param name="Errors"></param>
 public sealed record ResultError(
     string Key,
     IEnumerable<string> Errors)
@@ -24,6 +29,9 @@ public sealed record ResultError(
     }
 }
 
+/// <summary>
+/// Represents a collection of <see cref="ResultError"/> instances.
+/// </summary>
 public sealed class ResultErrors : IEnumerable<ResultError>
 {
     private readonly List<ResultError> _errors = [];
@@ -58,6 +66,11 @@ public sealed class ResultErrors : IEnumerable<ResultError>
     }
 }
 
+/// <summary>
+/// Static methods for creating <see cref="IResult{T, TError}"/> instances with
+/// <see cref="ResultErrors"/> as the error type.
+/// </summary>
+/// <typeparam name="T"></typeparam>
 public static class Result<T>
 {
     public static IResult<T, ResultErrors> Ok(T value) =>
@@ -86,6 +99,10 @@ public static class Result<T>
         Task.FromResult(Error(message));
 }
 
+/// <summary>
+/// Static extension methods for <see cref="IResult{T, TError}"/> instances with
+/// <see cref="ResultErrors"/> as the error type.
+/// </summary>
 public static class ResultTExtensions
 {
     public static U Match<T, U>(

@@ -1,7 +1,9 @@
 namespace Danom;
 
 /// <summary>
-/// Contains operations for working with options.
+/// Represents when an actual value might not exist for a value or named
+/// variable. An option has an underlying type and can hold a value of that
+/// type, or it might not have a value.
 /// </summary>
 /// <typeparam name="T"></typeparam>
 public interface IOption<T>
@@ -17,6 +19,7 @@ public interface IOption<T>
     IOption<T> OrElseWith(Func<IOption<T>> ifNoneWith);
 }
 
+/// <inheritdoc />
 public sealed class Option<T>
     : Choice<T, Unit>, IOption<T>
 {

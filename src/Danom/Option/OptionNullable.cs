@@ -1,5 +1,9 @@
 namespace Danom;
 
+/// <summary>
+/// Contains extension methods for <see cref="IOption{T}"/> that allow for
+/// converting between nullable types and options.
+/// </summary>
 public static class OptionNullableExtensions
 {
     public static IOption<T> ToOption<T>(this T? x) =>

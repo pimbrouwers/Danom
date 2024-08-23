@@ -1,5 +1,9 @@
 namespace Danom;
 
+/// <summary>
+/// Contains extension methods for <see cref="Unit"/> that allow for converting
+/// between <see cref="Unit"/> and <see cref="Action"/>.
+/// </summary>
 public static class UnitActionExtensions
 {
     public static Func<TResult, Unit> ToUnitFunc<TResult>(this Action<TResult> action)
@@ -21,6 +25,10 @@ public static class UnitActionExtensions
     }
 }
 
+/// <summary>
+/// Contains extension methods for <see cref="Unit"/> that allow for converting
+/// between <see cref="Unit"/> and <see cref="Task"/>.
+/// </summary>
 public static class UnitTaskExtensions
 {
     public static async Task<Unit> ToUnitAsync(this Task task)

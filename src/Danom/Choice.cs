@@ -1,5 +1,10 @@
 namespace Danom;
 
+/// <summary>
+/// Represents a choice between two types.
+/// </summary>
+/// <typeparam name="T1"></typeparam>
+/// <typeparam name="T2"></typeparam>
 public abstract class Choice<T1, T2>
 {
     public static bool operator ==(Choice<T1, T2> left, Choice<T1, T2> right) =>
