@@ -1,6 +1,6 @@
 namespace Danom;
 
-public static class OptionAsyncExtensions
+public static class OptionTaskExtensions
 {
     public static async Task<U> MatchAsync<T, U>(
         this Task<IOption<T>> optionTask,

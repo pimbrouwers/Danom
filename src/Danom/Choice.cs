@@ -45,7 +45,7 @@ public abstract class Choice<T1, T2>
         return _t1.GetHashCode();
     }
 
-    public U Match<U>(
+    internal U Match<U>(
       Func<T1, U> t1,
       Func<T2, U> t2)
     {
@@ -63,4 +63,12 @@ public abstract class Choice<T1, T2>
             throw new InvalidOperationException("Choice is neither T1 nor T2.");
         }
     }
+
+    public T1 DefaultValue(
+         T1 defaultValue) =>
+         Match(ok => ok, _ => defaultValue);
+
+    public T1 DefaultWith(
+        Func<T1> defaultWith) =>
+        Match(ok => ok, _ => defaultWith());
 }

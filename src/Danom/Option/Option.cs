@@ -1,6 +1,21 @@
 namespace Danom;
 
-using System;
+/// <summary>
+/// Contains operations for working with options.
+/// </summary>
+/// <typeparam name="T"></typeparam>
+public interface IOption<T>
+{
+    bool IsSome { get; }
+    bool IsNone { get; }
+    U Match<U>(Func<T, U> some, Func<U> none);
+    IOption<U> Bind<U>(Func<T, IOption<U>> bind);
+    IOption<U> Map<U>(Func<T, U> map);
+    T DefaultValue(T defaultValue);
+    T DefaultWith(Func<T> defaultWith);
+    IOption<T> OrElse(IOption<T> ifNone);
+    IOption<T> OrElseWith(Func<IOption<T>> ifNoneWith);
+}
 
 public sealed class Option<T>
     : Choice<T, Unit>, IOption<T>
@@ -28,7 +43,7 @@ public sealed class Option<T>
         Task.FromResult(None());
 
     public U Match<U>(Func<T, U> some, Func<U> none) =>
-        Match(some, _ => none());
+        base.Match(some, _ => none());
 
     public IOption<U> Bind<U>(
         Func<T, IOption<U>> bind) =>
@@ -37,14 +52,6 @@ public sealed class Option<T>
     public IOption<U> Map<U>(
         Func<T, U> map) =>
         Bind(x => Option<U>.Some(map(x)));
-
-    public T DefaultValue(
-         T defaultValue) =>
-         Match(some => some, () => defaultValue);
-
-    public T DefaultWith(
-        Func<T> defaultWith) =>
-        Match(some => some, () => defaultWith());
 
     public IOption<T> OrElse(
         IOption<T> ifNone) =>
