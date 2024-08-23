@@ -81,3 +81,18 @@ public static class Option
     public static async Task<IOption<T>> SomeAsync<T>(Task<T> valueTask) =>
         Some(await valueTask);
 }
+
+public static class OptionActionExtensions
+{
+    public static void Match<T>(this IOption<T> option, Action<T> some, Action none)
+    {
+        if (option.ToNullable() is T t)
+        {
+            some(t);
+        }
+        else
+        {
+            none();
+        }
+    }
+}
