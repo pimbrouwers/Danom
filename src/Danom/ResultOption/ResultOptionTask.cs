@@ -1,5 +1,9 @@
 namespace Danom;
 
+/// <summary>
+/// Contains Task extension methods for <see cref="IResultOption{T, TError}"/> that allow for
+/// asynchronous operations containing <see cref="IResultOption{T, TError}"/>.
+/// </summary>
 public static class ResultOptionTaskExtensions
 {
     public static async Task<U> MatchAsync<T, TError, U>(

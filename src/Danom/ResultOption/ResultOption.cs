@@ -1,5 +1,12 @@
 namespace Danom;
 
+/// <summary>
+/// Represents a result of an operation that can be either successful or not. It
+/// is typically used in monadic error handling in scenarios where the success
+/// path may not have a value.
+/// </summary>
+/// <typeparam name="T"></typeparam>
+/// <typeparam name="TError"></typeparam>
 public interface IResultOption<T, TError>
 {
     bool IsOk { get; }
@@ -13,6 +20,7 @@ public interface IResultOption<T, TError>
     T DefaultWith(Func<T> defaultWith);
 }
 
+/// <inheritdoc />
 public sealed class ResultOption<T, TError>
     : Choice<IOption<T>, TError>, IResultOption<T, TError>
 {
@@ -86,6 +94,10 @@ public sealed class ResultOption<T, TError>
             error: e => $"Error({e})");
 }
 
+/// <summary>
+/// Extension methods for converting between <see cref="IOption{T}"/>,
+/// <see cref="IResult{T, TError}"/> and <see cref="IResultOption{T, TError}"/>.
+/// </summary>
 public static class ResultOptionConversionExtensions
 {
     public static IResultOption<T, TError> ToResultOption<T, TError>(this IOption<T> option) =>

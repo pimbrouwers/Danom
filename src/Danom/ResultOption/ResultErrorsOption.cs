@@ -1,5 +1,10 @@
 namespace Danom;
 
+/// <summary>
+/// Static methods for creating <see cref="IResultOption{T, TError}"/> instances with
+/// <see cref="ResultErrors"/> as the error type.
+/// </summary>
+/// <typeparam name="T"></typeparam>
 public static class ResultOption<T>
 {
     public static IResultOption<T, ResultErrors> Ok(T value) =>
@@ -30,7 +35,11 @@ public static class ResultOption<T>
         Task.FromResult(Error(message));
 }
 
-
+/// <summary>
+/// Extension methods for converting between <see cref="IOption{T}"/>,
+/// <see cref="IResult{T, TError}"/> and <see cref="IResultOption{T, TError}"/>
+/// with <see cref="ResultErrors"/> as the error type.
+/// </summary>
 public static class ResultOptionTConversionExtensions
 {
     public static IResultOption<T, ResultErrors> ToResultOption<T>(this IOption<T> option) =>
