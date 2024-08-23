@@ -1,0 +1,331 @@
+root=true
+
+[*]
+charset=utf-8
+end_of_line=lf
+trim_trailing_whitespace=true
+insert_final_newline=true
+indent_style=space
+max_line_length=120
+
+[*.{csproj, fsproj, sln}]
+indent_size=2
+
+[*.{cs, csx, fs, fsx, cshtml}]
+indent_size=4
+
+[*.ps1]
+indent_size = 2
+
+[*.json]
+indent_size = 2
+
+[*.sql]
+indent_size = 2
+
+[*.html]
+indent_size = 2
+
+[*.css]
+indent_size = 2
+
+[*.js]
+indent_size = 2
+
+###############################
+# .NET Coding Conventions     #
+###############################
+[*.{cs,vb}]
+dotnet_analyzer_diagnostic.severity = default
+# Organize usings
+dotnet_sort_system_directives_first = true
+# this. preferences
+dotnet_style_qualification_for_field = false:silent
+dotnet_style_qualification_for_property = false:silent
+dotnet_style_qualification_for_method = false:silent
+dotnet_style_qualification_for_event = false:silent
+# Language keywords vs BCL types preferences
+dotnet_style_predefined_type_for_locals_parameters_members = true:silent
+dotnet_style_predefined_type_for_member_access = true:silent
+# Parentheses preferences
+dotnet_style_parentheses_in_arithmetic_binary_operators = always_for_clarity:silent
+dotnet_style_parentheses_in_relational_binary_operators = always_for_clarity:silent
+dotnet_style_parentheses_in_other_binary_operators = always_for_clarity:silent
+dotnet_style_parentheses_in_other_operators = never_if_unnecessary:silent
+# Modifier preferences
+dotnet_style_require_accessibility_modifiers = for_non_interface_members:silent
+dotnet_style_readonly_field = true:suggestion
+# Expression-level preferences
+dotnet_style_object_initializer = true:suggestion
+dotnet_style_collection_initializer = true:suggestion
+dotnet_style_explicit_tuple_names = true:suggestion
+dotnet_style_null_propagation = true:suggestion
+dotnet_style_coalesce_expression = true:suggestion
+dotnet_style_prefer_is_null_check_over_reference_equality_method = true:silent
+dotnet_style_prefer_inferred_tuple_names = true:suggestion
+dotnet_style_prefer_inferred_anonymous_type_member_names = true:suggestion
+dotnet_style_prefer_auto_properties = true:silent
+dotnet_style_prefer_conditional_expression_over_assignment = true:silent
+dotnet_style_prefer_conditional_expression_over_return = true:silent
+
+###############################
+# Naming Conventions          #
+###############################
+# Style Definitions
+dotnet_naming_style.pascal_case_style.capitalization = pascal_case
+# Use PascalCase for constant fields
+dotnet_naming_rule.constant_fields_should_be_pascal_case.severity = suggestion
+dotnet_naming_rule.constant_fields_should_be_pascal_case.symbols = constant_fields
+dotnet_naming_rule.constant_fields_should_be_pascal_case.style = pascal_case_style
+dotnet_naming_symbols.constant_fields.applicable_kinds = field
+dotnet_naming_symbols.constant_fields.applicable_accessibilities = *
+dotnet_naming_symbols.constant_fields.required_modifiers = const
+dotnet_naming_rule.private_members_with_underscore.symbols = private_fields
+dotnet_naming_rule.private_members_with_underscore.style = prefix_underscore
+dotnet_naming_rule.private_members_with_underscore.severity = suggestion
+dotnet_naming_symbols.private_fields.applicable_kinds = field
+dotnet_naming_symbols.private_fields.applicable_accessibilities = private
+dotnet_naming_style.prefix_underscore.capitalization = camel_case
+dotnet_naming_style.prefix_underscore.required_prefix = _
+dotnet_style_operator_placement_when_wrapping = beginning_of_line
+end_of_line = crlf
+
+###############################
+# C# Coding Conventions       #
+###############################
+[*.cs]
+# var preferences
+csharp_style_var_for_built_in_types = true:silent
+csharp_style_var_when_type_is_apparent = true:silent
+csharp_style_var_elsewhere = true:silent
+# Expression-bodied members
+csharp_style_expression_bodied_methods = false:silent
+csharp_style_expression_bodied_constructors = false:silent
+csharp_style_expression_bodied_operators = false:silent
+csharp_style_expression_bodied_properties = true:silent
+csharp_style_expression_bodied_indexers = true:silent
+csharp_style_expression_bodied_accessors = true:silent
+# Pattern matching preferences
+csharp_style_pattern_matching_over_is_with_cast_check = true:suggestion
+csharp_style_pattern_matching_over_as_with_null_check = true:suggestion
+# Null-checking preferences
+csharp_style_throw_expression = true:suggestion
+csharp_style_conditional_delegate_call = true:suggestion
+# Modifier preferences
+csharp_preferred_modifier_order = public,private,protected,internal,static,extern,new,virtual,abstract,sealed,override,readonly,unsafe,volatile,async:suggestion
+# Expression-level preferences
+csharp_prefer_braces = true:silent
+csharp_style_deconstructed_variable_declaration = true:suggestion
+csharp_prefer_simple_default_expression = true:suggestion
+csharp_style_pattern_local_over_anonymous_function = true:suggestion
+csharp_style_inlined_variable_declaration = true:suggestion
+# Namespaces
+csharp_style_namespace_declarations = file_scoped:warning
+
+###############################
+# C# Formatting Rules         #
+###############################
+# New line preferences
+csharp_new_line_before_open_brace = all
+csharp_new_line_before_else = true
+csharp_new_line_before_catch = true
+csharp_new_line_before_finally = true
+csharp_new_line_before_members_in_object_initializers = true
+csharp_new_line_before_members_in_anonymous_types = true
+csharp_new_line_before_using_directive = true
+csharp_new_line_between_query_expression_clauses = true
+# Indentation preferences
+csharp_indent_case_contents = true
+csharp_indent_switch_labels = true
+csharp_indent_labels = flush_left
+# Space preferences
+csharp_space_after_cast = false
+csharp_space_after_keywords_in_control_flow_statements = true
+csharp_space_between_method_call_parameter_list_parentheses = false
+csharp_space_between_method_declaration_parameter_list_parentheses = false
+csharp_space_between_parentheses = false
+csharp_space_before_colon_in_inheritance_clause = true
+csharp_space_after_colon_in_inheritance_clause = true
+csharp_space_around_binary_operators = before_and_after
+csharp_space_between_method_declaration_empty_parameter_list_parentheses = false
+csharp_space_between_method_call_name_and_opening_parenthesis = false
+csharp_space_between_method_call_empty_parameter_list_parentheses = false
+# Wrapping preferences
+csharp_preserve_single_line_statements = true
+csharp_preserve_single_line_blocks = true
+csharp_using_directive_placement = inside_namespace:warning
+csharp_prefer_simple_using_statement = true:warning
+csharp_style_prefer_method_group_conversion = true:silent
+csharp_style_prefer_top_level_statements = true:silent
+csharp_style_prefer_primary_constructors = true:warning
+csharp_style_expression_bodied_lambdas = true:warning
+csharp_style_expression_bodied_local_functions = false:silent
+
+###############################
+# C# Code Analysis            #
+###############################
+[*.cs]
+# Security
+dotnet_diagnostic.CA2100.severity = error
+dotnet_diagnostic.CA2119.severity = error
+dotnet_diagnostic.CA2153.severity = error
+dotnet_diagnostic.CA2300.severity = error
+dotnet_diagnostic.CA2301.severity = error
+dotnet_diagnostic.CA2302.severity = error
+dotnet_diagnostic.CA2305.severity = error
+dotnet_diagnostic.CA2310.severity = error
+dotnet_diagnostic.CA2311.severity = error
+dotnet_diagnostic.CA2312.severity = error
+dotnet_diagnostic.CA2315.severity = error
+dotnet_diagnostic.CA2321.severity = error
+dotnet_diagnostic.CA2322.severity = error
+dotnet_diagnostic.CA2326.severity = error
+dotnet_diagnostic.CA2327.severity = error
+dotnet_diagnostic.CA2328.severity = error
+dotnet_diagnostic.CA2329.severity = error
+dotnet_diagnostic.CA2330.severity = error
+dotnet_diagnostic.CA2350.severity = error
+dotnet_diagnostic.CA2351.severity = error
+dotnet_diagnostic.CA2352.severity = error
+dotnet_diagnostic.CA2353.severity = error
+dotnet_diagnostic.CA2354.severity = error
+dotnet_diagnostic.CA2355.severity = error
+dotnet_diagnostic.CA2356.severity = error
+dotnet_diagnostic.CA2361.severity = error
+dotnet_diagnostic.CA2362.severity = error
+dotnet_diagnostic.CA3001.severity = error
+dotnet_diagnostic.CA3002.severity = error
+dotnet_diagnostic.CA3003.severity = error
+dotnet_diagnostic.CA3004.severity = error
+dotnet_diagnostic.CA3005.severity = error
+dotnet_diagnostic.CA3006.severity = error
+dotnet_diagnostic.CA3007.severity = error
+dotnet_diagnostic.CA3008.severity = error
+dotnet_diagnostic.CA3009.severity = error
+dotnet_diagnostic.CA3010.severity = error
+dotnet_diagnostic.CA3011.severity = error
+dotnet_diagnostic.CA3012.severity = error
+dotnet_diagnostic.CA3061.severity = error
+dotnet_diagnostic.CA3075.severity = error
+dotnet_diagnostic.CA3076.severity = error
+dotnet_diagnostic.CA3077.severity = error
+dotnet_diagnostic.CA3147.severity = error
+dotnet_diagnostic.CA5350.severity = error
+dotnet_diagnostic.CA5351.severity = error
+dotnet_diagnostic.CA5358.severity = error
+dotnet_diagnostic.CA5359.severity = error
+dotnet_diagnostic.CA5360.severity = error
+dotnet_diagnostic.CA5361.severity = error
+dotnet_diagnostic.CA5362.severity = error
+dotnet_diagnostic.CA5363.severity = error
+dotnet_diagnostic.CA5364.severity = error
+dotnet_diagnostic.CA5365.severity = error
+dotnet_diagnostic.CA5366.severity = error
+dotnet_diagnostic.CA5367.severity = error
+dotnet_diagnostic.CA5368.severity = error
+dotnet_diagnostic.CA5369.severity = error
+dotnet_diagnostic.CA5370.severity = error
+dotnet_diagnostic.CA5371.severity = error
+dotnet_diagnostic.CA5372.severity = error
+dotnet_diagnostic.CA5373.severity = error
+dotnet_diagnostic.CA5374.severity = error
+dotnet_diagnostic.CA5375.severity = error
+dotnet_diagnostic.CA5376.severity = error
+dotnet_diagnostic.CA5377.severity = error
+dotnet_diagnostic.CA5378.severity = error
+dotnet_diagnostic.CA5379.severity = error
+dotnet_diagnostic.CA5380.severity = error
+dotnet_diagnostic.CA5381.severity = error
+dotnet_diagnostic.CA5382.severity = error
+dotnet_diagnostic.CA5383.severity = error
+dotnet_diagnostic.CA5384.severity = error
+dotnet_diagnostic.CA5385.severity = error
+dotnet_diagnostic.CA5386.severity = error
+dotnet_diagnostic.CA5387.severity = error
+dotnet_diagnostic.CA5388.severity = error
+dotnet_diagnostic.CA5389.severity = error
+dotnet_diagnostic.CA5390.severity = error
+dotnet_diagnostic.CA5391.severity = error
+dotnet_diagnostic.CA5392.severity = error
+dotnet_diagnostic.CA5393.severity = error
+dotnet_diagnostic.CA5394.severity = error
+dotnet_diagnostic.CA5395.severity = error
+dotnet_diagnostic.CA5396.severity = error
+dotnet_diagnostic.CA5397.severity = error
+dotnet_diagnostic.CA5398.severity = error
+dotnet_diagnostic.CA5399.severity = error
+dotnet_diagnostic.CA5400.severity = error
+dotnet_diagnostic.CA5401.severity = error
+dotnet_diagnostic.CA5402.severity = error
+dotnet_diagnostic.CA5403.severity = error
+dotnet_diagnostic.CA5404.severity = error
+dotnet_diagnostic.CA5405.severity = error
+
+# Reliability
+dotnet_diagnostic.CA2000.severity = error
+dotnet_diagnostic.CA2002.severity = error
+dotnet_diagnostic.CA2008.severity = error
+dotnet_diagnostic.CA2009.severity = error
+dotnet_diagnostic.CA2011.severity = error
+dotnet_diagnostic.CA2012.severity = error
+dotnet_diagnostic.CA2013.severity = error
+dotnet_diagnostic.CA2014.severity = error
+dotnet_diagnostic.CA2015.severity = error
+dotnet_diagnostic.CA2016.severity = error
+dotnet_diagnostic.CA2017.severity = error
+dotnet_diagnostic.CA2018.severity = error
+dotnet_diagnostic.CA2019.severity = error
+dotnet_diagnostic.CA2020.severity = error
+dotnet_diagnostic.CA2021.severity = error
+
+# Performance
+dotnet_diagnostic.CA1802.severity = error
+dotnet_diagnostic.CA1805.severity = error
+dotnet_diagnostic.CA1806.severity = error
+dotnet_diagnostic.CA1810.severity = error
+dotnet_diagnostic.CA1812.severity = error
+dotnet_diagnostic.CA1813.severity = error
+dotnet_diagnostic.CA1814.severity = error
+dotnet_diagnostic.CA1815.severity = error
+dotnet_diagnostic.CA1819.severity = none
+dotnet_diagnostic.CA1820.severity = error
+dotnet_diagnostic.CA1821.severity = error
+dotnet_diagnostic.CA1822.severity = error
+dotnet_diagnostic.CA1823.severity = error
+dotnet_diagnostic.CA1824.severity = error
+dotnet_diagnostic.CA1825.severity = error
+dotnet_diagnostic.CA1826.severity = error
+dotnet_diagnostic.CA1827.severity = error
+dotnet_diagnostic.CA1828.severity = error
+dotnet_diagnostic.CA1829.severity = error
+dotnet_diagnostic.CA1830.severity = error
+dotnet_diagnostic.CA1831.severity = error
+dotnet_diagnostic.CA1832.severity = error
+dotnet_diagnostic.CA1833.severity = error
+dotnet_diagnostic.CA1834.severity = error
+dotnet_diagnostic.CA1835.severity = error
+dotnet_diagnostic.CA1836.severity = error
+dotnet_diagnostic.CA1837.severity = error
+dotnet_diagnostic.CA1838.severity = error
+dotnet_diagnostic.CA1839.severity = error
+dotnet_diagnostic.CA1840.severity = error
+dotnet_diagnostic.CA1841.severity = error
+dotnet_diagnostic.CA1842.severity = error
+dotnet_diagnostic.CA1843.severity = error
+dotnet_diagnostic.CA1844.severity = error
+dotnet_diagnostic.CA1845.severity = error
+dotnet_diagnostic.CA1846.severity = error
+dotnet_diagnostic.CA1847.severity = error
+dotnet_diagnostic.CA1848.severity = error
+dotnet_diagnostic.CA1849.severity = error
+dotnet_diagnostic.CA1850.severity = error
+dotnet_diagnostic.CA1851.severity = error
+dotnet_diagnostic.CA1852.severity = error
+dotnet_diagnostic.CA1853.severity = error
+dotnet_diagnostic.CA1854.severity = error
+dotnet_diagnostic.CA1855.severity = error
+dotnet_diagnostic.CA1856.severity = error
+dotnet_diagnostic.CA1857.severity = error
+dotnet_diagnostic.CA1858.severity = error
+dotnet_diagnostic.CA1859.severity = error
+dotnet_diagnostic.CA1860.severity = error
