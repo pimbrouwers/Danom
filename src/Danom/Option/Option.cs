@@ -46,7 +46,7 @@ public sealed class Option<T>
         Task.FromResult(None());
 
     public U Match<U>(Func<T, U> some, Func<U> none) =>
-        base.Match(some, _ => none());
+        Match(t1: some, t2: _ => none());
 
     public IOption<U> Bind<U>(
         Func<T, IOption<U>> bind) =>

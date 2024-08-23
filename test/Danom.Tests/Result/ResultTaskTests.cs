@@ -2,7 +2,7 @@ namespace Danom.Tests;
 
 using Xunit;
 
-public sealed class ResultAsyncTests
+public sealed class ResultOptionAsyncTests
 {
     [Fact]
     public async Task MatchShouldWork()

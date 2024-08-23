@@ -48,7 +48,7 @@ public sealed class Result<T, TError>
         Error(await errors);
 
     public new U Match<U>(Func<T, U> ok, Func<TError, U> error) =>
-        base.Match(ok, error);
+        Match(t1: ok,  t2: error);
 
     public IResult<U, TError> Bind<U>(
         Func<T, IResult<U, TError>> bind) =>
