@@ -16,7 +16,7 @@ Danom is a C# library that provides monadic structures to simplify functional pr
 
 ## Quick Start
 
-## Options
+### Options
 
 Represents when an actual value might not exist for a value or named variable. An option has an underlying type and can hold a value of that type, or it might not have a value.
 
@@ -80,7 +80,11 @@ var optionOrElseWith =
 
 ## Results
 
+--
+
 ## ResultOptions
+
+--
 
 ## Contribute
 
