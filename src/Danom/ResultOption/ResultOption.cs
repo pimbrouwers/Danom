@@ -22,7 +22,7 @@ public interface IResultOption<T, TError>
 
 /// <inheritdoc />
 public sealed class ResultOption<T, TError>
-    : Choice<IOption<T>, TError>, IResultOption<T, TError>
+    : Maybe<IOption<T>, TError>, IResultOption<T, TError>
 {
     internal ResultOption(IOption<T> option) : base(option) { }
 
@@ -33,7 +33,7 @@ public sealed class ResultOption<T, TError>
     public bool IsError => _isT2;
 
     public static IResultOption<T, TError> Ok(T value) =>
-        new ResultOption<T, TError>(Option.Some(value));
+        new ResultOption<T, TError>(Option<T>.Some(value));
 
     public static Task<IResultOption<T, TError>> OkAsync(T value) =>
         Task.FromResult(Ok(value));
