@@ -21,16 +21,61 @@ public interface IResultOption<T, TError>
 }
 
 /// <inheritdoc />
-public sealed class ResultOption<T, TError>
-    : Maybe<IOption<T>, TError>, IResultOption<T, TError>
+public readonly struct ResultOption<T, TError>()
+    : IResultOption<T, TError>
 {
-    internal ResultOption(IOption<T> option) : base(option) { }
+    private readonly IOption<T> _ok = Option<T>.None();
+    private readonly TError? _error;
 
-    internal ResultOption(TError tError) : base(tError) { }
+    private ResultOption(IOption<T> option) : this()
+    {
+        _ok = option;
+        IsOk = option.IsSome;
+    }
 
-    public bool IsOk => Match(option => option.IsSome, _ => false);
-    public bool IsNone => Match(option => option.IsNone, _ => false);
-    public bool IsError => _isT2;
+    private ResultOption(TError tError) : this()
+    {
+        _error = tError;
+        IsError = true;
+    }
+
+    /// <summary>
+    /// Returns true if the ResultOption is Ok, false otherwise.
+    /// </summary>
+    public bool IsOk { get; }
+
+    public bool IsNone => !IsOk && !IsError;
+
+    /// <summary>
+    /// Returns true if the ResultOption is Error, false otherwise.
+    /// </summary>
+    public bool IsError { get; }
+
+    public U Match<U>(Func<T, U> ok, Func<U> none, Func<TError, U> error) =>
+        IsError && _error is TError tError ?
+            error(tError) :
+            _ok.Match(ok, none);
+
+    public IResultOption<U, TError> Bind<U>(
+        Func<T, IResultOption<U, TError>> bind) =>
+        Match(bind, ResultOption<U, TError>.None, ResultOption<U, TError>.Error);
+
+    public IResultOption<U, TError> Map<U>(
+        Func<T, U> map) =>
+        Bind(x => ResultOption<U, TError>.Ok(map(x)));
+
+    public IResultOption<T, UError> MapError<UError>(
+        Func<TError, UError> mapError) =>
+        Match(ResultOption<T, UError>.Ok, ResultOption<T, UError>.None, e =>
+            ResultOption<T, UError>.Error(mapError(e)));
+
+    public T DefaultValue(
+        T defaultValue) =>
+        Match(ok => ok, () => defaultValue, _ => defaultValue);
+
+    public T DefaultWith(
+        Func<T> defaultWith) =>
+        Match(ok => ok, defaultWith, _ => defaultWith());
 
     public static IResultOption<T, TError> Ok(T value) =>
         new ResultOption<T, TError>(Option<T>.Some(value));
@@ -56,36 +101,17 @@ public sealed class ResultOption<T, TError>
     public static async Task<IResultOption<T, TError>> ErrorAsync(Task<TError> error) =>
         Error(await error);
 
-    public U Match<U>(
-        Func<T, U> ok,
-        Func<U> none,
-        Func<TError, U> error) =>
-        Match(
-            option =>
-                option.Match(
-                    some: x => ok(x),
-                    none: none),
-            error);
+    public static bool operator ==(ResultOption<T, TError> left, ResultOption<T, TError> right) =>
+        left.Equals(right);
 
-    public IResultOption<U, TError> Bind<U>(
-        Func<T, IResultOption<U, TError>> bind) =>
-        Match(bind, ResultOption<U, TError>.None, ResultOption<U, TError>.Error);
+    public static bool operator !=(ResultOption<T, TError> left, ResultOption<T, TError> right) =>
+        !(left == right);
 
-    public IResultOption<U, TError> Map<U>(
-        Func<T, U> map) =>
-        Bind(x => ResultOption<U, TError>.Ok(map(x)));
+    public override bool Equals(object? obj) =>
+        _ok is not null && obj is not null && _ok.Equals(obj);
 
-    public IResultOption<T, UError> MapError<UError>(
-        Func<TError, UError> mapError) =>
-        Match(ResultOption<T, UError>.Ok, ResultOption<T, UError>.None, e => ResultOption<T, UError>.Error(mapError(e)));
-
-    public T DefaultValue(
-        T defaultValue) =>
-        Match(ok => ok, () => defaultValue, _ => defaultValue);
-
-    public T DefaultWith(
-        Func<T> defaultWith) =>
-        Match(ok => ok, defaultWith, _ => defaultWith());
+    public override int GetHashCode()
+        => _ok is null ? 0 : _ok.GetHashCode();
 
     public override string ToString() =>
         Match(

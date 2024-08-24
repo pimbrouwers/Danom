@@ -19,36 +19,39 @@ public interface IResult<T, TError>
 }
 
 /// <inheritdoc />
-public sealed class Result<T, TError>
-    : Maybe<T, TError>, IResult<T, TError>
+public readonly struct Result<T, TError>
+    : IResult<T, TError>
 {
-    internal Result(T t) : base(t) { }
+    private readonly T? _ok;
+    private readonly TError? _error;
 
-    internal Result(TError t) : base(t) { }
+    private Result(T t)
+    {
+        _ok = t;
+        IsOk = true;
+    }
 
-    public bool IsOk => _isT1;
-    public bool IsError => _isT2;
+    private Result(TError tError)
+    {
+        _error = tError;
+    }
 
-    public static IResult<T, TError> Ok(T value) =>
-        new Result<T, TError>(value);
+    /// <summary>
+    /// Returns true if the Result is Ok, false otherwise.
+    /// </summary>
+    public bool IsOk { get; }
 
-    public static Task<IResult<T, TError>> OkAsync(T value) =>
-        Task.FromResult(Ok(value));
+    /// <summary>
+    /// Returns true if the Result is Error, false otherwise.
+    /// </summary>
+    public bool IsError => !IsOk;
 
-    public static async Task<IResult<T, TError>> OkAsync(Task<T> valueTask) =>
-        Ok(await valueTask);
-
-    public static IResult<T, TError> Error(TError errors) =>
-        new Result<T, TError>(errors);
-
-    public static Task<IResult<T, TError>> ErrorAsync(TError errors) =>
-        Task.FromResult(Error(errors));
-
-    public static async Task<IResult<T, TError>> ErrorAsync(Task<TError> errors) =>
-        Error(await errors);
-
-    public new U Match<U>(Func<T, U> ok, Func<TError, U> error) =>
-        Match(t1: ok,  t2: error);
+    public U Match<U>(Func<T, U> ok, Func<TError, U> error) =>
+        IsOk && _ok is T t ?
+            ok(t) :
+            IsError && _error is TError tError ?
+                error(tError) :
+                throw new InvalidOperationException("Result error has not been initialized.");
 
     public IResult<U, TError> Bind<U>(
         Func<T, IResult<U, TError>> bind) =>
@@ -80,6 +83,36 @@ public sealed class Result<T, TError>
     public T DefaultWith(
         Func<T> defaultWith) =>
         Match(ok => ok, _ => defaultWith());
+
+    public static IResult<T, TError> Ok(T value) =>
+        new Result<T, TError>(value);
+
+    public static Task<IResult<T, TError>> OkAsync(T value) =>
+        Task.FromResult(Ok(value));
+
+    public static async Task<IResult<T, TError>> OkAsync(Task<T> valueTask) =>
+        Ok(await valueTask);
+
+    public static IResult<T, TError> Error(TError errors) =>
+        new Result<T, TError>(errors);
+
+    public static Task<IResult<T, TError>> ErrorAsync(TError errors) =>
+        Task.FromResult(Error(errors));
+
+    public static async Task<IResult<T, TError>> ErrorAsync(Task<TError> errors) =>
+        Error(await errors);
+
+    public static bool operator ==(Result<T, TError> left, Result<T, TError> right) =>
+        left.Equals(right);
+
+    public static bool operator !=(Result<T, TError> left, Result<T, TError> right) =>
+        !(left == right);
+
+    public override bool Equals(object? obj) =>
+        _ok is not null && obj is not null && _ok.Equals(obj);
+
+    public override int GetHashCode()
+        => _ok is null ? 0 : _ok.GetHashCode();
 
     public override string ToString() =>
         Match(

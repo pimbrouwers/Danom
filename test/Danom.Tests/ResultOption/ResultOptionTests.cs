@@ -9,6 +9,7 @@ public sealed class ResultOptionTests
     {
         var result = ResultOption<int, string>.Ok(1);
         AssertResultOption.IsOk(result);
+        Assert.False(result.IsNone);
         Assert.False(result.IsError);
         Assert.Equal("Ok(1)", result.ToString());
     }
@@ -18,6 +19,7 @@ public sealed class ResultOptionTests
     {
         var result = await ResultOption<int, string>.OkAsync(1);
         AssertResultOption.IsOk(result);
+        Assert.False(result.IsNone);
         Assert.False(result.IsError);
         Assert.Equal("Ok(1)", result.ToString());
     }
@@ -27,23 +29,44 @@ public sealed class ResultOptionTests
     {
         var result = await ResultOption<int, string>.OkAsync(Task<int>.Factory.StartNew(() => 1));
         AssertResultOption.IsOk(result);
+        Assert.False(result.IsNone);
         Assert.False(result.IsError);
         Assert.Equal("Ok(1)", result.ToString());
     }
 
     [Fact]
-    public async Task ErrorAsyncShouldWork()
+    public void NoneShouldWork()
     {
-        var result = await ResultOption<int, string>.ErrorAsync("Error");
-        AssertResultOption.IsError(result);
+        var result = ResultOption<int, string>.None();
+        AssertResultOption.IsNone(result);
         Assert.False(result.IsOk);
-        Assert.Equal("Error(Error)", result.ToString());
+        Assert.False(result.IsError);
+        Assert.Equal("None", result.ToString());
+    }
+
+    [Fact]
+    public async Task NoneAsyncShouldWork()
+    {
+        var result = await ResultOption<int, string>.NoneAsync();
+        AssertResultOption.IsNone(result);
+        Assert.False(result.IsOk);
+        Assert.False(result.IsError);
+        Assert.Equal("None", result.ToString());
     }
 
     [Fact]
     public void ErrorShouldWork()
     {
         var result = ResultOption<int, string>.Error("Error");
+        AssertResultOption.IsError(result);
+        Assert.False(result.IsOk);
+        Assert.Equal("Error(Error)", result.ToString());
+    }
+
+    [Fact]
+    public async Task ErrorAsyncShouldWork()
+    {
+        var result = await ResultOption<int, string>.ErrorAsync("Error");
         AssertResultOption.IsError(result);
         Assert.False(result.IsOk);
         Assert.Equal("Error(Error)", result.ToString());

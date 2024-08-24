@@ -19,22 +19,100 @@ public interface IOption<T>
 }
 
 /// <inheritdoc cref="IOption{T}" />
-public sealed class Option<T>
-    : Maybe<T, Unit>, IOption<T>
+public readonly struct Option<T>()
+    : IOption<T>
 {
-    internal Option(T t) : base(t) { }
+    private readonly T? _some;
 
-    internal Option() : base(Unit.Value) { }
+    private Option(T t) : this()
+    {
+        _some = t;
+        IsSome = true;
+    }
 
     /// <summary>
     /// Returns true if the Option is Some, false otherwise.
     /// </summary>
-    public bool IsSome => _isT1;
+    public bool IsSome { get; }
 
     /// <summary>
     /// Returns true if the Option is None, false otherwise.
     /// </summary>
-    public bool IsNone => _isT2;
+    public bool IsNone => !IsSome;
+
+    /// <summary>
+    /// Evaluates the some delegate if the Option is Some, otherwise evaluates
+    /// the none delegate.
+    /// </summary>
+    /// <typeparam name="U"></typeparam>
+    /// <param name="some"></param>
+    /// <param name="none"></param>
+    /// <returns></returns>
+    public U Match<U>(Func<T, U> some, Func<U> none) =>
+        IsSome && _some is T t ?
+            some(t) :
+            none();
+
+    /// <summary>
+    /// Evaluates the bind delegate if the Option is Some, otherwise returns
+    /// None.
+    /// </summary>
+    /// <typeparam name="U"></typeparam>
+    /// <param name="bind"></param>
+    /// <returns></returns>
+    public IOption<U> Bind<U>(
+        Func<T, IOption<U>> bind) =>
+        Match(bind, Option<U>.None);
+
+    /// <summary>
+    /// Evaluates the map delegate if the Option is Some, otherwise returns
+    /// None.
+    /// </summary>
+    /// <typeparam name="U"></typeparam>
+    /// <param name="map"></param>
+    /// <returns></returns>
+    public IOption<U> Map<U>(
+        Func<T, U> map) =>
+        Bind(x => Option<U>.Some(map(x)));
+
+    /// <summary>
+    /// Returns the value of the Option if it is T, otherwise returns the
+    /// specified default value.
+    /// </summary>
+    /// <param name="defaultValue"></param>
+    /// <returns></returns>
+    public T DefaultValue(
+         T defaultValue) =>
+         Match(some => some, () => defaultValue);
+
+    /// <summary>
+    /// Returns the value of the Option if it is T, otherwise returns the
+    /// </summary>
+    /// <param name="defaultWith"></param>
+    /// <returns></returns>
+    public T DefaultWith(
+        Func<T> defaultWith) =>
+        Match(some => some, () => defaultWith());
+
+    /// <summary>
+    /// Returns the value of the Option if it is Some, otherwise returns the
+    /// specified ifNone value.
+    /// </summary>
+    /// <param name="ifNone"></param>
+    /// <returns></returns>
+    public IOption<T> OrElse(
+        IOption<T> ifNone) =>
+        Match(Option<T>.Some, () => ifNone);
+
+    /// <summary>
+    /// Returns the value of the Option if it is Some, otherwise returns the
+    /// </summary>
+    /// <param name="ifNoneWith"></param>
+    /// <returns></returns>
+    public IOption<T> OrElseWith(
+        Func<IOption<T>> ifNoneWith) =>
+        Match(Option<T>.Some, ifNoneWith);
+
 
     /// <summary>
     /// Creates a new Option with the specified value.
@@ -75,76 +153,17 @@ public sealed class Option<T>
     public static Task<IOption<T>> NoneAsync() =>
         Task.FromResult(None());
 
-    /// <summary>
-    /// Evaluates the some delegate if the Option is Some, otherwise evaluates
-    /// the none delegate.
-    /// </summary>
-    /// <typeparam name="U"></typeparam>
-    /// <param name="some"></param>
-    /// <param name="none"></param>
-    /// <returns></returns>
-    public U Match<U>(Func<T, U> some, Func<U> none) =>
-        Match(t1: some, t2: _ => none());
+    public static bool operator ==(Option<T> left, Option<T> right) =>
+        left.Equals(right);
 
-    /// <summary>
-    /// Evaluates the bind delegate if the Option is Some, otherwise returns
-    /// None.
-    /// </summary>
-    /// <typeparam name="U"></typeparam>
-    /// <param name="bind"></param>
-    /// <returns></returns>
-    public IOption<U> Bind<U>(
-        Func<T, IOption<U>> bind) =>
-        Match(bind, Option<U>.None);
+    public static bool operator !=(Option<T> left, Option<T> right) =>
+        !(left == right);
 
-    /// <summary>
-    /// Evaluates the map delegate if the Option is Some, otherwise returns
-    /// None.
-    /// </summary>
-    /// <typeparam name="U"></typeparam>
-    /// <param name="map"></param>
-    /// <returns></returns>
-    public IOption<U> Map<U>(
-        Func<T, U> map) =>
-        Bind(x => Option<U>.Some(map(x)));
+    public override bool Equals(object? obj) =>
+        _some is not null && obj is not null && _some.Equals(obj);
 
-    /// <summary>
-    /// Returns the value of the Option if it is T, otherwise returns the
-    /// specified default value.
-    /// </summary>
-    /// <param name="defaultValue"></param>
-    /// <returns></returns>
-    public T DefaultValue(
-         T defaultValue) =>
-         Match(some => some, _ => defaultValue);
-
-    /// <summary>
-    /// Returns the value of the Option if it is T, otherwise returns the
-    /// </summary>
-    /// <param name="defaultWith"></param>
-    /// <returns></returns>
-    public T DefaultWith(
-        Func<T> defaultWith) =>
-        Match(some => some, _ => defaultWith());
-
-    /// <summary>
-    /// Returns the value of the Option if it is Some, otherwise returns the
-    /// specified ifNone value.
-    /// </summary>
-    /// <param name="ifNone"></param>
-    /// <returns></returns>
-    public IOption<T> OrElse(
-        IOption<T> ifNone) =>
-        Match(Option<T>.Some, () => ifNone);
-
-    /// <summary>
-    /// Returns the value of the Option if it is Some, otherwise returns the
-    /// </summary>
-    /// <param name="ifNoneWith"></param>
-    /// <returns></returns>
-    public IOption<T> OrElseWith(
-        Func<IOption<T>> ifNoneWith) =>
-        Match(Option<T>.Some, ifNoneWith);
+    public override int GetHashCode()
+        => _some is null ? 0 : _some.GetHashCode();
 
     public override string ToString() =>
         Match(

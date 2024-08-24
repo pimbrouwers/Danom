@@ -30,7 +30,7 @@ var optionNone = Option<int>.None();
 
 ### Using Options
 
-Options are commonly used when a operation does not return a value.
+Options are commonly used when a operation might not return a value.
 
 ```csharp
 public IOption<int> TryFind(IEnumerable<int> numbers, Func<int, bool> predicate) =>
@@ -79,6 +79,10 @@ var optionOrElseWith =
 ```
 
 ## Results
+
+Represents the result of an operation that can either succeed or fail. These
+results can be chained together to form pipelines of error handling.
+
 
 --
 
