@@ -53,9 +53,9 @@ public sealed class OptionAsyncTests
     [Fact]
     public async Task OrElseShouldWork()
     {
-        // AssertOption.IsSome(1, await Option<int>.NoneAsync().OrElseAsync(Option<int>.Some(1)));
+        AssertOption.IsSome(1, await Option<int>.NoneAsync().OrElseAsync(Option<int>.Some(1)));
         AssertOption.IsSome(1, await Option<int>.NoneAsync().OrElseAsync(Option<int>.SomeAsync(1)));
-        // AssertOption.IsSome(2, await Option<int>.SomeAsync(2).OrElseAsync(Option<int>.Some(1)));
+        AssertOption.IsSome(2, await Option<int>.SomeAsync(2).OrElseAsync(Option<int>.Some(1)));
         AssertOption.IsSome(2, await Option<int>.SomeAsync(2).OrElseAsync(Option<int>.SomeAsync(1)));
     }
 
