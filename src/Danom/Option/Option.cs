@@ -41,8 +41,7 @@ public readonly struct Option<T>()
     public bool IsNone => !IsSome;
 
     /// <summary>
-    /// Evaluates the some delegate if the Option is Some, otherwise evaluates
-    /// the none delegate.
+    /// If the Option is Some evaluate the some delegate, otherwise none.
     /// </summary>
     /// <typeparam name="U"></typeparam>
     /// <param name="some"></param>
@@ -54,8 +53,7 @@ public readonly struct Option<T>()
             none();
 
     /// <summary>
-    /// Evaluates the bind delegate if the Option is Some, otherwise returns
-    /// None.
+    /// Evaluates the bind delegate if the Option is Some otherwise return None.
     /// </summary>
     /// <typeparam name="U"></typeparam>
     /// <param name="bind"></param>
@@ -65,8 +63,7 @@ public readonly struct Option<T>()
         Match(bind, Option<U>.None);
 
     /// <summary>
-    /// Evaluates the map delegate if the Option is Some, otherwise returns
-    /// None.
+    /// Evaluates the map delegate if the Option is Some otherwise return None.
     /// </summary>
     /// <typeparam name="U"></typeparam>
     /// <param name="map"></param>
@@ -76,8 +73,7 @@ public readonly struct Option<T>()
         Bind(x => Option<U>.Some(map(x)));
 
     /// <summary>
-    /// Returns the value of the Option if it is T, otherwise returns the
-    /// specified default value.
+    /// Returns the value of the Option if it is T otherwise return default.
     /// </summary>
     /// <param name="defaultValue"></param>
     /// <returns></returns>
@@ -86,7 +82,7 @@ public readonly struct Option<T>()
          Match(some => some, () => defaultValue);
 
     /// <summary>
-    /// Returns the value of the Option if it is T, otherwise returns the
+    /// Returns the value of the Option if it is T otherwise evaluate default.
     /// </summary>
     /// <param name="defaultWith"></param>
     /// <returns></returns>
@@ -95,8 +91,7 @@ public readonly struct Option<T>()
         Match(some => some, () => defaultWith());
 
     /// <summary>
-    /// Returns the value of the Option if it is Some, otherwise returns the
-    /// specified ifNone value.
+    /// Return the Option if it is Some, otherwise return ifNone.
     /// </summary>
     /// <param name="ifNone"></param>
     /// <returns></returns>
@@ -105,7 +100,7 @@ public readonly struct Option<T>()
         Match(Option<T>.Some, () => ifNone);
 
     /// <summary>
-    /// Returns the value of the Option if it is Some, otherwise returns the
+    /// Return the Option if it is Some, otherwise evaluate ifNoneWith.
     /// </summary>
     /// <param name="ifNoneWith"></param>
     /// <returns></returns>
