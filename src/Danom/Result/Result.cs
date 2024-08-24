@@ -20,7 +20,7 @@ public interface IResult<T, TError>
 
 /// <inheritdoc />
 public sealed class Result<T, TError>
-    : Choice<T, TError>, IResult<T, TError>
+    : Maybe<T, TError>, IResult<T, TError>
 {
     internal Result(T t) : base(t) { }
 
@@ -61,6 +61,25 @@ public sealed class Result<T, TError>
     public IResult<T, UError> MapError<UError>(
         Func<TError, UError> mapError) =>
         Match(Result<T, UError>.Ok, e => Result<T, UError>.Error(mapError(e)));
+
+    /// <summary>
+    /// Returns the value of the Result if it is T, otherwise returns the
+    /// specified default value.
+    /// </summary>
+    /// <param name="defaultValue"></param>
+    /// <returns></returns>
+    public T DefaultValue(
+         T defaultValue) =>
+         Match(ok => ok, _ => defaultValue);
+
+    /// <summary>
+    /// Returns the value of the Result if it is T, otherwise returns the
+    /// </summary>
+    /// <param name="defaultWith"></param>
+    /// <returns></returns>
+    public T DefaultWith(
+        Func<T> defaultWith) =>
+        Match(ok => ok, _ => defaultWith());
 
     public override string ToString() =>
         Match(
