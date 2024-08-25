@@ -50,6 +50,10 @@ public sealed class ResultErrors : IEnumerable<ResultError>
     public ResultErrors(string error)
         : this([new ResultError(error)]) { }
 
+    /// <summary>
+    /// Adds a new error to the collection.
+    /// </summary>
+    /// <param name="error"></param>
     public void Add(ResultError error) =>
         _errors.Add(error);
 
@@ -67,34 +71,75 @@ public sealed class ResultErrors : IEnumerable<ResultError>
 }
 
 /// <summary>
-/// Static methods for creating <see cref="IResult{T, TError}"/> instances with
-/// <see cref="ResultErrors"/> as the error type.
+/// The <see cref="Result{T, TError}"/> with <see cref="ResultErrors"/>
+/// as the predefined error type.
+///
+/// Alias for <see cref="Result{T, ResultErrors}"/>.
 /// </summary>
 /// <typeparam name="T"></typeparam>
 public static class Result<T>
 {
+    /// <summary>
+    /// Creates a new Result with the specified value.
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
     public static IResult<T, ResultErrors> Ok(T value) =>
         Result<T, ResultErrors>.Ok(value);
 
+    /// <summary>
+    /// Creates Result with the specified value wrapped in a completed Task.
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
     public static Task<IResult<T, ResultErrors>> OkAsync(T value) =>
         Result<T, ResultErrors>.OkAsync(value);
 
+    /// <summary>
+    /// Creates Result with the value of the awaited Task.
+    /// </summary>
+    /// <param name="valueTask"></param>
+    /// <returns></returns>
     public static Task<IResult<T, ResultErrors>> OkAsync(Task<T> valueTask) =>
         Result<T, ResultErrors>.OkAsync(valueTask);
 
+    /// <summary>
+    /// Creates a new Result with the specified error.
+    /// </summary>
+    /// <param name="errors"></param>
+    /// <returns></returns>
     public static IResult<T, ResultErrors> Error(ResultErrors errors) =>
         Result<T, ResultErrors>.Error(errors);
 
+    /// <summary>
+    /// Creates Result with the specified error wrapped in a completed Task.
+    /// </summary>
+    /// <param name="errors"></param>
+    /// <returns></returns>
     public static Task<IResult<T, ResultErrors>> ErrorAsync(ResultErrors errors) =>
         Task.FromResult(Error(errors));
 
+    /// <summary>
+    /// Creates a new Result with the specified error.
+    /// </summary>
+    /// <param name="messages"></param>
+    /// <returns></returns>
     public static IResult<T, ResultErrors> Error(IEnumerable<string> messages) =>
         Error(new ResultErrors(messages));
 
+    /// <summary>
+    /// Creates Result with the specified error wrapped in a completed Task.
+    /// </summary>
+    /// <param name="message"></param>
+    /// <returns></returns>
     public static IResult<T, ResultErrors> Error(string message) =>
         Error([message]);
 
-
+    /// <summary>
+    /// Creates Result with the specified error wrapped in a completed Task.
+    /// </summary>
+    /// <param name="message"></param>
+    /// <returns></returns>
     public static Task<IResult<T, ResultErrors>> ErrorAsync(string message) =>
         Task.FromResult(Error(message));
 }
