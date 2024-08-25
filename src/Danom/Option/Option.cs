@@ -19,12 +19,12 @@ public interface IOption<T>
 }
 
 /// <inheritdoc cref="IOption{T}" />
-public readonly struct Option<T>()
+public readonly struct Option<T>
     : IOption<T>
 {
-    private readonly T? _some;
+    private readonly T? _some = default;
 
-    private Option(T t) : this()
+    private Option(T t)
     {
         _some = t;
         IsSome = true;
@@ -33,7 +33,7 @@ public readonly struct Option<T>()
     /// <summary>
     /// Returns true if Option is Some, false otherwise.
     /// </summary>
-    public bool IsSome { get; }
+    public bool IsSome { get; } = false;
 
     /// <summary>
     /// Returns true if Option is None, false otherwise.
