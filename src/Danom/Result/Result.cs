@@ -22,8 +22,8 @@ public interface IResult<T, TError>
 public readonly struct Result<T, TError>
     : IResult<T, TError>
 {
-    private readonly T? _ok;
-    private readonly TError? _error;
+    private readonly T? _ok = default;
+    private readonly TError? _error = default;
 
     private Result(T t)
     {
@@ -39,7 +39,7 @@ public readonly struct Result<T, TError>
     /// <summary>
     /// Returns true if Result is Ok, false otherwise.
     /// </summary>
-    public bool IsOk { get; }
+    public bool IsOk { get; } = false;
 
     /// <summary>
     /// Returns true if Result is Error, false otherwise.
