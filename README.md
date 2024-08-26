@@ -2,7 +2,7 @@
 
 [![build](https://github.com/pimbrouwers/Danom/actions/workflows/build.yml/badge.svg)](https://github.com/pimbrouwers/Danom/actions/workflows/build.yml)
 
-Danom is a C# library that provides monadic structures to simplify functional programming patterns in C#.
+Danom is a C# library that provides monadic structures to simplify functional programming patterns in C#, that enforces exhaustive matching by preventing direct value access (this is good).
 
 ## Key Features
 - Implementation of common monads like `Option`, `Result`, and `ResultOption`.
@@ -14,11 +14,9 @@ Danom is a C# library that provides monadic structures to simplify functional pr
 - **Simplicity**: Easy to use API for common monadic operations.
 - **Performance**: Efficient implementation to minimize overhead.
 - **Interoperability**: Seamless integration with existing C# code and libraries.
-- **Extensibility**: Allow users to create custom monads.
+- **Durability**: Prevent direct use of internal value, enforcing exhaustive matching.
 
-## Quick Start
-
-### Options
+## Options
 
 Represents when an actual value might not exist for a value or named variable. An option has an underlying type and can hold a value of that type, or it might not have a value.
 
