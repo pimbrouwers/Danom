@@ -6,21 +6,8 @@ namespace Danom;
 /// </summary>
 /// <typeparam name="T"></typeparam>
 /// <typeparam name="TError"></typeparam>
-public interface IResult<T, TError>
-{
-    bool IsOk { get; }
-    bool IsError { get; }
-    U Match<U>(Func<T, U> ok, Func<TError, U> error);
-    IResult<U, TError> Bind<U>(Func<T, IResult<U, TError>> bind);
-    IResult<U, TError> Map<U>(Func<T, U> map);
-    IResult<T, UError> MapError<UError>(Func<TError, UError> mapError);
-    T DefaultValue(T defaultValue);
-    T DefaultWith(Func<T> defaultWith);
-}
-
-/// <inheritdoc />
 public readonly struct Result<T, TError>
-    : IResult<T, TError>
+    : IEquatable<Result<T, TError>>
 {
     private readonly T? _ok = default;
     private readonly TError? _error = default;
@@ -66,8 +53,8 @@ public readonly struct Result<T, TError>
     /// <typeparam name="U"></typeparam>
     /// <param name="bind"></param>
     /// <returns></returns>
-    public IResult<U, TError> Bind<U>(
-        Func<T, IResult<U, TError>> bind) =>
+    public Result<U, TError> Bind<U>(
+        Func<T, Result<U, TError>> bind) =>
         Match(bind, Result<U, TError>.Error);
 
     /// <summary>
@@ -76,7 +63,7 @@ public readonly struct Result<T, TError>
     /// <typeparam name="U"></typeparam>
     /// <param name="map"></param>
     /// <returns></returns>
-    public IResult<U, TError> Map<U>(
+    public Result<U, TError> Map<U>(
         Func<T, U> map) =>
         Bind(x => Result<U, TError>.Ok(map(x)));
 
@@ -86,7 +73,7 @@ public readonly struct Result<T, TError>
     /// <typeparam name="U"></typeparam>
     /// <param name="map"></param>
     /// <returns></returns>
-    public IResult<T, UError> MapError<UError>(
+    public Result<T, UError> MapError<UError>(
         Func<TError, UError> mapError) =>
         Match(Result<T, UError>.Ok, e => Result<T, UError>.Error(mapError(e)));
 
@@ -114,15 +101,15 @@ public readonly struct Result<T, TError>
     /// </summary>
     /// <param name="value"></param>
     /// <returns></returns>
-    public static IResult<T, TError> Ok(T value) =>
-        new Result<T, TError>(value);
+    public static Result<T, TError> Ok(T value) =>
+        new(value);
 
     /// <summary>
     /// Creates Result with the specified value wrapped in a completed Task.
     /// </summary>
     /// <param name="value"></param>
     /// <returns></returns>
-    public static Task<IResult<T, TError>> OkAsync(T value) =>
+    public static Task<Result<T, TError>> OkAsync(T value) =>
         Task.FromResult(Ok(value));
 
     /// <summary>
@@ -130,7 +117,7 @@ public readonly struct Result<T, TError>
     /// </summary>
     /// <param name="valueTask"></param>
     /// <returns></returns>
-    public static async Task<IResult<T, TError>> OkAsync(Task<T> valueTask) =>
+    public static async Task<Result<T, TError>> OkAsync(Task<T> valueTask) =>
         Ok(await valueTask);
 
     /// <summary>
@@ -138,15 +125,15 @@ public readonly struct Result<T, TError>
     /// </summary>
     /// <param name="errors"></param>
     /// <returns></returns>
-    public static IResult<T, TError> Error(TError errors) =>
-        new Result<T, TError>(errors);
+    public static Result<T, TError> Error(TError errors) =>
+        new(errors);
 
     /// <summary>
     /// Creates Result with the specified error wrapped in a completed Task.
     /// </summary>
     /// <param name="errors"></param>
     /// <returns></returns>
-    public static Task<IResult<T, TError>> ErrorAsync(TError errors) =>
+    public static Task<Result<T, TError>> ErrorAsync(TError errors) =>
         Task.FromResult(Error(errors));
 
     /// <summary>
@@ -154,7 +141,7 @@ public readonly struct Result<T, TError>
     /// </summary>
     /// <param name="errors"></param>
     /// <returns></returns>
-    public static async Task<IResult<T, TError>> ErrorAsync(Task<TError> errors) =>
+    public static async Task<Result<T, TError>> ErrorAsync(Task<TError> errors) =>
         Error(await errors);
 
     public static bool operator ==(Result<T, TError> left, Result<T, TError> right) =>
@@ -164,10 +151,23 @@ public readonly struct Result<T, TError>
         !(left == right);
 
     public override bool Equals(object? obj) =>
-        _ok is not null && obj is not null && _ok.Equals(obj);
+        obj is Result<T, TError> o && Equals(o);
 
-    public override int GetHashCode()
-        => _ok is null ? 0 : _ok.GetHashCode();
+    public readonly bool Equals(Result<T, TError> other) =>
+        Match(
+            ok: x1 =>
+                other.Match(
+                    ok: x2 => x1 is not null &&  x2 is not null && x2.Equals(x1),
+                    error: _ => false),
+            error: e1 =>
+                other.Match(
+                    ok: _ => false,
+                    error: e2 => e2 is not null && e2.Equals(e1)));
+
+    public override int GetHashCode() =>
+        Match(
+            ok: x => x is null ? 0 : x.GetHashCode(),
+            error: e => e is null ? 0 : e.GetHashCode());
 
     public override string ToString() =>
         Match(

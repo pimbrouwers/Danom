@@ -6,7 +6,7 @@ namespace Danom;
 /// value exists or is needed.
 /// </summary>
 public readonly struct Unit
-    : IEquatable<Unit>, IComparable<Unit>
+    : IEquatable<Unit>
 {
     public static readonly Unit Value;
     public static readonly Task<Unit> ValueAsync = Task.FromResult(Value);
@@ -19,9 +19,6 @@ public readonly struct Unit
 
     public readonly bool Equals(Unit other) =>
         true;
-
-    public int CompareTo(Unit other) =>
-        0;
 
     public override readonly string ToString() =>
         "()";

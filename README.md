@@ -35,7 +35,7 @@ var optionNone = Option<int>.None();
 Options are commonly used when a operation might not return a value.
 
 ```csharp
-public IOption<int> TryFind(IEnumerable<int> numbers, Func<int, bool> predicate) =>
+public Option<int> TryFind(IEnumerable<int> numbers, Func<int, bool> predicate) =>
     numbers.FirstOrDefault(predicate).ToOption();
 ```
 

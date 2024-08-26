@@ -7,27 +7,13 @@ namespace Danom;
 /// </summary>
 /// <typeparam name="T"></typeparam>
 /// <typeparam name="TError"></typeparam>
-public interface IResultOption<T, TError>
-{
-    bool IsOk { get; }
-    bool IsNone { get; }
-    bool IsError { get; }
-    U Match<U>(Func<T, U> ok, Func<U> none, Func<TError, U> error);
-    IResultOption<U, TError> Bind<U>(Func<T, IResultOption<U, TError>> bind);
-    IResultOption<U, TError> Map<U>(Func<T, U> map);
-    IResultOption<T, UError> MapError<UError>(Func<TError, UError> mapError);
-    T DefaultValue(T defaultValue);
-    T DefaultWith(Func<T> defaultWith);
-}
-
-/// <inheritdoc />
 public readonly struct ResultOption<T, TError>()
-    : IResultOption<T, TError>
+    : IEquatable<ResultOption<T, TError>>
 {
-    private readonly IOption<T> _ok = Option<T>.None();
+    private readonly Option<T> _ok = Option<T>.None();
     private readonly TError? _error = default;
 
-    private ResultOption(IOption<T> option) : this()
+    private ResultOption(Option<T> option) : this()
     {
         _ok = option;
         IsOk = option.IsSome;
@@ -69,8 +55,8 @@ public readonly struct ResultOption<T, TError>()
     /// <typeparam name="U"></typeparam>
     /// <param name="bind"></param>
     /// <returns></returns>
-    public IResultOption<U, TError> Bind<U>(
-        Func<T, IResultOption<U, TError>> bind) =>
+    public ResultOption<U, TError> Bind<U>(
+        Func<T, ResultOption<U, TError>> bind) =>
         Match(bind, ResultOption<U, TError>.None, ResultOption<U, TError>.Error);
 
     /// <summary>
@@ -79,7 +65,7 @@ public readonly struct ResultOption<T, TError>()
     /// <typeparam name="U"></typeparam>
     /// <param name="map"></param>
     /// <returns></returns>
-    public IResultOption<U, TError> Map<U>(
+    public ResultOption<U, TError> Map<U>(
         Func<T, U> map) =>
         Bind(x => ResultOption<U, TError>.Ok(map(x)));
 
@@ -89,7 +75,7 @@ public readonly struct ResultOption<T, TError>()
     /// <typeparam name="U"></typeparam>
     /// <param name="map"></param>
     /// <returns></returns>
-    public IResultOption<T, UError> MapError<UError>(
+    public ResultOption<T, UError> MapError<UError>(
         Func<TError, UError> mapError) =>
         Match(ResultOption<T, UError>.Ok, ResultOption<T, UError>.None, e =>
             ResultOption<T, UError>.Error(mapError(e)));
@@ -118,15 +104,15 @@ public readonly struct ResultOption<T, TError>()
     /// </summary>
     /// <param name="value"></param>
     /// <returns></returns>
-    public static IResultOption<T, TError> Ok(T value) =>
-        new ResultOption<T, TError>(Option<T>.Some(value));
+    public static ResultOption<T, TError> Ok(T value) =>
+        new(Option<T>.Some(value));
 
     /// <summary>
     /// Creates ResultOption with the specified value wrapped in a completed Task.
     /// </summary>
     /// <param name="value"></param>
     /// <returns></returns>
-    public static Task<IResultOption<T, TError>> OkAsync(T value) =>
+    public static Task<ResultOption<T, TError>> OkAsync(T value) =>
         Task.FromResult(Ok(value));
 
     /// <summary>
@@ -134,36 +120,36 @@ public readonly struct ResultOption<T, TError>()
     /// </summary>
     /// <param name="valueTask"></param>
     /// <returns></returns>
-    public static async Task<IResultOption<T, TError>> OkAsync(Task<T> valueTask) =>
+    public static async Task<ResultOption<T, TError>> OkAsync(Task<T> valueTask) =>
         Ok(await valueTask);
 
     /// <summary>
     /// Creates a new ResultOption with no value.
     /// </summary>
     /// <returns></returns>
-    public static IResultOption<T, TError> None() =>
-        new ResultOption<T, TError>(Option<T>.None());
+    public static ResultOption<T, TError> None() =>
+        new(Option<T>.None());
 
     /// <summary>
     /// Creates a new ResultOption with no value wrapped in a completed Task.
     /// </summary>
     /// <returns></returns>
-    public static Task<IResultOption<T, TError>> NoneAsync() =>
+    public static Task<ResultOption<T, TError>> NoneAsync() =>
         Task.FromResult(None());
 
     /// <summary>
     /// Creates a new ResultOption with the specified error.
     /// </summary>
     /// <param name="errors"></param>
-    public static IResultOption<T, TError> Error(TError error) =>
-        new ResultOption<T, TError>(error);
+    public static ResultOption<T, TError> Error(TError error) =>
+        new(error);
 
     /// <summary>
     /// Creates ResultOption with the specified error wrapped in a completed Task.
     /// </summary>
     /// <param name="errors"></param>
     /// <returns></returns>
-    public static Task<IResultOption<T, TError>> ErrorAsync(TError error) =>
+    public static Task<ResultOption<T, TError>> ErrorAsync(TError error) =>
         Task.FromResult(Error(error));
 
     /// <summary>
@@ -171,7 +157,7 @@ public readonly struct ResultOption<T, TError>()
     /// </summary>
     /// <param name="errors"></param>
     /// <returns></returns>
-    public static async Task<IResultOption<T, TError>> ErrorAsync(Task<TError> error) =>
+    public static async Task<ResultOption<T, TError>> ErrorAsync(Task<TError> error) =>
         Error(await error);
 
     public static bool operator ==(ResultOption<T, TError> left, ResultOption<T, TError> right) =>
@@ -181,10 +167,31 @@ public readonly struct ResultOption<T, TError>()
         !(left == right);
 
     public override bool Equals(object? obj) =>
-        _ok is not null && obj is not null && _ok.Equals(obj);
+        obj is ResultOption<T, TError> o && Equals(o);
 
-    public override int GetHashCode()
-        => _ok is null ? 0 : _ok.GetHashCode();
+    public readonly bool Equals(ResultOption<T, TError> other) =>
+        Match(
+            ok: x1 =>
+                other.Match(
+                    ok: x2 => x1 is not null && x2 is not null && x2.Equals(x1),
+                    none: () => false,
+                    error: _ => false),
+            none: () =>
+                other.Match(
+                    ok: _ => false,
+                    none: () => true,
+                    error: _ => false),
+            error: e1 =>
+                other.Match(
+                    ok: _ => false,
+                    none: () => false,
+                    error: e2 => e1 is not null && e2 is not null && e2.Equals(e1)));
+
+    public override int GetHashCode() =>
+        Match(
+            ok: x => x is null ? 0 : x.GetHashCode(),
+            none: () => 0,
+            error: e => e is null ? 0 : e.GetHashCode());
 
     public override string ToString() =>
         Match(
@@ -194,30 +201,30 @@ public readonly struct ResultOption<T, TError>()
 }
 
 /// <summary>
-/// Extension methods for converting between <see cref="IOption{T}"/>,
-/// <see cref="IResult{T, TError}"/> and <see cref="IResultOption{T, TError}"/>.
+/// Extension methods for converting between <see cref="Option{T}"/>,
+/// <see cref="IResult{T, TError}"/> and <see cref="ResultOption{T, TError}"/>.
 /// </summary>
 public static class ResultOptionConversionExtensions
 {
-    public static IResultOption<T, TError> ToResultOption<T, TError>(this IOption<T> option) =>
+    public static ResultOption<T, TError> ToResultOption<T, TError>(this Option<T> option) =>
         option.Match(ResultOption<T, TError>.Ok, ResultOption<T, TError>.None);
 
-    public static Task<IResultOption<T, TError>> ToResultOptionAsync<T, TError>(this Task<IOption<T>> optionTask) =>
+    public static Task<ResultOption<T, TError>> ToResultOptionAsync<T, TError>(this Task<Option<T>> optionTask) =>
         optionTask.MatchAsync(ResultOption<T, TError>.Ok, ResultOption<T, TError>.None);
 
-    public static IResultOption<T, TError> ToResultOption<T, TError>(this IResult<T, TError> result) =>
+    public static ResultOption<T, TError> ToResultOption<T, TError>(this Result<T, TError> result) =>
         result.Match(ResultOption<T, TError>.Ok, ResultOption<T, TError>.Error);
 
-    public static Task<IResultOption<T, TError>> ToResultOptionAsync<T, TError>(this Task<IResult<T, TError>> resultTask) =>
+    public static Task<ResultOption<T, TError>> ToResultOptionAsync<T, TError>(this Task<Result<T, TError>> resultTask) =>
         resultTask.MatchAsync(ResultOption<T, TError>.Ok, ResultOption<T, TError>.Error);
 
-    public static IResultOption<T, TError> ToResultOption<T, TError>(this IResult<IOption<T>, TError> result) =>
+    public static ResultOption<T, TError> ToResultOption<T, TError>(this Result<Option<T>, TError> result) =>
         result.Match(
             ok: opt =>
                 opt.Match(ResultOption<T, TError>.Ok, ResultOption<T, TError>.None),
             error: ResultOption<T, TError>.Error);
 
-    public static Task<IResultOption<T, TError>> ToResultOptionAsync<T, TError>(this Task<IResult<IOption<T>, TError>> resultTask) =>
+    public static Task<ResultOption<T, TError>> ToResultOptionAsync<T, TError>(this Task<Result<Option<T>, TError>> resultTask) =>
         resultTask.MatchAsync(
             ok: opt =>
                 opt.Match(ResultOption<T, TError>.Ok, ResultOption<T, TError>.None),

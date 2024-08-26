@@ -1,8 +1,8 @@
 namespace Danom;
 
 /// <summary>
-/// Contains Task extension methods for <see cref="IOption{T}"/> that allow for
-/// asynchronous operations containing <see cref="IOption{T}"/>.
+/// Contains Task extension methods for <see cref="Option{T}"/> that allow for
+/// asynchronous operations containing <see cref="Option{T}"/>.
 /// </summary>
 public static class OptionTaskExtensions
 {
@@ -16,7 +16,7 @@ public static class OptionTaskExtensions
     /// <param name="none"></param>
     /// <returns></returns>
     public static async Task<U> MatchAsync<T, U>(
-        this Task<IOption<T>> optionTask,
+        this Task<Option<T>> optionTask,
         Func<T, Task<U>> some,
         Func<Task<U>> none) =>
         await (await optionTask).Match(some, none);
@@ -31,7 +31,7 @@ public static class OptionTaskExtensions
     /// <param name="none"></param>
     /// <returns></returns>
     public static async Task<U> MatchAsync<T, U>(
-        this Task<IOption<T>> optionTask,
+        this Task<Option<T>> optionTask,
         Func<T, U> some,
         Func<U> none) =>
         (await optionTask).Match(some, none);
@@ -44,9 +44,9 @@ public static class OptionTaskExtensions
     /// <param name="optionTask"></param>
     /// <param name="bind"></param>
     /// <returns></returns>
-    public static Task<IOption<U>> BindAsync<T, U>(
-        this Task<IOption<T>> optionTask,
-        Func<T, Task<IOption<U>>> bind) =>
+    public static Task<Option<U>> BindAsync<T, U>(
+        this Task<Option<T>> optionTask,
+        Func<T, Task<Option<U>>> bind) =>
         optionTask.MatchAsync(bind, Option<U>.NoneAsync);
 
     /// <summary>
@@ -57,9 +57,9 @@ public static class OptionTaskExtensions
     /// <param name="optionTask"></param>
     /// <param name="bind"></param>
     /// <returns></returns>
-    public static Task<IOption<U>> BindAsync<T, U>(
-        this Task<IOption<T>> optionTask,
-        Func<T, IOption<U>> bind) =>
+    public static Task<Option<U>> BindAsync<T, U>(
+        this Task<Option<T>> optionTask,
+        Func<T, Option<U>> bind) =>
         optionTask.MatchAsync(x => bind(x), Option<U>.None);
 
     /// <summary>
@@ -70,8 +70,8 @@ public static class OptionTaskExtensions
     /// <param name="optionTask"></param>
     /// <param name="map"></param>
     /// <returns></returns>
-    public static Task<IOption<U>> MapAsync<T, U>(
-        this Task<IOption<T>> optionTask,
+    public static Task<Option<U>> MapAsync<T, U>(
+        this Task<Option<T>> optionTask,
         Func<T, Task<U>> map) =>
         BindAsync(optionTask, x => Option<U>.SomeAsync(map(x)));
 
@@ -83,8 +83,8 @@ public static class OptionTaskExtensions
     /// <param name="optionTask"></param>
     /// <param name="map"></param>
     /// <returns></returns>
-    public static Task<IOption<U>> MapAsync<T, U>(
-        this Task<IOption<T>> optionTask,
+    public static Task<Option<U>> MapAsync<T, U>(
+        this Task<Option<T>> optionTask,
         Func<T, U> map) =>
         BindAsync(optionTask, x => Option<U>.Some(map(x)));
 
@@ -96,7 +96,7 @@ public static class OptionTaskExtensions
     /// <param name="defaultValue"></param>
     /// <returns></returns>
     public static Task<T> DefaultValueAsync<T>(
-        this Task<IOption<T>> optionTask,
+        this Task<Option<T>> optionTask,
         T defaultValue) =>
         optionTask.MatchAsync(some => some, () => defaultValue);
 
@@ -108,7 +108,7 @@ public static class OptionTaskExtensions
     /// <param name="defaultValue"></param>
     /// <returns></returns>
     public static Task<T> DefaultValueAsync<T>(
-        this Task<IOption<T>> optionTask,
+        this Task<Option<T>> optionTask,
         Task<T> defaultValue) =>
         optionTask.MatchAsync(some => Task.FromResult(some), () => defaultValue);
 
@@ -120,7 +120,7 @@ public static class OptionTaskExtensions
     /// <param name="defaultWith"></param>
     /// <returns></returns>
     public static Task<T> DefaultWithAsync<T>(
-        this Task<IOption<T>> optionTask,
+        this Task<Option<T>> optionTask,
         Func<Task<T>> defaultWith) =>
         optionTask.MatchAsync(some => Task.FromResult(some), defaultWith);
 
@@ -132,7 +132,7 @@ public static class OptionTaskExtensions
     /// <param name="defaultWith"></param>
     /// <returns></returns>
     public static Task<T> DefaultWithAsync<T>(
-        this Task<IOption<T>> optionTask,
+        this Task<Option<T>> optionTask,
         Func<T> defaultWith) =>
         optionTask.MatchAsync(some => some, () => defaultWith());
 
@@ -143,9 +143,9 @@ public static class OptionTaskExtensions
     /// <param name="optionTask"></param>
     /// <param name="ifNone"></param>
     /// <returns></returns>
-    public static Task<IOption<T>> OrElseAsync<T>(
-        this Task<IOption<T>> optionTask,
-        Task<IOption<T>> ifNone) =>
+    public static Task<Option<T>> OrElseAsync<T>(
+        this Task<Option<T>> optionTask,
+        Task<Option<T>> ifNone) =>
         optionTask.MatchAsync(_ => optionTask, () => ifNone);
 
     /// <summary>
@@ -155,9 +155,9 @@ public static class OptionTaskExtensions
     /// <param name="optionTask"></param>
     /// <param name="ifNone"></param>
     /// <returns></returns>
-    public static Task<IOption<T>> OrElseAsync<T>(
-        this Task<IOption<T>> optionTask,
-        IOption<T> ifNone) =>
+    public static Task<Option<T>> OrElseAsync<T>(
+        this Task<Option<T>> optionTask,
+        Option<T> ifNone) =>
         optionTask.MatchAsync(Option<T>.Some, () => ifNone);
 
     /// <summary>
@@ -167,9 +167,9 @@ public static class OptionTaskExtensions
     /// <param name="optionTask"></param>
     /// <param name="ifNoneWith"></param>
     /// <returns></returns>
-    public static Task<IOption<T>> OrElseWithAsync<T>(
-        this Task<IOption<T>> optionTask,
-        Func<Task<IOption<T>>> ifNoneWith) =>
+    public static Task<Option<T>> OrElseWithAsync<T>(
+        this Task<Option<T>> optionTask,
+        Func<Task<Option<T>>> ifNoneWith) =>
         optionTask.MatchAsync(_ => optionTask, ifNoneWith);
 
     /// <summary>
@@ -179,8 +179,8 @@ public static class OptionTaskExtensions
     /// <param name="optionTask"></param>
     /// <param name="ifNoneWith"></param>
     /// <returns></returns>
-    public static Task<IOption<T>> OrElseWithAsync<T>(
-        this Task<IOption<T>> optionTask,
-        Func<IOption<T>> ifNoneWith) =>
+    public static Task<Option<T>> OrElseWithAsync<T>(
+        this Task<Option<T>> optionTask,
+        Func<Option<T>> ifNoneWith) =>
         optionTask.MatchAsync(Option<T>.Some, ifNoneWith);
 }

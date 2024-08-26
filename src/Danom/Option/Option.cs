@@ -5,29 +5,18 @@ namespace Danom;
 /// using nulls, and allows for more expressive code with exhaustive matching.
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public interface IOption<T>
-{
-    bool IsSome { get; }
-    bool IsNone { get; }
-    U Match<U>(Func<T, U> some, Func<U> none);
-    IOption<U> Bind<U>(Func<T, IOption<U>> bind);
-    IOption<U> Map<U>(Func<T, U> map);
-    T DefaultValue(T defaultValue);
-    T DefaultWith(Func<T> defaultWith);
-    IOption<T> OrElse(IOption<T> ifNone);
-    IOption<T> OrElseWith(Func<IOption<T>> ifNoneWith);
-}
-
-/// <inheritdoc cref="IOption{T}" />
 public readonly struct Option<T>
-    : IOption<T>
+    : IEquatable<Option<T>>
 {
     private readonly T? _some = default;
 
     private Option(T t)
     {
-        _some = t;
-        IsSome = true;
+        if (t is not null)
+        {
+            _some = t;
+            IsSome = true;
+        }
     }
 
     /// <summary>
@@ -58,8 +47,8 @@ public readonly struct Option<T>
     /// <typeparam name="U"></typeparam>
     /// <param name="bind"></param>
     /// <returns></returns>
-    public IOption<U> Bind<U>(
-        Func<T, IOption<U>> bind) =>
+    public Option<U> Bind<U>(
+        Func<T, Option<U>> bind) =>
         Match(bind, Option<U>.None);
 
     /// <summary>
@@ -68,7 +57,7 @@ public readonly struct Option<T>
     /// <typeparam name="U"></typeparam>
     /// <param name="map"></param>
     /// <returns></returns>
-    public IOption<U> Map<U>(
+    public Option<U> Map<U>(
         Func<T, U> map) =>
         Bind(x => Option<U>.Some(map(x)));
 
@@ -95,8 +84,8 @@ public readonly struct Option<T>
     /// </summary>
     /// <param name="ifNone"></param>
     /// <returns></returns>
-    public IOption<T> OrElse(
-        IOption<T> ifNone) =>
+    public Option<T> OrElse(
+        Option<T> ifNone) =>
         Match(Option<T>.Some, () => ifNone);
 
     /// <summary>
@@ -104,8 +93,8 @@ public readonly struct Option<T>
     /// </summary>
     /// <param name="ifNoneWith"></param>
     /// <returns></returns>
-    public IOption<T> OrElseWith(
-        Func<IOption<T>> ifNoneWith) =>
+    public Option<T> OrElseWith(
+        Func<Option<T>> ifNoneWith) =>
         Match(Option<T>.Some, ifNoneWith);
 
 
@@ -114,7 +103,7 @@ public readonly struct Option<T>
     /// </summary>
     /// <param name="value"></param>
     /// <returns></returns>
-    public static IOption<T> Some(T value) =>
+    public static Option<T> Some(T value) =>
         new Option<T>(value);
 
     /// <summary>
@@ -122,7 +111,7 @@ public readonly struct Option<T>
     /// </summary>
     /// <param name="value"></param>
     /// <returns></returns>
-    public static Task<IOption<T>> SomeAsync(T value) =>
+    public static Task<Option<T>> SomeAsync(T value) =>
         Task.FromResult(Some(value));
 
     /// <summary>
@@ -130,21 +119,21 @@ public readonly struct Option<T>
     /// </summary>
     /// <param name="value"></param>
     /// <returns></returns>
-    public static async Task<IOption<T>> SomeAsync(Task<T> value) =>
+    public static async Task<Option<T>> SomeAsync(Task<T> value) =>
         Some(await value);
 
     /// <summary>
     /// Creates a new Option with no value.
     /// </summary>
     /// <returns></returns>
-    public static IOption<T> None() =>
+    public static Option<T> None() =>
         new Option<T>();
 
     /// <summary>
     /// Creates a new Option with no value wrapped in a completed Task.
     /// </summary>
     /// <returns></returns>
-    public static Task<IOption<T>> NoneAsync() =>
+    public static Task<Option<T>> NoneAsync() =>
         Task.FromResult(None());
 
     public static bool operator ==(Option<T> left, Option<T> right) =>
@@ -154,10 +143,24 @@ public readonly struct Option<T>
         !(left == right);
 
     public override bool Equals(object? obj) =>
-        _some is not null && obj is not null && _some.Equals(obj);
+        obj is Option<T> o && Equals(o);
 
-    public override int GetHashCode()
-        => _some is null ? 0 : _some.GetHashCode();
+    public readonly bool Equals(Option<T> other) =>
+        Match(
+            some: x1 =>
+                other.Match(
+                    some: x2 => x1 is not null && x2 is not null && x2.Equals(x1),
+                    none: () => false),
+            none: () =>
+                other.Match(
+                    some: _ => false,
+                    none: () => true)
+            );
+
+    public override int GetHashCode() =>
+        Match(
+            some: x => x is null ? 0 : x.GetHashCode(),
+            none: () => 0);
 
     public override string ToString() =>
         Match(
@@ -178,7 +181,7 @@ public static class OptionActionExtensions
     /// <param name="option"></param>
     /// <param name="some"></param>
     /// <param name="none"></param>
-    public static void Match<T>(this IOption<T> option, Action<T> some, Action none)
+    public static void Match<T>(this Option<T> option, Action<T> some, Action none)
     {
         if (option.ToNullable() is T t)
         {

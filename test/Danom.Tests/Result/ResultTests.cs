@@ -88,4 +88,31 @@ public sealed class ResultTests
         Assert.Equal(1, Result<int, string>.Error("Error").DefaultWith(() => 1));
         Assert.Equal(2, Result<int, string>.Ok(2).DefaultWith(() => 1));
     }
+
+    [Fact]
+    public void EqualityShouldWork()
+    {
+        Assert.Equal(Result<int,string>.Error("Error"), Result<int,string>.Error("Error"));
+        Assert.Equal(Result<int,string>.Ok(1), Result<int,string>.Ok(1));
+        Assert.NotEqual(Result<int,string>.Ok(1), Result<int,string>.Ok(2));
+        Assert.NotEqual(Result<int,string>.Ok(1), Result<int,string>.Error("Error"));
+    }
+
+    [Fact]
+    public void EqualityOperatorShouldWork()
+    {
+        Assert.True(Result<int,string>.Error("Error") == Result<int,string>.Error("Error"));
+        Assert.True(Result<int,string>.Ok(1) == Result<int,string>.Ok(1));
+        Assert.False(Result<int,string>.Ok(1) == Result<int,string>.Ok(2));
+        Assert.False(Result<int,string>.Ok(1) == Result<int,string>.Error("Error"));
+    }
+
+    [Fact]
+    public void InequalityOperatorShouldWork()
+    {
+        Assert.False(Result<int,string>.Error("Error") != Result<int,string>.Error("Error"));
+        Assert.False(Result<int,string>.Ok(1) != Result<int,string>.Ok(1));
+        Assert.True(Result<int,string>.Ok(1) != Result<int,string>.Ok(2));
+        Assert.True(Result<int,string>.Ok(1) != Result<int,string>.Error("Error"));
+    }
 }

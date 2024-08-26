@@ -84,7 +84,7 @@ public static class Result<T>
     /// </summary>
     /// <param name="value"></param>
     /// <returns></returns>
-    public static IResult<T, ResultErrors> Ok(T value) =>
+    public static Result<T, ResultErrors> Ok(T value) =>
         Result<T, ResultErrors>.Ok(value);
 
     /// <summary>
@@ -92,7 +92,7 @@ public static class Result<T>
     /// </summary>
     /// <param name="value"></param>
     /// <returns></returns>
-    public static Task<IResult<T, ResultErrors>> OkAsync(T value) =>
+    public static Task<Result<T, ResultErrors>> OkAsync(T value) =>
         Result<T, ResultErrors>.OkAsync(value);
 
     /// <summary>
@@ -100,7 +100,7 @@ public static class Result<T>
     /// </summary>
     /// <param name="valueTask"></param>
     /// <returns></returns>
-    public static Task<IResult<T, ResultErrors>> OkAsync(Task<T> valueTask) =>
+    public static Task<Result<T, ResultErrors>> OkAsync(Task<T> valueTask) =>
         Result<T, ResultErrors>.OkAsync(valueTask);
 
     /// <summary>
@@ -108,7 +108,7 @@ public static class Result<T>
     /// </summary>
     /// <param name="errors"></param>
     /// <returns></returns>
-    public static IResult<T, ResultErrors> Error(ResultErrors errors) =>
+    public static Result<T, ResultErrors> Error(ResultErrors errors) =>
         Result<T, ResultErrors>.Error(errors);
 
     /// <summary>
@@ -116,7 +116,7 @@ public static class Result<T>
     /// </summary>
     /// <param name="errors"></param>
     /// <returns></returns>
-    public static Task<IResult<T, ResultErrors>> ErrorAsync(ResultErrors errors) =>
+    public static Task<Result<T, ResultErrors>> ErrorAsync(ResultErrors errors) =>
         Task.FromResult(Error(errors));
 
     /// <summary>
@@ -124,7 +124,7 @@ public static class Result<T>
     /// </summary>
     /// <param name="messages"></param>
     /// <returns></returns>
-    public static IResult<T, ResultErrors> Error(IEnumerable<string> messages) =>
+    public static Result<T, ResultErrors> Error(IEnumerable<string> messages) =>
         Error(new ResultErrors(messages));
 
     /// <summary>
@@ -132,7 +132,7 @@ public static class Result<T>
     /// </summary>
     /// <param name="message"></param>
     /// <returns></returns>
-    public static IResult<T, ResultErrors> Error(string message) =>
+    public static Result<T, ResultErrors> Error(string message) =>
         Error([message]);
 
     /// <summary>
@@ -140,7 +140,7 @@ public static class Result<T>
     /// </summary>
     /// <param name="message"></param>
     /// <returns></returns>
-    public static Task<IResult<T, ResultErrors>> ErrorAsync(string message) =>
+    public static Task<Result<T, ResultErrors>> ErrorAsync(string message) =>
         Task.FromResult(Error(message));
 }
 
@@ -151,52 +151,52 @@ public static class Result<T>
 public static class ResultTExtensions
 {
     public static U Match<T, U>(
-        this IResult<T, ResultErrors> result,
+        this Result<T, ResultErrors> result,
         Func<T, U> ok,
         Func<ResultErrors, U> error) =>
         result.Match(ok, error);
 
-    public static IResult<U, ResultErrors> Bind<T, U>(
-        this IResult<T, ResultErrors> result,
-        Func<T, IResult<U, ResultErrors>> bind) =>
+    public static Result<U, ResultErrors> Bind<T, U>(
+        this Result<T, ResultErrors> result,
+        Func<T, Result<U, ResultErrors>> bind) =>
         result.Match(
             ok: ok => bind(ok),
             error: Result<U, ResultErrors>.Error);
 
-    public static IResult<U, ResultErrors> Map<T, U>(
-        this IResult<T, ResultErrors> result,
+    public static Result<U, ResultErrors> Map<T, U>(
+        this Result<T, ResultErrors> result,
         Func<T, U> map) =>
         result.Bind(x => Result<U, ResultErrors>.Ok(map(x)));
 
     public static async Task<U> MatchAsync<T, U>(
-        this Task<IResult<T, ResultErrors>> resultTask,
+        this Task<Result<T, ResultErrors>> resultTask,
         Func<T, U> ok,
         Func<ResultErrors, U> error) =>
         (await resultTask).Match(ok, error);
 
-    public static Task<IResult<U, ResultErrors>> BindAsync<T, U>(
-        this Task<IResult<T, ResultErrors>> resultTask,
-        Func<T, IResult<U, ResultErrors>> bind) =>
+    public static Task<Result<U, ResultErrors>> BindAsync<T, U>(
+        this Task<Result<T, ResultErrors>> resultTask,
+        Func<T, Result<U, ResultErrors>> bind) =>
         resultTask.MatchAsync(x => bind(x), Result<U, ResultErrors>.Error);
 
-    public static Task<IResult<U, ResultErrors>> MapAsync<T, U>(
-        this Task<IResult<T, ResultErrors>> resultTask,
+    public static Task<Result<U, ResultErrors>> MapAsync<T, U>(
+        this Task<Result<T, ResultErrors>> resultTask,
         Func<T, U> map) =>
         resultTask.BindAsync(x => Result<U, ResultErrors>.Ok(map(x)));
 
     public static async Task<U> MatchAsync<T, U>(
-        this Task<IResult<T, ResultErrors>> resultTask,
+        this Task<Result<T, ResultErrors>> resultTask,
         Func<T, Task<U>> ok,
         Func<ResultErrors, Task<U>> error) =>
         await (await resultTask).Match(ok, error);
 
-    public static Task<IResult<U, ResultErrors>> BindAsync<T, U>(
-        this Task<IResult<T, ResultErrors>> resultTask,
-        Func<T, Task<IResult<U, ResultErrors>>> bind) =>
+    public static Task<Result<U, ResultErrors>> BindAsync<T, U>(
+        this Task<Result<T, ResultErrors>> resultTask,
+        Func<T, Task<Result<U, ResultErrors>>> bind) =>
         resultTask.MatchAsync(bind, Result<U, ResultErrors>.ErrorAsync);
 
-    public static Task<IResult<U, ResultErrors>> MapAsync<T, U>(
-        this Task<IResult<T, ResultErrors>> resultTask,
+    public static Task<Result<U, ResultErrors>> MapAsync<T, U>(
+        this Task<Result<T, ResultErrors>> resultTask,
         Func<T, Task<U>> map) =>
         resultTask.BindAsync(x => Result<U, ResultErrors>.OkAsync(map(x)));
 }

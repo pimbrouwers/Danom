@@ -111,4 +111,35 @@ public sealed class ResultOptionTests
         Assert.Equal(1, ResultOption<int, string>.Error("Error").DefaultWith(() => 1));
         Assert.Equal(2, ResultOption<int, string>.Ok(2).DefaultWith(() => 1));
     }
+
+
+    [Fact]
+    public void EqualityShouldWork()
+    {
+        Assert.Equal(ResultOption<int, string>.None(), ResultOption<int, string>.None());
+        Assert.Equal(ResultOption<int,string>.Error("Error"), ResultOption<int,string>.Error("Error"));
+        Assert.Equal(ResultOption<int,string>.Ok(1), ResultOption<int,string>.Ok(1));
+        Assert.NotEqual(ResultOption<int,string>.Ok(1), ResultOption<int,string>.Ok(2));
+        Assert.NotEqual(ResultOption<int,string>.Ok(1), ResultOption<int,string>.Error("Error"));
+    }
+
+    [Fact]
+    public void EqualityOperatorShouldWork()
+    {
+        Assert.True(ResultOption<int, string>.None() == ResultOption<int, string>.None());
+        Assert.True(ResultOption<int,string>.Error("Error") == ResultOption<int,string>.Error("Error"));
+        Assert.True(ResultOption<int,string>.Ok(1) == ResultOption<int,string>.Ok(1));
+        Assert.False(ResultOption<int,string>.Ok(1) == ResultOption<int,string>.Ok(2));
+        Assert.False(ResultOption<int,string>.Ok(1) == ResultOption<int,string>.Error("Error"));
+    }
+
+    [Fact]
+    public void InequalityOperatorShouldWork()
+    {
+        Assert.False(ResultOption<int, string>.None() != ResultOption<int, string>.None());
+        Assert.False(ResultOption<int,string>.Error("Error") != ResultOption<int,string>.Error("Error"));
+        Assert.False(ResultOption<int,string>.Ok(1) != ResultOption<int,string>.Ok(1));
+        Assert.True(ResultOption<int,string>.Ok(1) != ResultOption<int,string>.Ok(2));
+        Assert.True(ResultOption<int,string>.Ok(1) != ResultOption<int,string>.Error("Error"));
+    }
 }

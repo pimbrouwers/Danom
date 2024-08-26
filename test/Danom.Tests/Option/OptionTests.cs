@@ -28,7 +28,6 @@ public sealed class OptionTests
         var option = await Option<int>.SomeAsync(Task<int>.Factory.StartNew(() => 1));
         AssertOption.IsSome(option);
         Assert.False(option.IsNone);
-        Assert.Equal("Some(1)", option.ToString());
     }
 
     [Fact]
@@ -37,7 +36,6 @@ public sealed class OptionTests
         var option = await Option<int>.NoneAsync();
         AssertOption.IsNone(option);
         Assert.False(option.IsSome);
-        Assert.Equal("None", option.ToString());
     }
 
     [Fact]
@@ -47,6 +45,14 @@ public sealed class OptionTests
         AssertOption.IsNone(option);
         Assert.False(option.IsSome);
         Assert.Equal("None", option.ToString());
+    }
+
+    [Fact]
+    public void NullShouldProduceNone()
+    {
+        var option = Option<object>.Some(default!);
+        AssertOption.IsNone(option);
+        Assert.False(option.IsSome);
     }
 
     [Fact]
@@ -101,5 +107,38 @@ public sealed class OptionTests
     {
         AssertOption.IsSome(1, Option<int>.None().OrElseWith(() => Option<int>.Some(1)));
         AssertOption.IsSome(2, Option<int>.Some(2).OrElseWith(() => Option<int>.Some(1)));
+    }
+
+    [Fact]
+    public void EqualityShouldWork()
+    {
+        Assert.Equal(Option<int>.None(), Option<int>.None());
+        Assert.Equal(Option<int>.Some(1), Option<int>.Some(1));
+        Assert.NotEqual(Option<int>.Some(1), Option<int>.Some(2));
+        Assert.NotEqual(Option<int>.Some(1), Option<int>.None());
+    }
+
+    [Fact]
+    public void GetHashCodeShouldBeZero()
+    {
+        Assert.Equal(0, Option<int>.None().GetHashCode());
+    }
+
+    [Fact]
+    public void EqualityOperatorShouldWork()
+    {
+        Assert.True(Option<int>.None() == Option<int>.None());
+        Assert.True(Option<int>.Some(1) == Option<int>.Some(1));
+        Assert.False(Option<int>.Some(1) == Option<int>.Some(2));
+        Assert.False(Option<int>.Some(1) == Option<int>.None());
+    }
+
+    [Fact]
+    public void InequalityOperatorShouldWork()
+    {
+        Assert.False(Option<int>.None() != Option<int>.None());
+        Assert.False(Option<int>.Some(1) != Option<int>.Some(1));
+        Assert.True(Option<int>.Some(1) != Option<int>.Some(2));
+        Assert.True(Option<int>.Some(1) != Option<int>.None());
     }
 }
