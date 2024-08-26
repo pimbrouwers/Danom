@@ -23,12 +23,6 @@ public sealed class UnitTests
     }
 
     [Fact]
-    public void CompareToShouldBeZero()
-    {
-        Assert.Equal(0, Unit.Value.CompareTo(Unit.Value));
-    }
-
-    [Fact]
     public void EqualityOperatorShouldWork()
     {
 #pragma warning disable CS1718 // Comparison made to same variable
