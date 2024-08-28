@@ -24,17 +24,17 @@ public readonly struct Result<T, TError>
     }
 
     /// <summary>
-    /// Returns true if Result is Ok, false otherwise.
+    /// Returns true if <see cref="Result{T, TError}"/> is Ok, false otherwise.
     /// </summary>
     public bool IsOk { get; } = false;
 
     /// <summary>
-    /// Returns true if Result is Error, false otherwise.
+    /// Returns true if <see cref="Result{T, TError}"/> is Error, false otherwise.
     /// </summary>
     public bool IsError => !IsOk;
 
     /// <summary>
-    /// If Result is Ok evaluate the ok delegate, otherwise error.
+    /// If <see cref="Result{T, TError}"/> is Ok evaluate the ok delegate, otherwise error.
     /// </summary>
     /// <typeparam name="U"></typeparam>
     /// <param name="ok"></param>
@@ -48,7 +48,7 @@ public readonly struct Result<T, TError>
                 throw new InvalidOperationException("Result error has not been initialized.");
 
     /// <summary>
-    /// Evaluates the bind delegate if Result is Ok otherwise return Error.
+    /// Evaluates the bind delegate if <see cref="Result{T, TError}"/> is Ok otherwise return Error.
     /// </summary>
     /// <typeparam name="U"></typeparam>
     /// <param name="bind"></param>
@@ -58,7 +58,7 @@ public readonly struct Result<T, TError>
         Match(bind, Result<U, TError>.Error);
 
     /// <summary>
-    /// Evaluates the map delegate if Result is Ok otherwise return Error.
+    /// Evaluates the map delegate if <see cref="Result{T, TError}"/> is Ok otherwise return Error.
     /// </summary>
     /// <typeparam name="U"></typeparam>
     /// <param name="map"></param>
@@ -68,7 +68,7 @@ public readonly struct Result<T, TError>
         Bind(x => Result<U, TError>.Ok(map(x)));
 
     /// <summary>
-    /// Evaluates the mapError delegate if Result is Error otherwise return Ok.
+    /// Evaluates the mapError delegate if <see cref="Result{T, TError}"/> is Error otherwise return Ok.
     /// </summary>
     /// <typeparam name="UError"></typeparam>
     /// <param name="mapError"></param>
@@ -78,7 +78,7 @@ public readonly struct Result<T, TError>
         Match(Result<T, UError>.Ok, e => Result<T, UError>.Error(mapError(e)));
 
     /// <summary>
-    /// Returns the value of Result if it is T, otherwise returns the
+    /// Returns the value of <see cref="Result{T, TError}"/> if it is T, otherwise returns the
     /// specified default value.
     /// </summary>
     /// <param name="defaultValue"></param>
@@ -88,7 +88,7 @@ public readonly struct Result<T, TError>
          Match(ok => ok, _ => defaultValue);
 
     /// <summary>
-    /// Returns the value of Result if it is T, otherwise returns the
+    /// Returns the value of <see cref="Result{T, TError}"/> if it is T, otherwise returns the
     /// </summary>
     /// <param name="defaultWith"></param>
     /// <returns></returns>
@@ -97,7 +97,7 @@ public readonly struct Result<T, TError>
         Match(ok => ok, _ => defaultWith());
 
     /// <summary>
-    /// Creates a new Result with the specified value.
+    /// Creates a new <see cref="Result{T, TError}"/> with the specified value.
     /// </summary>
     /// <param name="value"></param>
     /// <returns></returns>
@@ -105,7 +105,7 @@ public readonly struct Result<T, TError>
         new(value);
 
     /// <summary>
-    /// Creates Result with the specified value wrapped in a completed Task.
+    /// Creates <see cref="Result{T, TError}"/> with the specified value wrapped in a completed Task.
     /// </summary>
     /// <param name="value"></param>
     /// <returns></returns>
@@ -113,7 +113,7 @@ public readonly struct Result<T, TError>
         Task.FromResult(Ok(value));
 
     /// <summary>
-    /// Creates Result with the value of the awaited Task.
+    /// Creates <see cref="Result{T, TError}"/> with the value of the awaited Task.
     /// </summary>
     /// <param name="valueTask"></param>
     /// <returns></returns>
@@ -121,7 +121,7 @@ public readonly struct Result<T, TError>
         Ok(await valueTask);
 
     /// <summary>
-    /// Creates a new Result with the specified error.
+    /// Creates a new <see cref="Result{T, TError}"/> with the specified error.
     /// </summary>
     /// <param name="errors"></param>
     /// <returns></returns>
@@ -129,7 +129,7 @@ public readonly struct Result<T, TError>
         new(errors);
 
     /// <summary>
-    /// Creates Result with the specified error wrapped in a completed Task.
+    /// Creates <see cref="Result{T, TError}"/> with the specified error wrapped in a completed Task.
     /// </summary>
     /// <param name="errors"></param>
     /// <returns></returns>
@@ -137,7 +137,7 @@ public readonly struct Result<T, TError>
         Task.FromResult(Error(errors));
 
     /// <summary>
-    /// Creates Result with the value of the awaited Task.
+    /// Creates <see cref="Result{T, TError}"/> with the value of the awaited Task.
     /// </summary>
     /// <param name="errors"></param>
     /// <returns></returns>
@@ -145,7 +145,7 @@ public readonly struct Result<T, TError>
         Error(await errors);
 
     /// <summary>
-    /// Returns true if the specified Result is equal to the current Result.
+    /// Returns true if the specified Result is equal to the current <see cref="Result{T, TError}"/>.
     /// </summary>
     /// <param name="left"></param>
     /// <param name="right"></param>
@@ -154,7 +154,7 @@ public readonly struct Result<T, TError>
         left.Equals(right);
 
     /// <summary>
-    /// Returns true if the specified Result is not equal to the current Result.
+    /// Returns true if the specified Result is not equal to the current <see cref="Result{T, TError}"/>.
     /// </summary>
     /// <param name="left"></param>
     /// <param name="right"></param>
@@ -163,7 +163,7 @@ public readonly struct Result<T, TError>
         !(left == right);
 
     /// <summary>
-    /// Returns true if the specified Result is equal to the current Result.
+    /// Returns true if the specified Result is equal to the current <see cref="Result{T, TError}"/>.
     /// </summary>
     /// <param name="obj"></param>
     /// <returns></returns>
@@ -171,7 +171,7 @@ public readonly struct Result<T, TError>
         obj is Result<T, TError> o && Equals(o);
 
     /// <summary>
-    /// Returns true if the specified Result is equal to the current Result.
+    /// Returns true if the specified Result is equal to the current <see cref="Result{T, TError}"/>.
     /// </summary>
     /// <param name="other"></param>
     /// <returns></returns>
@@ -187,7 +187,7 @@ public readonly struct Result<T, TError>
                     error: e2 => e2 is not null && e2.Equals(e1)));
 
     /// <summary>
-    /// Returns the hash code for the Result.
+    /// Returns the hash code for the <see cref="Result{T, TError}"/>.
     /// </summary>
     /// <returns></returns>
     public override int GetHashCode() =>
@@ -196,7 +196,7 @@ public readonly struct Result<T, TError>
             error: e => e is null ? 0 : e.GetHashCode());
 
     /// <summary>
-    /// Returns a string representation of the Result.
+    /// Returns a string representation of the <see cref="Result{T, TError}"/>.
     /// </summary>
     /// <returns></returns>
     public override string ToString() =>
@@ -207,16 +207,14 @@ public readonly struct Result<T, TError>
 
 
 /// <summary>
-/// The <see cref="Result{T, TError}"/> with <see cref="ResultErrors"/>
+/// The <see cref="Result{T, ResultErrors}"/> with <see cref="ResultErrors"/>
 /// as the predefined error type.
-///
-/// Alias for <see cref="Result{T, ResultErrors}"/>.
 /// </summary>
 /// <typeparam name="T"></typeparam>
 public static class Result<T>
 {
     /// <summary>
-    /// Creates a new Result with the specified value.
+    /// Creates a new <see cref="Result{T, ResultErrors}"/> with the specified value.
     /// </summary>
     /// <param name="value"></param>
     /// <returns></returns>
@@ -224,7 +222,7 @@ public static class Result<T>
         Result<T, ResultErrors>.Ok(value);
 
     /// <summary>
-    /// Creates Result with the specified value wrapped in a completed Task.
+    /// Creates <see cref="Result{T, ResultErrors}"/> with the specified value wrapped in a completed Task.
     /// </summary>
     /// <param name="value"></param>
     /// <returns></returns>
@@ -232,7 +230,7 @@ public static class Result<T>
         Result<T, ResultErrors>.OkAsync(value);
 
     /// <summary>
-    /// Creates Result with the value of the awaited Task.
+    /// Creates <see cref="Result{T, ResultErrors}"/> with the value of the awaited Task.
     /// </summary>
     /// <param name="valueTask"></param>
     /// <returns></returns>
@@ -240,7 +238,7 @@ public static class Result<T>
         Result<T, ResultErrors>.OkAsync(valueTask);
 
     /// <summary>
-    /// Creates a new Result with the specified error.
+    /// Creates a new <see cref="Result{T, ResultErrors}"/> with the specified error.
     /// </summary>
     /// <param name="errors"></param>
     /// <returns></returns>
@@ -248,7 +246,7 @@ public static class Result<T>
         Result<T, ResultErrors>.Error(errors);
 
     /// <summary>
-    /// Creates Result with the specified error wrapped in a completed Task.
+    /// Creates <see cref="Result{T, ResultErrors}"/> with the specified error wrapped in a completed Task.
     /// </summary>
     /// <param name="errors"></param>
     /// <returns></returns>
@@ -256,7 +254,7 @@ public static class Result<T>
         Task.FromResult(Error(errors));
 
     /// <summary>
-    /// Creates a new Result with the specified error.
+    /// Creates a new <see cref="Result{T, ResultErrors}"/> with the specified error.
     /// </summary>
     /// <param name="messages"></param>
     /// <returns></returns>
@@ -264,7 +262,7 @@ public static class Result<T>
         Error(new ResultErrors(messages));
 
     /// <summary>
-    /// Creates Result with the specified error wrapped in a completed Task.
+    /// Creates <see cref="Result{T, ResultErrors}"/> with the specified error wrapped in a completed Task.
     /// </summary>
     /// <param name="message"></param>
     /// <returns></returns>
@@ -272,7 +270,7 @@ public static class Result<T>
         Error([message]);
 
     /// <summary>
-    /// Creates Result with the specified error wrapped in a completed Task.
+    /// Creates <see cref="Result{T, ResultErrors}"/> with the specified error wrapped in a completed Task.
     /// </summary>
     /// <param name="message"></param>
     /// <returns></returns>

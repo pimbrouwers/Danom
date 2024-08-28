@@ -237,14 +237,14 @@ public readonly struct ResultOption<T, TError>()
 
 
 /// <summary>
-/// Static methods for creating <see cref="ResultOption{T, TError}"/> instances with
+/// Static methods for creating <see cref="ResultOption{T, ResultErrors}"/> instances with
 /// <see cref="ResultErrors"/> as the error type.
 /// </summary>
 /// <typeparam name="T"></typeparam>
 public static class ResultOption<T>
 {
     /// <summary>
-    /// Creates a new <see cref="ResultOption{T, TError}"/> instance with the
+    /// Creates a new <see cref="ResultOption{T, ResultErrors}"/> instance with the
     /// specified value.
     /// </summary>
     /// <param name="value"></param>
@@ -253,7 +253,7 @@ public static class ResultOption<T>
         ResultOption<T, ResultErrors>.Ok(value);
 
     /// <summary>
-    /// Creates a new <see cref="ResultOption{T, TError}"/> instance with the
+    /// Creates a new <see cref="ResultOption{T, ResultErrors}"/> instance with the
     /// value of the awaited Task.
     /// </summary>
     /// <param name="value"></param>
@@ -262,7 +262,7 @@ public static class ResultOption<T>
         ResultOption<T, ResultErrors>.OkAsync(value);
 
     /// <summary>
-    /// Creates a new <see cref="ResultOption{T, TError}"/> instance with the
+    /// Creates a new <see cref="ResultOption{T, ResultErrors}"/> instance with the
     /// value of the awaited Task.
     /// </summary>
     /// <param name="valueTask"></param>
@@ -271,7 +271,7 @@ public static class ResultOption<T>
         ResultOption<T, ResultErrors>.OkAsync(valueTask);
 
     /// <summary>
-    /// Creates a new <see cref="ResultOption{T, TError}"/> instance with no
+    /// Creates a new <see cref="ResultOption{T, ResultErrors}"/> instance with no
     /// value.
     /// </summary>
     /// <returns></returns>
@@ -279,7 +279,7 @@ public static class ResultOption<T>
         ResultOption<T, ResultErrors>.None();
 
     /// <summary>
-    /// Creates a new <see cref="ResultOption{T, TError}"/> instance with no
+    /// Creates a new <see cref="ResultOption{T, ResultErrors}"/> instance with no
     /// value wrapped in a completed Task.
     /// in a completed Task.
     /// </summary>
@@ -288,7 +288,7 @@ public static class ResultOption<T>
         ResultOption<T, ResultErrors>.NoneAsync();
 
     /// <summary>
-    /// Creates a new <see cref="ResultOption{T, TError}"/> instance with the
+    /// Creates a new <see cref="ResultOption{T, ResultErrors}"/> instance with the
     /// specified error.
     /// </summary>
     /// <param name="errors"></param>
@@ -297,7 +297,7 @@ public static class ResultOption<T>
         ResultOption<T, ResultErrors>.Error(errors);
 
     /// <summary>
-    /// Creates a new <see cref="ResultOption{T, TError}"/> instance with the
+    /// Creates a new <see cref="ResultOption{T, ResultErrors}"/> instance with the
     /// specified error.
     /// </summary>
     /// <param name="message"></param>
@@ -306,7 +306,7 @@ public static class ResultOption<T>
         Error([new ResultError(string.Empty, [message])]);
 
     /// <summary>
-    /// Creates a new <see cref="ResultOption{T, TError}"/> instance with the
+    /// Creates a new <see cref="ResultOption{T, ResultErrors}"/> instance with the
     /// specified error wrapped in a completed Task.
     /// </summary>
     /// <param name="errors"></param>
@@ -315,7 +315,7 @@ public static class ResultOption<T>
         Task.FromResult(Error(errors));
 
     /// <summary>
-    /// Creates a new <see cref="ResultOption{T, TError}"/> instance with the
+    /// Creates a new <see cref="ResultOption{T, ResultErrors}"/> instance with the
     /// specified error wrapped in a completed Task.
     /// </summary>
     /// <param name="message"></param>

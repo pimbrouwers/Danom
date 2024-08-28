@@ -20,17 +20,17 @@ public readonly struct Option<T>
     }
 
     /// <summary>
-    /// Returns true if Option is Some, false otherwise.
+    /// Returns true if <see cref="Option{T}"/> is Some, false otherwise.
     /// </summary>
     public bool IsSome { get; } = false;
 
     /// <summary>
-    /// Returns true if Option is None, false otherwise.
+    /// Returns true if <see cref="Option{T}"/> is None, false otherwise.
     /// </summary>
     public bool IsNone => !IsSome;
 
     /// <summary>
-    /// If Option is Some evaluate the some delegate, otherwise none.
+    /// If <see cref="Option{T}"/> is Some evaluate the some delegate, otherwise none.
     /// </summary>
     /// <typeparam name="U"></typeparam>
     /// <param name="some"></param>
@@ -42,7 +42,7 @@ public readonly struct Option<T>
             none();
 
     /// <summary>
-    /// Evaluates the bind delegate if Option is Some otherwise return None.
+    /// Evaluates the bind delegate if <see cref="Option{T}"/> is Some otherwise return None.
     /// </summary>
     /// <typeparam name="U"></typeparam>
     /// <param name="bind"></param>
@@ -52,7 +52,7 @@ public readonly struct Option<T>
         Match(bind, Option<U>.None);
 
     /// <summary>
-    /// Evaluates the map delegate if Option is Some otherwise return None.
+    /// Evaluates the map delegate if <see cref="Option{T}"/> is Some otherwise return None.
     /// </summary>
     /// <typeparam name="U"></typeparam>
     /// <param name="map"></param>
@@ -62,7 +62,7 @@ public readonly struct Option<T>
         Bind(x => Option<U>.Some(map(x)));
 
     /// <summary>
-    /// Returns the value of Option if it is T otherwise return default.
+    /// Returns the value of <see cref="Option{T}"/> if it is T otherwise return default.
     /// </summary>
     /// <param name="defaultValue"></param>
     /// <returns></returns>
@@ -71,7 +71,7 @@ public readonly struct Option<T>
          Match(some => some, () => defaultValue);
 
     /// <summary>
-    /// Returns the value of Option if it is T otherwise evaluate default.
+    /// Returns the value of <see cref="Option{T}"/> if it is T otherwise evaluate default.
     /// </summary>
     /// <param name="defaultWith"></param>
     /// <returns></returns>
@@ -80,7 +80,7 @@ public readonly struct Option<T>
         Match(some => some, () => defaultWith());
 
     /// <summary>
-    /// Return Option if it is Some, otherwise return ifNone.
+    /// Return <see cref="Option{T}"/> if it is Some, otherwise return ifNone.
     /// </summary>
     /// <param name="ifNone"></param>
     /// <returns></returns>
@@ -89,7 +89,7 @@ public readonly struct Option<T>
         Match(Option<T>.Some, () => ifNone);
 
     /// <summary>
-    /// Return Option if it is Some, otherwise evaluate ifNoneWith.
+    /// Return <see cref="Option{T}"/> if it is Some, otherwise evaluate ifNoneWith.
     /// </summary>
     /// <param name="ifNoneWith"></param>
     /// <returns></returns>
@@ -99,7 +99,7 @@ public readonly struct Option<T>
 
 
     /// <summary>
-    /// Creates a new Option with the specified value.
+    /// Creates a new <see cref="Option{T}"/> with the specified value.
     /// </summary>
     /// <param name="value"></param>
     /// <returns></returns>
@@ -107,7 +107,7 @@ public readonly struct Option<T>
         new(value);
 
     /// <summary>
-    /// Creates Option with the specified value wrapped in a completed Task.
+    /// Creates <see cref="Option{T}"/> with the specified value wrapped in a completed Task.
     /// </summary>
     /// <param name="value"></param>
     /// <returns></returns>
@@ -115,7 +115,7 @@ public readonly struct Option<T>
         Task.FromResult(Some(value));
 
     /// <summary>
-    /// Creates a new Option with the value of the awaited Task.
+    /// Creates a new <see cref="Option{T}"/> with the value of the awaited Task.
     /// </summary>
     /// <param name="value"></param>
     /// <returns></returns>
@@ -123,21 +123,21 @@ public readonly struct Option<T>
         Some(await value);
 
     /// <summary>
-    /// Creates a new Option with no value.
+    /// Creates a new <see cref="Option{T}"/> with no value.
     /// </summary>
     /// <returns></returns>
     public static Option<T> None() =>
         new();
 
     /// <summary>
-    /// Creates a new Option with no value wrapped in a completed Task.
+    /// Creates a new <see cref="Option{T}"/> with no value wrapped in a completed Task.
     /// </summary>
     /// <returns></returns>
     public static Task<Option<T>> NoneAsync() =>
         Task.FromResult(None());
 
     /// <summary>
-    /// Returns true if the specified Options are equal.
+    /// Returns true if the specified <see cref="Option{T}"/>s are equal.
     /// </summary>
     /// <param name="left"></param>
     /// <param name="right"></param>
@@ -146,7 +146,7 @@ public readonly struct Option<T>
         left.Equals(right);
 
     /// <summary>
-    /// Returns true if the specified Options are not equal.
+    /// Returns true if the specified <see cref="Option{T}"/>s are not equal.
     /// </summary>
     /// <param name="left"></param>
     /// <param name="right"></param>
@@ -155,7 +155,7 @@ public readonly struct Option<T>
         !(left == right);
 
     /// <summary>
-    /// Returns true if the specified Options are equal.
+    /// Returns true if the specified <see cref="Option{T}"/>s are equal.
     /// </summary>
     /// <param name="obj"></param>
     /// <returns></returns>
@@ -163,7 +163,7 @@ public readonly struct Option<T>
         obj is Option<T> o && Equals(o);
 
     /// <summary>
-    /// Returns true if the specified Options are equal.
+    /// Returns true if the specified <see cref="Option{T}"/>s are equal.
     /// </summary>
     /// <param name="other"></param>
     /// <returns></returns>
@@ -180,7 +180,7 @@ public readonly struct Option<T>
             );
 
     /// <summary>
-    /// Returns the hash code of the Option.
+    /// Returns the hash code of the <see cref="Option{T}"/>.
     /// </summary>
     /// <returns></returns>
     public override int GetHashCode() =>
@@ -189,7 +189,7 @@ public readonly struct Option<T>
             none: () => 0);
 
     /// <summary>
-    /// Returns the string representation of the Option.
+    /// Returns the string representation of the <see cref="Option{T}"/>.
     /// </summary>
     /// <returns></returns>
     public override string ToString() =>
@@ -199,12 +199,12 @@ public readonly struct Option<T>
 }
 
 /// <summary>
-/// Extension methods to allow Option matching using
+/// Extension methods to allow <see cref="Option{T}"/> matching using
 /// </summary>
 public static class OptionActionExtensions
 {
     /// <summary>
-    /// If Option is Some, evaluates the some delegate, otherwise evaluates
+    /// If <see cref="Option{T}"/> is Some, evaluates the some delegate, otherwise evaluates
     /// the none delegate.
     /// </summary>
     /// <typeparam name="T"></typeparam>
