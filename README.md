@@ -1,5 +1,5 @@
 # Danom
-
+[![NuGet Version](https://img.shields.io/nuget/v/Danom.svg)](https://www.nuget.org/packages/Danom)
 [![build](https://github.com/pimbrouwers/Danom/actions/workflows/build.yml/badge.svg)](https://github.com/pimbrouwers/Danom/actions/workflows/build.yml)
 
 Danom is a C# library that provides monadic structures to simplify functional programming patterns in C#, that enforces exhaustive matching by preventing direct value access (this is good).
