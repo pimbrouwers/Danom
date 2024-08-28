@@ -61,13 +61,17 @@ Represents when an actual value might not exist for a value or named variable. A
 
 ```csharp
 var option = Option<int>.Some(5);
+
 // or, with no value
 var optionNone = Option<int>.None();
+
+// also returns none
+var optionNull = Option<object>.Some(default!);
 ```
 
 ### Using Option
 
-Options are commonly used when a operation might not return a value.
+Options are commonly used when a operation might not return a value. For example:
 
 ```csharp
 public Option<int> TryFind(IEnumerable<int> numbers, Func<int, bool> predicate) =>
@@ -134,14 +138,18 @@ var resultErrorsTyped = Result<int>.Error(new ResultErrors("error-key", "An erro
 
 ### Using Results
 
-Results are commonly used when an operation might not succeed, and you want to manage the _expected_ errors.
+Results are commonly used when an operation might not succeed, and you want to manage the _expected_ errors. For example:
 
 ```csharp
 public Result<int, string> TryDivide(int numerator, int denominator) =>
     denominator == 0
         ? Result<int, string>.Error("Cannot divide by zero")
         : Result<int, string>.Ok(numerator / denominator);
+```
 
+With this method defined we can begin performing operations against the Result result:
+
+```csharp
 // Exhasutive matching
 TryDivide(10, 2)
     .Match(
@@ -191,6 +199,40 @@ Result<int, ResultErrors> resultErrorsTyped = Result<int>.Error(new ResultErrors
 
 ## ResultOption
 
+Represents a combination of the Result and Option monads. This is useful when you want to handle both the success and failure of an operation, but also want to handle the case where a value might not exist. It simplifies the inspection by eliminating the redundant nested `Match` calls.
+
+### Creating ResultOptions
+
+```csharp
+var resultOption = ResultOption<int, string>.Ok(5);
+// or, with an error
+var resultOptionError = ResultOption<int, string>.Error("An error occurred");
+// or, with no value
+var resultOptionNone = ResultOption<int, string>.None();
+```
+
+### Using ResultOptions
+
+ResultOptions are commonly used when an operation might not succeed, but also where a value might not exist. For example:
+
+```csharp
+public Option<int> LookupUserId(string username) => // ...
+
+public ResultOption<int, string> GetUserId(string username)
+{
+    if(username == "admin")
+    {
+        return ResultOption<int,string>.Error("Invalid username");
+    }
+
+    return LookupUserId(username).Match(
+        some: id => ResultOption<int, string>.Ok(1) :
+        none: ResultOption<int, string>.None);
+
+    // or, using the extension method
+    LookupUserId(username).ToResultOption();
+}
+```
 
 ## Contribute
 
