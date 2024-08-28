@@ -104,7 +104,7 @@ public readonly struct Option<T>
     /// <param name="value"></param>
     /// <returns></returns>
     public static Option<T> Some(T value) =>
-        new Option<T>(value);
+        new(value);
 
     /// <summary>
     /// Creates Option with the specified value wrapped in a completed Task.
@@ -127,7 +127,7 @@ public readonly struct Option<T>
     /// </summary>
     /// <returns></returns>
     public static Option<T> None() =>
-        new Option<T>();
+        new();
 
     /// <summary>
     /// Creates a new Option with no value wrapped in a completed Task.
@@ -136,15 +136,37 @@ public readonly struct Option<T>
     public static Task<Option<T>> NoneAsync() =>
         Task.FromResult(None());
 
+    /// <summary>
+    /// Returns true if the specified Options are equal.
+    /// </summary>
+    /// <param name="left"></param>
+    /// <param name="right"></param>
+    /// <returns></returns>
     public static bool operator ==(Option<T> left, Option<T> right) =>
         left.Equals(right);
 
+    /// <summary>
+    /// Returns true if the specified Options are not equal.
+    /// </summary>
+    /// <param name="left"></param>
+    /// <param name="right"></param>
+    /// <returns></returns>
     public static bool operator !=(Option<T> left, Option<T> right) =>
         !(left == right);
 
+    /// <summary>
+    /// Returns true if the specified Options are equal.
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <returns></returns>
     public override bool Equals(object? obj) =>
         obj is Option<T> o && Equals(o);
 
+    /// <summary>
+    /// Returns true if the specified Options are equal.
+    /// </summary>
+    /// <param name="other"></param>
+    /// <returns></returns>
     public readonly bool Equals(Option<T> other) =>
         Match(
             some: x1 =>
@@ -157,11 +179,19 @@ public readonly struct Option<T>
                     none: () => true)
             );
 
+    /// <summary>
+    /// Returns the hash code of the Option.
+    /// </summary>
+    /// <returns></returns>
     public override int GetHashCode() =>
         Match(
             some: x => x is null ? 0 : x.GetHashCode(),
             none: () => 0);
 
+    /// <summary>
+    /// Returns the string representation of the Option.
+    /// </summary>
+    /// <returns></returns>
     public override string ToString() =>
         Match(
             some: x => $"Some({x})",

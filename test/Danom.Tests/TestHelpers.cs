@@ -1,5 +1,6 @@
 namespace Danom.Tests;
 
+using Danom;
 using Xunit;
 
 public static class AssertOption

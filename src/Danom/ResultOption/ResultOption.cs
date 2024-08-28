@@ -30,6 +30,9 @@ public readonly struct ResultOption<T, TError>()
     /// </summary>
     public bool IsOk { get; } = false;
 
+    /// <summary>
+    /// Returns true if the ResultOption is None, false otherwise.
+    /// </summary>
     public bool IsNone => !IsOk && !IsError;
 
     /// <summary>
@@ -38,10 +41,12 @@ public readonly struct ResultOption<T, TError>()
     public bool IsError { get; } = false;
 
     /// <summary>
-    /// If Result is Ok evaluate the ok delegate, otherwise error.
+    /// If ResultOption is Ok evaluate the ok delegate, otherwise none. If
+    /// ResultOption is Error evaluate the error delegate.
     /// </summary>
     /// <typeparam name="U"></typeparam>
     /// <param name="ok"></param>
+    /// <param name="none"></param>
     /// <param name="error"></param>
     /// <returns></returns>
     public U Match<U>(Func<T, U> ok, Func<U> none, Func<TError, U> error) =>
@@ -72,8 +77,8 @@ public readonly struct ResultOption<T, TError>()
     /// <summary>
     /// Evaluates the mapError delegate if Result is Error.
     /// </summary>
-    /// <typeparam name="U"></typeparam>
-    /// <param name="map"></param>
+    /// <typeparam name="UError"></typeparam>
+    /// <param name="mapError"></param>
     /// <returns></returns>
     public ResultOption<T, UError> MapError<UError>(
         Func<TError, UError> mapError) =>
@@ -140,14 +145,14 @@ public readonly struct ResultOption<T, TError>()
     /// <summary>
     /// Creates a new ResultOption with the specified error.
     /// </summary>
-    /// <param name="errors"></param>
+    /// <param name="error"></param>
     public static ResultOption<T, TError> Error(TError error) =>
         new(error);
 
     /// <summary>
     /// Creates ResultOption with the specified error wrapped in a completed Task.
     /// </summary>
-    /// <param name="errors"></param>
+    /// <param name="error"></param>
     /// <returns></returns>
     public static Task<ResultOption<T, TError>> ErrorAsync(TError error) =>
         Task.FromResult(Error(error));
@@ -155,20 +160,42 @@ public readonly struct ResultOption<T, TError>()
     /// <summary>
     /// Creates ResultOption with the value of the awaited Task.
     /// </summary>
-    /// <param name="errors"></param>
+    /// <param name="error"></param>
     /// <returns></returns>
     public static async Task<ResultOption<T, TError>> ErrorAsync(Task<TError> error) =>
         Error(await error);
 
+    /// <summary>
+    /// Returns true if the specified ResultOptions are equal.
+    /// </summary>
+    /// <param name="left"></param>
+    /// <param name="right"></param>
+    /// <returns></returns>
     public static bool operator ==(ResultOption<T, TError> left, ResultOption<T, TError> right) =>
         left.Equals(right);
 
+    /// <summary>
+    /// Returns true if the specified ResultOptions are not equal.
+    /// </summary>
+    /// <param name="left"></param>
+    /// <param name="right"></param>
+    /// <returns></returns>
     public static bool operator !=(ResultOption<T, TError> left, ResultOption<T, TError> right) =>
         !(left == right);
 
+    /// <summary>
+    /// Returns true if the specified ResultOptions are equal.
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <returns></returns>
     public override bool Equals(object? obj) =>
         obj is ResultOption<T, TError> o && Equals(o);
 
+    /// <summary>
+    /// Returns true if the specified ResultOptions are equal.
+    /// </summary>
+    /// <param name="other"></param>
+    /// <returns></returns>
     public readonly bool Equals(ResultOption<T, TError> other) =>
         Match(
             ok: x1 =>
@@ -187,12 +214,20 @@ public readonly struct ResultOption<T, TError>()
                     none: () => false,
                     error: e2 => e1 is not null && e2 is not null && e2.Equals(e1)));
 
+    /// <summary>
+    /// Returns the hash code for the ResultOption.
+    /// </summary>
+    /// <returns></returns>
     public override int GetHashCode() =>
         Match(
             ok: x => x is null ? 0 : x.GetHashCode(),
             none: () => 0,
             error: e => e is null ? 0 : e.GetHashCode());
 
+    /// <summary>
+    /// Returns a string representation of the ResultOption.
+    /// </summary>
+    /// <returns></returns>
     public override string ToString() =>
         Match(
             ok: x => $"Ok({x})",
@@ -200,33 +235,91 @@ public readonly struct ResultOption<T, TError>()
             error: e => $"Error({e})");
 }
 
+
 /// <summary>
-/// Extension methods for converting between <see cref="Option{T}"/>,
-/// <see cref="IResult{T, TError}"/> and <see cref="ResultOption{T, TError}"/>.
+/// Static methods for creating <see cref="ResultOption{T, TError}"/> instances with
+/// <see cref="ResultErrors"/> as the error type.
 /// </summary>
-public static class ResultOptionConversionExtensions
+/// <typeparam name="T"></typeparam>
+public static class ResultOption<T>
 {
-    public static ResultOption<T, TError> ToResultOption<T, TError>(this Option<T> option) =>
-        option.Match(ResultOption<T, TError>.Ok, ResultOption<T, TError>.None);
+    /// <summary>
+    /// Creates a new <see cref="ResultOption{T, TError}"/> instance with the
+    /// specified value.
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>/
+    public static ResultOption<T, ResultErrors> Ok(T value) =>
+        ResultOption<T, ResultErrors>.Ok(value);
 
-    public static Task<ResultOption<T, TError>> ToResultOptionAsync<T, TError>(this Task<Option<T>> optionTask) =>
-        optionTask.MatchAsync(ResultOption<T, TError>.Ok, ResultOption<T, TError>.None);
+    /// <summary>
+    /// Creates a new <see cref="ResultOption{T, TError}"/> instance with the
+    /// value of the awaited Task.
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public static Task<ResultOption<T, ResultErrors>> OkAsync(T value) =>
+        ResultOption<T, ResultErrors>.OkAsync(value);
 
-    public static ResultOption<T, TError> ToResultOption<T, TError>(this Result<T, TError> result) =>
-        result.Match(ResultOption<T, TError>.Ok, ResultOption<T, TError>.Error);
+    /// <summary>
+    /// Creates a new <see cref="ResultOption{T, TError}"/> instance with the
+    /// value of the awaited Task.
+    /// </summary>
+    /// <param name="valueTask"></param>
+    /// <returns></returns>
+    public static Task<ResultOption<T, ResultErrors>> OkAsync(Task<T> valueTask) =>
+        ResultOption<T, ResultErrors>.OkAsync(valueTask);
 
-    public static Task<ResultOption<T, TError>> ToResultOptionAsync<T, TError>(this Task<Result<T, TError>> resultTask) =>
-        resultTask.MatchAsync(ResultOption<T, TError>.Ok, ResultOption<T, TError>.Error);
+    /// <summary>
+    /// Creates a new <see cref="ResultOption{T, TError}"/> instance with no
+    /// value.
+    /// </summary>
+    /// <returns></returns>
+    public static ResultOption<T, ResultErrors> None() =>
+        ResultOption<T, ResultErrors>.None();
 
-    public static ResultOption<T, TError> ToResultOption<T, TError>(this Result<Option<T>, TError> result) =>
-        result.Match(
-            ok: opt =>
-                opt.Match(ResultOption<T, TError>.Ok, ResultOption<T, TError>.None),
-            error: ResultOption<T, TError>.Error);
+    /// <summary>
+    /// Creates a new <see cref="ResultOption{T, TError}"/> instance with no
+    /// value wrapped in a completed Task.
+    /// in a completed Task.
+    /// </summary>
+    /// <returns></returns>
+    public static Task<ResultOption<T, ResultErrors>> NoneAsync() =>
+        ResultOption<T, ResultErrors>.NoneAsync();
 
-    public static Task<ResultOption<T, TError>> ToResultOptionAsync<T, TError>(this Task<Result<Option<T>, TError>> resultTask) =>
-        resultTask.MatchAsync(
-            ok: opt =>
-                opt.Match(ResultOption<T, TError>.Ok, ResultOption<T, TError>.None),
-            error: ResultOption<T, TError>.Error);
+    /// <summary>
+    /// Creates a new <see cref="ResultOption{T, TError}"/> instance with the
+    /// specified error.
+    /// </summary>
+    /// <param name="errors"></param>
+    /// <returns></returns>
+    public static ResultOption<T, ResultErrors> Error(ResultErrors errors) =>
+        ResultOption<T, ResultErrors>.Error(errors);
+
+    /// <summary>
+    /// Creates a new <see cref="ResultOption{T, TError}"/> instance with the
+    /// specified error.
+    /// </summary>
+    /// <param name="message"></param>
+    /// <returns></returns>
+    public static ResultOption<T, ResultErrors> Error(string message) =>
+        Error([new ResultError(string.Empty, [message])]);
+
+    /// <summary>
+    /// Creates a new <see cref="ResultOption{T, TError}"/> instance with the
+    /// specified error wrapped in a completed Task.
+    /// </summary>
+    /// <param name="errors"></param>
+    /// <returns></returns>
+    public static Task<ResultOption<T, ResultErrors>> ErrorAsync(ResultErrors errors) =>
+        Task.FromResult(Error(errors));
+
+    /// <summary>
+    /// Creates a new <see cref="ResultOption{T, TError}"/> instance with the
+    /// specified error wrapped in a completed Task.
+    /// </summary>
+    /// <param name="message"></param>
+    /// <returns></returns>
+    public static Task<ResultOption<T, ResultErrors>> ErrorAsync(string message) =>
+        Task.FromResult(Error(message));
 }

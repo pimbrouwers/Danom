@@ -230,7 +230,7 @@ public ResultOption<int, string> GetUserId(string username)
         none: ResultOption<int, string>.None);
 
     // or, using the extension method
-    LookupUserId(username).ToResultOption();
+    // return LookupUserId(username).ToResultOption();
 }
 ```
 

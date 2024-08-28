@@ -70,8 +70,8 @@ public readonly struct Result<T, TError>
     /// <summary>
     /// Evaluates the mapError delegate if Result is Error otherwise return Ok.
     /// </summary>
-    /// <typeparam name="U"></typeparam>
-    /// <param name="map"></param>
+    /// <typeparam name="UError"></typeparam>
+    /// <param name="mapError"></param>
     /// <returns></returns>
     public Result<T, UError> MapError<UError>(
         Func<TError, UError> mapError) =>
@@ -144,15 +144,37 @@ public readonly struct Result<T, TError>
     public static async Task<Result<T, TError>> ErrorAsync(Task<TError> errors) =>
         Error(await errors);
 
+    /// <summary>
+    /// Returns true if the specified Result is equal to the current Result.
+    /// </summary>
+    /// <param name="left"></param>
+    /// <param name="right"></param>
+    /// <returns></returns>
     public static bool operator ==(Result<T, TError> left, Result<T, TError> right) =>
         left.Equals(right);
 
+    /// <summary>
+    /// Returns true if the specified Result is not equal to the current Result.
+    /// </summary>
+    /// <param name="left"></param>
+    /// <param name="right"></param>
+    /// <returns></returns>
     public static bool operator !=(Result<T, TError> left, Result<T, TError> right) =>
         !(left == right);
 
+    /// <summary>
+    /// Returns true if the specified Result is equal to the current Result.
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <returns></returns>
     public override bool Equals(object? obj) =>
         obj is Result<T, TError> o && Equals(o);
 
+    /// <summary>
+    /// Returns true if the specified Result is equal to the current Result.
+    /// </summary>
+    /// <param name="other"></param>
+    /// <returns></returns>
     public readonly bool Equals(Result<T, TError> other) =>
         Match(
             ok: x1 =>
@@ -164,13 +186,96 @@ public readonly struct Result<T, TError>
                     ok: _ => false,
                     error: e2 => e2 is not null && e2.Equals(e1)));
 
+    /// <summary>
+    /// Returns the hash code for the Result.
+    /// </summary>
+    /// <returns></returns>
     public override int GetHashCode() =>
         Match(
             ok: x => x is null ? 0 : x.GetHashCode(),
             error: e => e is null ? 0 : e.GetHashCode());
 
+    /// <summary>
+    /// Returns a string representation of the Result.
+    /// </summary>
+    /// <returns></returns>
     public override string ToString() =>
         Match(
             ok: x => $"Ok({x})",
             error: e => $"Error({e})");
+}
+
+
+/// <summary>
+/// The <see cref="Result{T, TError}"/> with <see cref="ResultErrors"/>
+/// as the predefined error type.
+///
+/// Alias for <see cref="Result{T, ResultErrors}"/>.
+/// </summary>
+/// <typeparam name="T"></typeparam>
+public static class Result<T>
+{
+    /// <summary>
+    /// Creates a new Result with the specified value.
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public static Result<T, ResultErrors> Ok(T value) =>
+        Result<T, ResultErrors>.Ok(value);
+
+    /// <summary>
+    /// Creates Result with the specified value wrapped in a completed Task.
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public static Task<Result<T, ResultErrors>> OkAsync(T value) =>
+        Result<T, ResultErrors>.OkAsync(value);
+
+    /// <summary>
+    /// Creates Result with the value of the awaited Task.
+    /// </summary>
+    /// <param name="valueTask"></param>
+    /// <returns></returns>
+    public static Task<Result<T, ResultErrors>> OkAsync(Task<T> valueTask) =>
+        Result<T, ResultErrors>.OkAsync(valueTask);
+
+    /// <summary>
+    /// Creates a new Result with the specified error.
+    /// </summary>
+    /// <param name="errors"></param>
+    /// <returns></returns>
+    public static Result<T, ResultErrors> Error(ResultErrors errors) =>
+        Result<T, ResultErrors>.Error(errors);
+
+    /// <summary>
+    /// Creates Result with the specified error wrapped in a completed Task.
+    /// </summary>
+    /// <param name="errors"></param>
+    /// <returns></returns>
+    public static Task<Result<T, ResultErrors>> ErrorAsync(ResultErrors errors) =>
+        Task.FromResult(Error(errors));
+
+    /// <summary>
+    /// Creates a new Result with the specified error.
+    /// </summary>
+    /// <param name="messages"></param>
+    /// <returns></returns>
+    public static Result<T, ResultErrors> Error(IEnumerable<string> messages) =>
+        Error(new ResultErrors(messages));
+
+    /// <summary>
+    /// Creates Result with the specified error wrapped in a completed Task.
+    /// </summary>
+    /// <param name="message"></param>
+    /// <returns></returns>
+    public static Result<T, ResultErrors> Error(string message) =>
+        Error([message]);
+
+    /// <summary>
+    /// Creates Result with the specified error wrapped in a completed Task.
+    /// </summary>
+    /// <param name="message"></param>
+    /// <returns></returns>
+    public static Task<Result<T, ResultErrors>> ErrorAsync(string message) =>
+        Task.FromResult(Error(message));
 }
