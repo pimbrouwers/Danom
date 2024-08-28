@@ -21,7 +21,7 @@
 
     <!-- NuGet config -->
     <PackageId>Danom</PackageId>
-    <PackageTags>fsharp;functional;database;sql;ado;adonet</PackageTags>
+    <PackageTags>monads;error-handling;option-type;option;result;railway-oriented-programming;result-type</PackageTags>
     <PackageProjectUrl>https://github.com/pimbrouwers/Danom</PackageProjectUrl>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
