@@ -51,6 +51,7 @@ TryDivide(10, 2)
     .Match(
         ok: x => Console.WriteLine("Result: {0}", x),
         error: e => Console.WriteLine("Error: {0}", e));
+```
 
 ## Option
 
