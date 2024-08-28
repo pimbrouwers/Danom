@@ -62,6 +62,28 @@ public sealed class ResultTests
     }
 
     [Fact]
+    public void MatchActionShouldWork()
+    {
+        var ok = false;
+        var error = false;
+
+        Result<int, string>.Ok(1)
+            .Match(ok: _ => ok = true, error: _ => error = true);
+
+        Assert.True(ok);
+        Assert.False(error);
+
+        ok = false;
+        error = false;
+
+        Result<int, string>.Error("Error")
+            .Match(ok: _ => ok = true, error: _ => error = true);
+
+        Assert.False(ok);
+        Assert.True(error);
+    }
+
+    [Fact]
     public void BindShouldWork()
     {
         AssertResult.IsOk(2, Result<int, string>.Ok(1).Bind(x => Result<int, string>.Ok(x + 1)));

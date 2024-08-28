@@ -11,6 +11,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{0EBC8ACF-3
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Danom.Tests", "test\Danom.Tests\Danom.Tests.csproj", "{FD28EA84-DA52-422E-8191-702FAE8CEB3D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Danom.Validation", "src\Danom.Validation\Danom.Validation.csproj", "{E5B9A994-E581-41E7-976F-FF40C603CDD7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Danom.Validation.Tests", "test\Danom.Validation.Tests\Danom.Validation.Tests.csproj", "{D25E83D5-1B3D-4539-939F-762EA418160C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -28,9 +32,19 @@ Global
 		{FD28EA84-DA52-422E-8191-702FAE8CEB3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FD28EA84-DA52-422E-8191-702FAE8CEB3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FD28EA84-DA52-422E-8191-702FAE8CEB3D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E5B9A994-E581-41E7-976F-FF40C603CDD7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E5B9A994-E581-41E7-976F-FF40C603CDD7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E5B9A994-E581-41E7-976F-FF40C603CDD7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E5B9A994-E581-41E7-976F-FF40C603CDD7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D25E83D5-1B3D-4539-939F-762EA418160C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D25E83D5-1B3D-4539-939F-762EA418160C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D25E83D5-1B3D-4539-939F-762EA418160C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D25E83D5-1B3D-4539-939F-762EA418160C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{13856824-D877-4357-9187-4CF0CE545C33} = {A4230CA9-1E07-403F-9556-D01A88C7F219}
 		{FD28EA84-DA52-422E-8191-702FAE8CEB3D} = {0EBC8ACF-34C1-47FB-8F06-413EBC59AC87}
+		{E5B9A994-E581-41E7-976F-FF40C603CDD7} = {A4230CA9-1E07-403F-9556-D01A88C7F219}
+		{D25E83D5-1B3D-4539-939F-762EA418160C} = {0EBC8ACF-34C1-47FB-8F06-413EBC59AC87}
 	EndGlobalSection
 EndGlobal

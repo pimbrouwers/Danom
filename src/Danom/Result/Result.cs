@@ -34,7 +34,8 @@ public readonly struct Result<T, TError>
     public bool IsError => !IsOk;
 
     /// <summary>
-    /// If <see cref="Result{T, TError}"/> is Ok evaluate the ok delegate, otherwise error.
+    /// If <see cref="Result{T, TError}"/> is Ok evaluate the ok delegate,
+    /// otherwise error.
     /// </summary>
     /// <typeparam name="U"></typeparam>
     /// <param name="ok"></param>
@@ -46,6 +47,26 @@ public readonly struct Result<T, TError>
             IsError && _error is TError tError ?
                 error(tError) :
                 throw new InvalidOperationException("Result error has not been initialized.");
+
+    /// <summary>
+    /// If <see cref="Result{T,TError}"/> is Some, evaluates the some delegate,
+    /// otherwise evaluates
+    /// the none delegate.
+    /// </summary>
+    public void Match(Action<T> ok, Action<TError> error)
+    {
+        Match(
+            ok: x =>
+            {
+                ok(x);
+                return Unit.Value;
+            },
+            error: e =>
+            {
+                error(e);
+                return Unit.Value;
+            });
+    }
 
     /// <summary>
     /// Evaluates the bind delegate if <see cref="Result{T, TError}"/> is Ok otherwise return Error.

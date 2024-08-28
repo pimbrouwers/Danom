@@ -85,6 +85,22 @@ public sealed class ResultOptionTests
     }
 
     [Fact]
+    public void MatchActionShouldWork()
+    {
+        var ok = 0;
+        var error = 0;
+        ResultOption<int, string>.Ok(1).Match(_ => ok++, () => error++, _ => error++);
+        Assert.Equal(1, ok);
+        Assert.Equal(0, error);
+
+        ok = 0;
+        error = 0;
+        ResultOption<int, string>.Error("Error").Match(_ => ok++, () => error++, _ => error++);
+        Assert.Equal(0, ok);
+        Assert.Equal(1, error);
+    }
+
+    [Fact]
     public void BindShouldWork()
     {
         AssertResultOption.IsOk(2, ResultOption<int, string>.Ok(1).Bind(x => ResultOption<int, string>.Ok(x + 1)));

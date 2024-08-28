@@ -55,6 +55,33 @@ public readonly struct ResultOption<T, TError>()
             _ok.Match(ok, none);
 
     /// <summary>
+    /// If <see cref="ResultOption{T,TError}"/> is Some, evaluates the some delegate, otherwise evaluates
+    /// the none delegate.
+    /// </summary>
+    public void Match(
+        Action<T> ok,
+        Action none,
+        Action<TError> error)
+    {
+        Match(
+            ok: x =>
+            {
+                ok(x);
+                return Unit.Value;
+            },
+            none: () =>
+            {
+                none();
+                return Unit.Value;
+            },
+            error: e =>
+            {
+                error(e);
+                return Unit.Value;
+            });
+    }
+
+    /// <summary>
     /// Evaluates the bind delegate if ResultOption is Ok.
     /// </summary>
     /// <typeparam name="U"></typeparam>

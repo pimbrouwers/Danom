@@ -68,6 +68,21 @@ public sealed class OptionTests
     }
 
     [Fact]
+    public void MatchActionShouldWork()
+    {
+        var some = Option<int>.Some(1);
+        var none = Option<int>.None();
+
+        some.Match(
+            some: x => Assert.Equal(1, x),
+            none: () => Assert.True(false));
+
+        none.Match(
+            some: x => Assert.True(false),
+            none: () => Assert.True(true));
+    }
+
+    [Fact]
     public void BindShouldWork()
     {
         AssertOption.IsSome(2, Option<int>.Some(1).Bind(x => Option<int>.Some(x + 1)));

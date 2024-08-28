@@ -42,6 +42,24 @@ public readonly struct Option<T>
             none();
 
     /// <summary>
+    /// If <see cref="Option{T}"/> is Some evaluate the some delegate, otherwise none.
+    /// </summary>
+    /// <param name="some"></param>
+    /// <param name="none"></param>
+    public void Match(Action<T> some, Action none) =>
+        Match(
+            some: x =>
+            {
+                some(x);
+                return Unit.Value;
+            },
+            none: () =>
+            {
+                none();
+                return Unit.Value;
+            });
+
+    /// <summary>
     /// Evaluates the bind delegate if <see cref="Option{T}"/> is Some otherwise return None.
     /// </summary>
     /// <typeparam name="U"></typeparam>
@@ -196,30 +214,4 @@ public readonly struct Option<T>
         Match(
             some: x => $"Some({x})",
             none: () => "None");
-}
-
-/// <summary>
-/// Extension methods to allow <see cref="Option{T}"/> matching using
-/// </summary>
-public static class OptionActionExtensions
-{
-    /// <summary>
-    /// If <see cref="Option{T}"/> is Some, evaluates the some delegate, otherwise evaluates
-    /// the none delegate.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="option"></param>
-    /// <param name="some"></param>
-    /// <param name="none"></param>
-    public static void Match<T>(this Option<T> option, Action<T> some, Action none)
-    {
-        if (option.ToNullable() is T t)
-        {
-            some(t);
-        }
-        else
-        {
-            none();
-        }
-    }
 }
