@@ -5,9 +5,9 @@
 Danom is a C# library that provides monadic structures to simplify functional programming patterns in C#, that enforces exhaustive matching by preventing direct value access (this is good).
 
 ## Key Features
-- Implementation of common monads like `Option`, `Result`, and `ResultOption`.
+- Implementation of common monads like [Option](#option), [Result](#result), and [ResultOption](#resultoption).
 - Fluent API for chaining operations.
-- Error handling with monads.
+- [Error handling](#using-results) with monads.
 - Integration with async/await for asynchronous operations.
 
 ## Design Goals
@@ -16,9 +16,45 @@ Danom is a C# library that provides monadic structures to simplify functional pr
 - **Interoperability**: Seamless integration with existing C# code and libraries.
 - **Durability**: Prevent direct use of internal value, enforcing exhaustive matching.
 
-## Options
+## Getting Started
 
-Represents when an actual value might not exist for a value or named variable. An option has an underlying type and can hold a value of that type, or it might not have a value.
+Install the [Danom](https://www.nuget.org/packages/Danom/) NuGet package:
+
+```
+PM>  Install-Package Danom
+```
+
+Or using the dotnet CLI
+```cmd
+dotnet add package Danom
+```
+
+### Quick Start
+
+```csharp
+using Danom;
+
+// Create an Option
+var option = Option<int>.Some(5);
+
+option.Match(
+    some: x => Console.WriteLine("Value: {0}", x),
+    none: () => Console.WriteLine("No value"));
+
+// Create a Result
+public Result<int, string> TryDivide(int numerator, int denominator) =>
+    denominator == 0
+        ? Result<int, string>.Error("Cannot divide by zero")
+        : Result<int, string>.Ok(numerator / denominator);
+
+TryDivide(10, 2)
+    .Match(
+        ok: x => Console.WriteLine("Result: {0}", x),
+        error: e => Console.WriteLine("Error: {0}", e));
+
+## Option
+
+Represents when an actual value might not exist for a value or named variable. An option has an underlying type and can hold a value of that type, or it might not have a value. Options are a fantastic means of reducing primitive congestion in your code, and they are a much safer way to handle null values and virutally eliminate null reference exceptions.
 
 ### Creating Options
 
@@ -28,7 +64,7 @@ var option = Option<int>.Some(5);
 var optionNone = Option<int>.None();
 ```
 
-### Using Options
+### Using Option
 
 Options are commonly used when a operation might not return a value.
 
@@ -49,46 +85,111 @@ TryFind(nums, x => x == 1)
         none: () => Console.WriteLine("Did not find number"));
 
 // Mapping the value
-var optionSum =
+Option<int> optionSum =
     TryFind(nums, x => x == 1)
         .Map(x => x + 1);
 
 // Binding the option
-var optionBindSum =
+Option<int> optionBindSum =
     TryFind(nums, x => x == 1)
         .Bind(num1 =>
             TryFind(nums, x => x == 2)
                 .Map(num2 => num1 + num2));
 
 // Handling "None"
-var optionDefault =
+Option<int> optionDefault =
     TryFind(nums, x => x == 4)
         .DefaultValue(99);
 
-var optionDefaultWith =
+Option<int> optionDefaultWith =
     TryFind(nums, x => x == 4)
         .DefaultWith(() => 99); // useful if creating the value is expensive
 
-var optionOrElse =
+Option<int> optionOrElse =
     TryFind(nums, x => x == 4)
-        .OrElse(Option.Some(99));
+        .OrElse(Option<int>.Some(99));
 
-var optionOrElseWith =
+Option<int> optionOrElseWith =
     TryFind(nums, x => x == 4)
-        .OrElseWith(() => 99);
+        .OrElseWith(() => Option<int>.Some(99)); // useful if creating the value is expensive
 ```
 
-## Results
+## Result
 
-Represents the result of an operation that can either succeed or fail. These
-results can be chained together to form pipelines of error handling.
+Represents the result of an operation that can either succeed or fail. These results can be chained together allowing you to form error-tolerant pipelines. This lets you break up functionality like this into small pieces which are as composable as you need them to be. Also benefiting from the exhaustive matching.
 
+### Creating Results
 
---
+```csharp
+var result = Result<int, string>.Ok(5);
+// or, with an error
+var resultError = Result<int, string>.Error("An error occurred");
+// or, using the built-in Error type
+var resultErrors = Result<int>.Ok(5);
+var resultErrorsError = Result<int>.Error("An error occurred");
+var resultErrorsMultiError = Result<int>.Error(["An error occurred", "Another error occurred"]);
+var resultErrorsTyped = Result<int>.Error(new ResultErrors("error-key", "An error occurred"));
+```
 
-## ResultOptions
+### Using Results
 
---
+Results are commonly used when an operation might not succeed, and you want to manage the _expected_ errors.
+
+```csharp
+public Result<int, string> TryDivide(int numerator, int denominator) =>
+    denominator == 0
+        ? Result<int, string>.Error("Cannot divide by zero")
+        : Result<int, string>.Ok(numerator / denominator);
+
+// Exhasutive matching
+TryDivide(10, 2)
+    .Match(
+        ok: x => Console.WriteLine("Result: {0}", x),
+        error: e => Console.WriteLine("Error: {0}", e));
+
+// Mapping the value
+Result<int, string> resultSum =
+    TryDivide(10, 2)
+        .Map(x => x + 1);
+
+// Binding the result (i.e., when a nested operation also returns a Result)
+Result<int, string> resultBindSum =
+    TryDivide(10, 2)
+        .Bind(num1 =>
+            TryDivide(20, 2)
+                .Map(num2 =>
+                    num1 + num2));
+
+// Handling errors
+Result<int, string> resultDefault =
+    TryDivide(10, 0)
+        .DefaultValue(99);
+
+Result<int, string> resultDefaultWith =
+    TryDivide(10, 0)
+        .DefaultWith(() => 99); // useful if creating the value is expensive
+
+Result<int, string> resultOrElse =
+    TryDivide(10, 0)
+        .OrElse(Result<int, string>.Ok(99));
+
+Result<int, string> resultOrElseWith =
+    TryDivide(10, 0)
+        .OrElseWith(() =>
+            Result<int, string>.Ok(99)); // useful if creating the value is expensive
+```
+
+Since error messages are frequently represented as string collections, often with keys (e.g., for validation), the `ResultErrors` type is provided to simplify Result creation. The flexible constructor allows errors to be initialized with a single string, a collection of strings, or a key-value pair.
+
+```csharp
+Result<int, ResultErrors> resultErrors = Result<int>.Ok(5);
+Result<int, ResultErrors> resultErrorsError = Result<int>.Error("An error occurred");
+Result<int, ResultErrors> resultErrorsMultiError = Result<int>.Error(["An error occurred", "Another error occurred"]);
+Result<int, ResultErrors> resultErrorsTyped = Result<int>.Error(new ResultErrors("error-key", "An error occurred"));
+```
+
+## ResultOption
+
 
 ## Contribute
 
