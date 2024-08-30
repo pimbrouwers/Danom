@@ -216,6 +216,9 @@ public readonly struct Option<T>
             none: () => "None");
 }
 
+/// <summary>
+/// Provides static methods for creating <see cref="Option{T}"/>s.
+/// </summary>
 public static class Option
 {
     /// <summary>

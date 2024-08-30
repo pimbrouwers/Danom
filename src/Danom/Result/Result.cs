@@ -298,3 +298,74 @@ public static class Result<T>
     public static Task<Result<T, ResultErrors>> ErrorAsync(string message) =>
         Task.FromResult(Error(message));
 }
+
+/// <summary>
+/// The <see cref="Result{T, ResultErrors}"/> with <see cref="ResultErrors"/>
+/// as the predefined error type.
+/// </summary>
+public static class Result
+{
+    /// <summary>
+    /// Creates a new <see cref="Result{T, ResultErrors}"/> with the specified value.
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public static Result<T, ResultErrors> Ok<T>(T value) =>
+        Result<T, ResultErrors>.Ok(value);
+
+    /// <summary>
+    /// Creates <see cref="Result{T, ResultErrors}"/> with the specified value wrapped in a completed Task.
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public static Task<Result<T, ResultErrors>> OkAsync<T>(T value) =>
+        Result<T, ResultErrors>.OkAsync(value);
+
+    /// <summary>
+    /// Creates <see cref="Result{T, ResultErrors}"/> with the value of the awaited Task.
+    /// </summary>
+    /// <param name="valueTask"></param>
+    /// <returns></returns>
+    public static Task<Result<T, ResultErrors>> OkAsync<T>(Task<T> valueTask) =>
+        Result<T, ResultErrors>.OkAsync(valueTask);
+
+    /// <summary>
+    /// Creates a new <see cref="Result{T, ResultErrors}"/> with the specified error.
+    /// </summary>
+    /// <param name="errors"></param>
+    /// <returns></returns>
+    public static Result<T, ResultErrors> Error<T>(ResultErrors errors) =>
+        Result<T, ResultErrors>.Error(errors);
+
+    /// <summary>
+    /// Creates <see cref="Result{T, ResultErrors}"/> with the specified error wrapped in a completed Task.
+    /// </summary>
+    /// <param name="errors"></param>
+    /// <returns></returns>
+    public static Task<Result<T, ResultErrors>> ErrorAsync<T>(ResultErrors errors) =>
+        Task.FromResult(Error<T>(errors));
+
+    /// <summary>
+    /// Creates a new <see cref="Result{T, ResultErrors}"/> with the specified error.
+    /// </summary>
+    /// <param name="messages"></param>
+    /// <returns></returns>
+    public static Result<T, ResultErrors> Error<T>(IEnumerable<string> messages) =>
+        Error<T>(new ResultErrors(messages));
+
+    /// <summary>
+    /// Creates <see cref="Result{T, ResultErrors}"/> with the specified error wrapped in a completed Task.
+    /// </summary>
+    /// <param name="message"></param>
+    /// <returns></returns>
+    public static Result<T, ResultErrors> Error<T>(string message) =>
+        Error<T>([message]);
+
+    /// <summary>
+    /// Creates <see cref="Result{T, ResultErrors}"/> with the specified error wrapped in a completed Task.
+    /// </summary>
+    /// <param name="message"></param>
+    /// <returns></returns>
+    public static Task<Result<T, ResultErrors>> ErrorAsync<T>(string message) =>
+        Task.FromResult(Error<T>(message));
+}
