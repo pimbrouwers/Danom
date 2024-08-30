@@ -5,7 +5,7 @@
     <Version>1.0.0-alpha1</Version>
 
     <!-- General info -->
-    <Description>Monadic structures to simplify functional programming patterns in C#.</Description>
+    <Description>ASP.NET Core MVC helpers for Danom.</Description>
     <Copyright>Copyright 2024 Pim Brouwers</Copyright>
     <Authors>Pim Brouwers</Authors>
     <NeutralLanguage>en-CA</NeutralLanguage>
@@ -21,7 +21,7 @@
 
     <!-- NuGet config -->
     <PackageId>Danom.Mvc</PackageId>
-    <PackageTags>aspnetcore;mvc;validation;</PackageTags>
+    <PackageTags>aspnetcore;mvc;validation;danom;</PackageTags>
     <PackageProjectUrl>https://github.com/pimbrouwers/Danom</PackageProjectUrl>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
@@ -39,15 +39,15 @@
     <None Include="./README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
-  <ItemGroup>
+  <!-- <ItemGroup>
     <ProjectReference Include="..\Danom\Danom.csproj" />
     <ProjectReference Include="..\Danom.Validation\Danom.Validation.csproj" />
-  </ItemGroup>
+  </ItemGroup> -->
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
-    <!-- <PackageReference Include="Danom" Version="1.*" /> -->
-    <!-- <PackageReference Include="Danom.Validation" Version="1.*" /> -->
+    <PackageReference Include="Danom" Version="1.0.0-alpha*" />
+    <PackageReference Include="Danom.Validation" Version="1.0.0-alpha*" />
   </ItemGroup>
 
 </Project>
