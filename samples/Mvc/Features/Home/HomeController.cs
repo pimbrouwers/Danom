@@ -26,12 +26,8 @@ public sealed class HomeController : DanomController
 
     public IActionResult ResultError() =>
         ViewResult(
-            result: Result<string>.Error(new ResultErrors("An error occurred.")),
-            errorAction: errors =>
-                ViewResultErrors(
-                    errors: errors,
-                    viewName: "Detail",
-                    model: errors),
+            result: Result<string, string>.Error("An error occurred."),
+            errorAction: errors => View("Detail", errors),
             viewName: "Detail");
 
     public IActionResult ResultErrors() =>
@@ -46,12 +42,8 @@ public sealed class HomeController : DanomController
 
     public IActionResult ResultOptionError() =>
         ViewResultOption(
-            resultOption: ResultOption<string>.Error(new ResultErrors("An error occurred.")),
-            errorAction: errors =>
-                ViewResultErrors(
-                    errors: errors,
-                    viewName: "Detail",
-                    model: errors),
+            resultOption: ResultOption<string, string>.Error("An error occurred."),
+            errorAction: errors => View("Detail", errors),
             viewName: "Detail");
 
     public IActionResult ResultOptionErrors() =>
