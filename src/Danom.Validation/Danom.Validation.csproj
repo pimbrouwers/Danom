@@ -5,7 +5,7 @@
     <Version>1.0.0-alpha1</Version>
 
     <!-- General info -->
-    <Description>Monadic structures to simplify functional programming patterns in C#.</Description>
+    <Description>Validators and validation helpers for Danom based on FluentValidation.</Description>
     <Copyright>Copyright 2024 Pim Brouwers</Copyright>
     <Authors>Pim Brouwers</Authors>
     <NeutralLanguage>en-CA</NeutralLanguage>
