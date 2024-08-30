@@ -41,6 +41,7 @@ public class AttendeeValidator
         RuleFor(x => x.AlternateEmail).Optional(x => x.EmailAddress());
     }
 }
+
 var input =
     new Attendee(
         Name: "John Doe",

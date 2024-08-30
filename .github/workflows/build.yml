@@ -20,10 +20,10 @@ jobs:
           dotnet-version: ${{ matrix.dotnet-version }}
 
       - name: Install dependencies
-        run: dotnet restore src/Danom
+        run: dotnet restore
 
       - name: Build
-        run: dotnet build src/Danom -c Release
+        run: dotnet build -c Release
 
       - name: Test
-        run: dotnet test test/Danom.Tests -c Release
+        run: dotnet test -c Release
