@@ -237,7 +237,7 @@ public ResultOption<int, string> GetUserId(string username)
 
 ## Integrations
 
-Since Danom introduces types that are most commonly found in your model and business logic layers, it is integrated with other libraries to provide a seamless experience when build applications.
+Since Danom introduces types that are most commonly found in your model and business logic layers, external integrations are not only inevitable but required to provide a seamless experience when build applications.
 
 ### Fluent Validation Integration
 
