@@ -10,7 +10,7 @@ public readonly struct Option<T>
 {
     private readonly T? _some = default;
 
-    private Option(T t)
+    internal Option(T t)
     {
         if (t is not null)
         {
@@ -214,4 +214,45 @@ public readonly struct Option<T>
         Match(
             some: x => $"Some({x})",
             none: () => "None");
+}
+
+public static class Option
+{
+    /// <summary>
+    /// Creates a new <see cref="Option{T}"/> with the specified value.
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public static Option<T> Some<T>(T value) =>
+        new(value);
+
+    /// <summary>
+    /// Creates <see cref="Option{T}"/> with the specified value wrapped in a completed Task.
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public static Task<Option<T>> SomeAsync<T>(T value) =>
+        Task.FromResult(Some(value));
+
+    /// <summary>
+    /// Creates a new <see cref="Option{T}"/> with the value of the awaited Task.
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public static async Task<Option<T>> SomeAsync<T>(Task<T> value) =>
+        Some(await value);
+
+    /// <summary>
+    /// Creates a new <see cref="Option{T}"/> with no value.
+    /// </summary>
+    /// <returns></returns>
+    public static Option<T> None<T>() =>
+        new();
+
+    /// <summary>
+    /// Creates a new <see cref="Option{T}"/> with no value wrapped in a completed Task.
+    /// </summary>
+    /// <returns></returns>
+    public static Task<Option<T>> NoneAsync<T>() =>
+        Task.FromResult(None<T>());
 }
