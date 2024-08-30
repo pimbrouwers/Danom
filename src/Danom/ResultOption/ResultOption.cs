@@ -350,3 +350,37 @@ public static class ResultOption<T>
     public static Task<ResultOption<T, ResultErrors>> ErrorAsync(string message) =>
         Task.FromResult(Error(message));
 }
+
+/// <summary>
+/// Static methods for creating <see cref="ResultOption{T, ResultErrors}"/> instances with
+/// <see cref="ResultErrors"/> as the error type.
+/// </summary>
+public static class ResultOption
+{
+    /// <summary>
+    /// Creates a new <see cref="ResultOption{T, ResultErrors}"/> instance with the
+    /// specified value.
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>/
+    public static ResultOption<T, ResultErrors> Ok<T>(T value) =>
+        ResultOption<T, ResultErrors>.Ok(value);
+
+    /// <summary>
+    /// Creates a new <see cref="ResultOption{T, ResultErrors}"/> instance with the
+    /// value of the awaited Task.
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public static Task<ResultOption<T, ResultErrors>> OkAsync<T>(T value) =>
+        ResultOption<T, ResultErrors>.OkAsync(value);
+
+    /// <summary>
+    /// Creates a new <see cref="ResultOption{T, ResultErrors}"/> instance with the
+    /// value of the awaited Task.
+    /// </summary>
+    /// <param name="valueTask"></param>
+    /// <returns></returns>
+    public static Task<ResultOption<T, ResultErrors>> OkAsync<T>(Task<T> valueTask) =>
+        ResultOption<T, ResultErrors>.OkAsync(valueTask);
+}
