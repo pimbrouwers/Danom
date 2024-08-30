@@ -27,7 +27,8 @@ using FluentValidation;
 public record Attendee(
     string Name,
     int Age,
-    Option<string> EmailAddress);
+    Option<string> Email,
+    Option<string> AlternateEmail);
 
 public class AttendeeValidator
     : AbstractValidator<Attendee>
@@ -36,14 +37,16 @@ public class AttendeeValidator
     {
         RuleFor(x => x.Name).NotEmpty();
         RuleFor(x => x.Age).GreaterThan(0);
-        RuleFor(x => x.EmailAddress).WhenSome(x => x.EmailAddress());
+        RuleFor(x => x.Email).Required(x => x.EmailAddress());
+        RuleFor(x => x.AlternateEmail).Optional(x => x.EmailAddress());
     }
 }
 var input =
     new Attendee(
         Name: "John Doe",
         Age: 30,
-        EmailAddress: Option<string>.None());
+        Email: Option<string>.Some("john@doe.com"),
+        AlternateEmail: Option<string>.None());
 
 var result =
     ValidationResult<Attendee>
