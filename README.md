@@ -9,7 +9,7 @@ Danom is a C# library that provides monadic structures to simplify functional pr
 - Fluent API for chaining operations.
 - [Error handling](#using-results) with monads.
 - Support for asynchronous operations.
-- Integrated with [ASP.NET Core](src/Danom.Mvc/README.md) and [Fluent Validation](src/Danom.Validation/README.md).
+- Integrated with [ASP.NET Core](#aspnet-core-mvc-integration) and [Fluent Validation](#fluent-validation-integration).
 
 ## Design Goals
 - **Simplicity**: Easy to use API for common monadic operations.
@@ -234,6 +234,22 @@ public ResultOption<int, string> GetUserId(string username)
     // return LookupUserId(username).ToResultOption();
 }
 ```
+
+## Integrations
+
+Since Danom introduces types that are most commonly found in your model and business logic layers, it is integrated with other libraries to provide a seamless experience when build applications.
+
+### Fluent Validation Integration
+
+Danom is integrated with [Fluent Validation](https://fluentvalidation.net/) to provide a seamless way to validate your models and return a `Result` or `ResultOption` with the validation errors.
+
+Documentation can be found [here](src/Danom.Validation/README.md).
+
+### ASP.NET Core MVC Integration
+
+Danom is integrated with [ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/?view=aspnetcore-5.0) to provide a set of utilities to help integrate the Danom library with common tasks in ASP.NET Core MVC applications.
+
+Documentation can be found [here](src/Danom.Mvc/README.md).
 
 ## Contribute
 
