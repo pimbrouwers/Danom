@@ -16,7 +16,6 @@ public static class OptionSamples
     }
 }
 
-// write main method
 public static class Program
 {
     public static void Main()
