@@ -14,12 +14,17 @@ public static class OptionTaskExtensions
     /// <param name="optionTask"></param>
     /// <param name="some"></param>
     /// <param name="none"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
     public static async Task<U> MatchAsync<T, U>(
         this Task<Option<T>> optionTask,
         Func<T, Task<U>> some,
-        Func<Task<U>> none) =>
-        await (await optionTask).Match(some, none);
+        Func<Task<U>> none,
+        CancellationToken? cancellationToken = null)
+    {
+        var option = await optionTask.WaitOrCancel(cancellationToken);
+        return await option.Match(some, none).WaitOrCancel(cancellationToken);
+    }
 
     /// <summary>
     /// If the Option is Some evaluate the some delegate, otherwise none.
@@ -29,12 +34,14 @@ public static class OptionTaskExtensions
     /// <param name="optionTask"></param>
     /// <param name="some"></param>
     /// <param name="none"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
     public static async Task<U> MatchAsync<T, U>(
         this Task<Option<T>> optionTask,
         Func<T, U> some,
-        Func<U> none) =>
-        (await optionTask).Match(some, none);
+        Func<U> none,
+        CancellationToken? cancellationToken = null) =>
+        (await optionTask.WaitOrCancel(cancellationToken)).Match(some, none);
 
     /// <summary>
     /// Evaluates the bind delegate if the Option is Some otherwise return None.
@@ -43,11 +50,13 @@ public static class OptionTaskExtensions
     /// <typeparam name="U"></typeparam>
     /// <param name="optionTask"></param>
     /// <param name="bind"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
     public static Task<Option<U>> BindAsync<T, U>(
         this Task<Option<T>> optionTask,
-        Func<T, Task<Option<U>>> bind) =>
-        optionTask.MatchAsync(bind, Option<U>.NoneAsync);
+        Func<T, Task<Option<U>>> bind,
+        CancellationToken? cancellationToken = null) =>
+        optionTask.MatchAsync(bind, Option<U>.NoneAsync, cancellationToken);
 
     /// <summary>
     /// Evaluates the bind delegate if the Option is Some otherwise return None.
@@ -56,11 +65,13 @@ public static class OptionTaskExtensions
     /// <typeparam name="U"></typeparam>
     /// <param name="optionTask"></param>
     /// <param name="bind"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
     public static Task<Option<U>> BindAsync<T, U>(
         this Task<Option<T>> optionTask,
-        Func<T, Option<U>> bind) =>
-        optionTask.MatchAsync(x => bind(x), Option<U>.None);
+        Func<T, Option<U>> bind,
+        CancellationToken? cancellationToken = null) =>
+        optionTask.MatchAsync(x => bind(x), Option<U>.None, cancellationToken);
 
     /// <summary>
     /// Evaluates the map delegate if the Option is Some otherwise return None.
@@ -69,11 +80,13 @@ public static class OptionTaskExtensions
     /// <typeparam name="U"></typeparam>
     /// <param name="optionTask"></param>
     /// <param name="map"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
     public static Task<Option<U>> MapAsync<T, U>(
         this Task<Option<T>> optionTask,
-        Func<T, Task<U>> map) =>
-        BindAsync(optionTask, x => Option<U>.SomeAsync(map(x)));
+        Func<T, Task<U>> map,
+        CancellationToken? cancellationToken = null) =>
+        BindAsync(optionTask, x => Option<U>.SomeAsync(map(x)), cancellationToken);
 
     /// <summary>
     /// Evaluates the map delegate if the Option is Some otherwise return None.
@@ -82,11 +95,13 @@ public static class OptionTaskExtensions
     /// <typeparam name="U"></typeparam>
     /// <param name="optionTask"></param>
     /// <param name="map"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
     public static Task<Option<U>> MapAsync<T, U>(
         this Task<Option<T>> optionTask,
-        Func<T, U> map) =>
-        BindAsync(optionTask, x => Option<U>.Some(map(x)));
+        Func<T, U> map,
+        CancellationToken? cancellationToken = null) =>
+        BindAsync(optionTask, x => Option<U>.Some(map(x)), cancellationToken);
 
     /// <summary>
     /// Returns the value of the Option if it is T otherwise return default.
@@ -94,11 +109,13 @@ public static class OptionTaskExtensions
     /// <typeparam name="T"></typeparam>
     /// <param name="optionTask"></param>
     /// <param name="defaultValue"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
     public static Task<T> DefaultValueAsync<T>(
         this Task<Option<T>> optionTask,
-        T defaultValue) =>
-        optionTask.MatchAsync(some => some, () => defaultValue);
+        T defaultValue,
+        CancellationToken? cancellationToken = null) =>
+        optionTask.MatchAsync(some => some, () => defaultValue, cancellationToken);
 
     /// <summary>
     /// Returns the value of the Option if it is T otherwise return default.
@@ -106,11 +123,13 @@ public static class OptionTaskExtensions
     /// <typeparam name="T"></typeparam>
     /// <param name="optionTask"></param>
     /// <param name="defaultValue"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
     public static Task<T> DefaultValueAsync<T>(
         this Task<Option<T>> optionTask,
-        Task<T> defaultValue) =>
-        optionTask.MatchAsync(some => Task.FromResult(some), () => defaultValue);
+        Task<T> defaultValue,
+        CancellationToken? cancellationToken = null) =>
+        optionTask.MatchAsync(some => Task.FromResult(some), () => defaultValue, cancellationToken);
 
     /// <summary>
     /// Returns the value of the Option if it is T otherwise evaluate default.
@@ -118,11 +137,13 @@ public static class OptionTaskExtensions
     /// <typeparam name="T"></typeparam>
     /// <param name="optionTask"></param>
     /// <param name="defaultWith"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
     public static Task<T> DefaultWithAsync<T>(
         this Task<Option<T>> optionTask,
-        Func<Task<T>> defaultWith) =>
-        optionTask.MatchAsync(some => Task.FromResult(some), defaultWith);
+        Func<Task<T>> defaultWith,
+        CancellationToken? cancellationToken = null) =>
+        optionTask.MatchAsync(some => Task.FromResult(some), defaultWith, cancellationToken);
 
     /// <summary>
     /// Returns the value of the Option if it is T otherwise evaluate default.
@@ -130,11 +151,13 @@ public static class OptionTaskExtensions
     /// <typeparam name="T"></typeparam>
     /// <param name="optionTask"></param>
     /// <param name="defaultWith"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
     public static Task<T> DefaultWithAsync<T>(
         this Task<Option<T>> optionTask,
-        Func<T> defaultWith) =>
-        optionTask.MatchAsync(some => some, () => defaultWith());
+        Func<T> defaultWith,
+        CancellationToken? cancellationToken = null) =>
+        optionTask.MatchAsync(some => some, () => defaultWith(), cancellationToken);
 
     /// <summary>
     /// Return the Option if it is Some, otherwise return the specified Option.
@@ -142,11 +165,13 @@ public static class OptionTaskExtensions
     /// <typeparam name="T"></typeparam>
     /// <param name="optionTask"></param>
     /// <param name="ifNone"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
     public static Task<Option<T>> OrElseAsync<T>(
         this Task<Option<T>> optionTask,
-        Task<Option<T>> ifNone) =>
-        optionTask.MatchAsync(_ => optionTask, () => ifNone);
+        Task<Option<T>> ifNone,
+        CancellationToken? cancellationToken = null) =>
+        optionTask.MatchAsync(_ => optionTask, () => ifNone, cancellationToken);
 
     /// <summary>
     /// Return the Option if it is Some, otherwise return the specified Option.
@@ -154,11 +179,13 @@ public static class OptionTaskExtensions
     /// <typeparam name="T"></typeparam>
     /// <param name="optionTask"></param>
     /// <param name="ifNone"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
     public static Task<Option<T>> OrElseAsync<T>(
         this Task<Option<T>> optionTask,
-        Option<T> ifNone) =>
-        optionTask.MatchAsync(Option<T>.Some, () => ifNone);
+        Option<T> ifNone,
+        CancellationToken? cancellationToken = null) =>
+        optionTask.MatchAsync(Option<T>.Some, () => ifNone, cancellationToken);
 
     /// <summary>
     /// Return the Option if it is Some, otherwise evaluate ifNoneWith.
@@ -166,11 +193,13 @@ public static class OptionTaskExtensions
     /// <typeparam name="T"></typeparam>
     /// <param name="optionTask"></param>
     /// <param name="ifNoneWith"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
     public static Task<Option<T>> OrElseWithAsync<T>(
         this Task<Option<T>> optionTask,
-        Func<Task<Option<T>>> ifNoneWith) =>
-        optionTask.MatchAsync(_ => optionTask, ifNoneWith);
+        Func<Task<Option<T>>> ifNoneWith,
+        CancellationToken? cancellationToken = null) =>
+        optionTask.MatchAsync(_ => optionTask, ifNoneWith, cancellationToken);
 
     /// <summary>
     /// Return the Option if it is Some, otherwise evaluate ifNoneWith.
@@ -178,9 +207,11 @@ public static class OptionTaskExtensions
     /// <typeparam name="T"></typeparam>
     /// <param name="optionTask"></param>
     /// <param name="ifNoneWith"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
     public static Task<Option<T>> OrElseWithAsync<T>(
         this Task<Option<T>> optionTask,
-        Func<Option<T>> ifNoneWith) =>
-        optionTask.MatchAsync(Option<T>.Some, ifNoneWith);
+        Func<Option<T>> ifNoneWith,
+        CancellationToken? cancellationToken = null) =>
+        optionTask.MatchAsync(Option<T>.Some, ifNoneWith, cancellationToken);
 }
