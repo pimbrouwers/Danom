@@ -8,7 +8,8 @@ Danom is a C# library that provides monadic structures to simplify functional pr
 - Implementation of common monads like [Option](#option), [Result](#result), and [ResultOption](#resultoption).
 - Fluent API for chaining operations.
 - [Error handling](#using-results) with monads.
-- Integration with async/await for asynchronous operations.
+- Support for asynchronous operations.
+- Integrated with [ASP.NET Core](src/Danom.Mvc/README.md) and [Fluent Validation](src/Danom.Validation/README.md).
 
 ## Design Goals
 - **Simplicity**: Easy to use API for common monadic operations.
