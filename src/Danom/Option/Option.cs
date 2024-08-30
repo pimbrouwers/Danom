@@ -244,18 +244,4 @@ public static class Option
     /// <returns></returns>
     public static async Task<Option<T>> SomeAsync<T>(Task<T> value) =>
         Some(await value);
-
-    /// <summary>
-    /// Creates a new <see cref="Option{T}"/> with no value.
-    /// </summary>
-    /// <returns></returns>
-    public static Option<T> None<T>() =>
-        new();
-
-    /// <summary>
-    /// Creates a new <see cref="Option{T}"/> with no value wrapped in a completed Task.
-    /// </summary>
-    /// <returns></returns>
-    public static Task<Option<T>> NoneAsync<T>() =>
-        Task.FromResult(None<T>());
 }
