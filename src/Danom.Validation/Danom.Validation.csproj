@@ -41,10 +41,11 @@
 
   <!-- <ItemGroup>
     <ProjectReference Include="..\Danom\Danom.csproj" />
+    <PackageReference Include="FluentValidation" Version="11.*" />
   </ItemGroup> -->
 
   <ItemGroup>
-    <PackageReference Include="Danom" Version="1.0.0-alpha*" />
+    <PackageReference Include="Danom" Version="1.0.0-alpha3" />
     <PackageReference Include="FluentValidation" Version="11.*" />
   </ItemGroup>
 

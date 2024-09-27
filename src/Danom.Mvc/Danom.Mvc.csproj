@@ -39,14 +39,17 @@
     <None Include="./README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
   <!-- <ItemGroup>
     <ProjectReference Include="..\Danom\Danom.csproj" />
     <ProjectReference Include="..\Danom.Validation\Danom.Validation.csproj" />
   </ItemGroup> -->
 
   <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="Danom" Version="1.0.0-alpha*" />
+    <PackageReference Include="Danom" Version="1.0.0-alpha3" />
     <PackageReference Include="Danom.Validation" Version="1.0.0-alpha*" />
   </ItemGroup>
 

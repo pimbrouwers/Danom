@@ -10,5 +10,4 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Danom\Danom.csproj" />
   </ItemGroup>
-
 </Project>

@@ -41,7 +41,7 @@ switch ($Action) {
 }
 
 if (!$NoRestore.IsPresent) {
-  RunCommand "dotnet restore $actionDir --force --force-evaluate --nologo --verbosity quiet"
+  RunCommand "dotnet restore $actionDir --force --force-evaluate --no-cache --nologo --verbosity quiet"
 }
 
 if ($Clean) {
