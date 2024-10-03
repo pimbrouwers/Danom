@@ -2,7 +2,7 @@
 [![NuGet Version](https://img.shields.io/nuget/v/Danom.Validation.svg)](https://www.nuget.org/packages/Danom.Validation)
 [![build](https://github.com/pimbrouwers/Danom/actions/workflows/build.yml/badge.svg)](https://github.com/pimbrouwers/Danom/actions/workflows/build.yml)
 
-One of the places the Results type really shines is input validation. It's a natural step in most workflows to validate input data before processing it, and the Result type is a great way to handle this. The [Danom.Validation](https://www.nuget.org/packages/Danom.Validation/) library provides a set of utilities to help with this and integrates with the wonderful [FluentValidation](https://github.com/FluentValidation/FluentValidation) library.
+One of the places the `Result` type really shines is input validation. It's a natural step in most workflows to validate input data before processing it, and the Result type is a great way to handle this. The [Danom.Validation](https://www.nuget.org/packages/Danom.Validation/) library provides a set of utilities to help with this, integrating with the wonderful [FluentValidation](https://github.com/FluentValidation/FluentValidation) library.
 
 ## Getting Started
 
