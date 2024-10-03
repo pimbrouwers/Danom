@@ -1,0 +1,10 @@
+@model object
+
+<h1>
+    <pre>
+        <code>
+            type: @(Model?.GetType().ToString() ?? "There are errors")<br>
+            @Json.Serialize(Model)
+        </code>
+    </pre>
+</h1>
