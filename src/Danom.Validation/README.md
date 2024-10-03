@@ -17,7 +17,9 @@ Or using the dotnet CLI
 dotnet add package Danom.Validation
 ```
 
-### Quick Start
+## Example
+
+The kitchen sink example below demonstrates the functionality delivered from this slim library built on top of Danom.
 
 ```csharp
 using Danom;
