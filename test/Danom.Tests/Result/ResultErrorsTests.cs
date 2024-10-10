@@ -41,7 +41,7 @@ public sealed class ResultErrorsTests
 
         Assert.NotEmpty(resultErrors);
         Assert.Equal(2, resultErrors.Count());
-        Assert.Equal($"[{Environment.NewLine}Error1{Environment.NewLine}Error2{Environment.NewLine}]", resultErrors.ToString());
+        Assert.Equal($"[ Error1, Error2 ]", resultErrors.ToString());
     }
 
     [Fact]
@@ -50,7 +50,7 @@ public sealed class ResultErrorsTests
         var resultErrors = new ResultErrors();
         resultErrors.Add(new("Error"));
         Assert.Single(resultErrors);
-        Assert.Equal($"[{Environment.NewLine}Error{Environment.NewLine}]", resultErrors.ToString());
+        Assert.Equal($"[ Error ]", resultErrors.ToString());
     }
 
     [Fact]
@@ -58,7 +58,7 @@ public sealed class ResultErrorsTests
     {
         var resultErrors = new ResultErrors("Error");
         Assert.Single(resultErrors);
-        Assert.Equal($"[{Environment.NewLine}Error{Environment.NewLine}]", resultErrors.ToString());
+        Assert.Equal($"[ Error ]", resultErrors.ToString());
     }
 }
 

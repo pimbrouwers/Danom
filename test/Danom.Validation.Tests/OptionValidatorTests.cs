@@ -28,7 +28,7 @@ public sealed class OptionValidatorTests
             AssertResult.IsError(result);
             Assert.False(result.IsOk);
             Assert.Equal(
-                $"Error([{Environment.NewLine}Value - 'Value' must be greater than '0'., 'Value' is optional, but invalid.{Environment.NewLine}])",
+                $"Error([ Value - 'Value' must be greater than '0'., 'Value' is optional, but invalid. ])",
                 result.ToString());
         }
 
@@ -138,7 +138,7 @@ public sealed class OptionValidatorTests
             AssertResult.IsError(result);
             Assert.False(result.IsOk);
             Assert.Equal(
-                $"Error([{Environment.NewLine}Value - 'Value' is required and invalid or missing.{Environment.NewLine}])",
+                $"Error([ Value - 'Value' is required and invalid or missing. ])",
                 result.ToString());
 
             input = new TestInput { Value = Option<int>.Some(2) };
@@ -148,7 +148,7 @@ public sealed class OptionValidatorTests
             Assert.False(result.IsOk);
 
             Assert.Equal(
-                $"Error([{Environment.NewLine}Value - 'Value' must be greater than '2'., 'Value' is required and invalid or missing.{Environment.NewLine}])",
+                $"Error([ Value - 'Value' must be greater than '2'., 'Value' is required and invalid or missing. ])",
                 result.ToString());
         }
 
@@ -171,7 +171,7 @@ public sealed class OptionValidatorTests
             AssertResult.IsError(result);
             Assert.False(result.IsOk);
             Assert.Equal(
-                $"Error([{Environment.NewLine}TestId - 'Test Id' is required and invalid or missing.{Environment.NewLine}])",
+                $"Error([ TestId - 'Test Id' is required and invalid or missing. ])",
                 result.ToString());
         }
     }
