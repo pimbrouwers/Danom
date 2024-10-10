@@ -122,7 +122,7 @@ public sealed class ResultErrors : IEnumerable<ResultError>
     /// <returns></returns>
     public override string ToString()
     {
-        var errors = string.Join(Environment.NewLine, _errors);
-        return string.Join(Environment.NewLine, ["[", errors, "]"]);
+        var errors = string.Join(", ", _errors);
+        return string.Concat(["[ ", errors, " ]"]);
     }
 }

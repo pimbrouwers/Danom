@@ -9,5 +9,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Danom\Danom.csproj" />
+    <ProjectReference Include="..\..\src\Danom.Validation\Danom.Validation.csproj" />
   </ItemGroup>
 </Project>
