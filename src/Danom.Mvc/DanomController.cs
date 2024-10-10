@@ -3,7 +3,7 @@ namespace Danom.Mvc;
 using Microsoft.AspNetCore.Mvc;
 
 /// <summary>
-/// A controller that provides helper methods for working with Danom types.
+/// A controller that provides helper methods for working with Danom's monad types.
 /// </summary>
 public class DanomController
     : Controller
@@ -44,7 +44,8 @@ public class DanomController
             });
 
     /// <summary>
-    ///
+    /// Renders the specified view with the specified model, and add the
+    /// provided errors to the model state.
     /// </summary>
     /// <param name="errors"></param>
     /// <param name="viewName"></param>
@@ -76,7 +77,8 @@ public class DanomController
     }
 
     /// <summary>
-    ///
+    /// An action result that renders the specified view with the specified model
+    /// if the result is Ok, otherwise execute the specified error action.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TError"></typeparam>
@@ -113,7 +115,8 @@ public class DanomController
             error: errorAction);
 
     /// <summary>
-    ///
+    /// An action result that renders the specified view with the specified model
+    /// if the result is Ok, otherwise display the errors in the model state.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="result"></param>
@@ -131,7 +134,9 @@ public class DanomController
             errorAction: e => ViewResultErrors(e, viewName, model));
 
     /// <summary>
-    ///
+    /// An action result that renders the specified view with the specified model
+    /// if the result is Ok, NotFound if the result is None, otherwise execute
+    /// the error action.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TError"></typeparam>
@@ -169,7 +174,9 @@ public class DanomController
             error: errorAction);
 
     /// <summary>
-    ///
+    /// An action result that renders the specified view with the specified model
+    /// if the result is Ok, NotFound if the result is None, otherwise display
+    /// the errors in the model state.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="resultOption"></param>
