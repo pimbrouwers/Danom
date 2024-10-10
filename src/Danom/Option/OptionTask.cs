@@ -214,4 +214,40 @@ public static class OptionTaskExtensions
         Func<Option<T>> ifNoneWith,
         CancellationToken? cancellationToken = null) =>
         optionTask.MatchAsync(Option<T>.Some, ifNoneWith, cancellationToken);
+
+    /// <summary>
+    /// Converts a nullable value to an option.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="x"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    public static async Task<Option<T>> ToOptionAsync<T>(
+        this Task<T?> x,
+        CancellationToken? cancellationToken = null) =>
+        (await x.WaitOrCancel(cancellationToken)).ToOption();
+
+    /// <summary>
+    /// Converts a nullable strct to an option.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="x"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    public static async Task<Option<T>> ToOptionAsync<T>(
+        this Task<T?> x,
+        CancellationToken? cancellationToken = null) where T : struct =>
+        (await x.WaitOrCancel(cancellationToken)).ToOption();
+
+    /// <summary>
+    /// Converts a nullable string to an option.
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    public static async Task<Option<string>> ToOptionAsync(
+        this Task<string?> x,
+        CancellationToken? cancellationToken = null) =>
+        (await x.WaitOrCancel(cancellationToken)).ToOption();
+
 }
