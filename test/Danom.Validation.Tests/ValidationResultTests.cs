@@ -2,6 +2,7 @@ namespace Danom.Validation.Tests;
 
 using Xunit;
 using FluentValidation;
+using Danom.TestHelpers;
 
 public sealed class ValidationResultTests
 {

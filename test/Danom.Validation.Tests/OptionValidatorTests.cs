@@ -2,6 +2,7 @@ namespace Danom.Validation.Tests;
 
 using FluentValidation;
 using Xunit;
+using Danom.TestHelpers;
 
 public sealed class OptionValidatorTests
 {

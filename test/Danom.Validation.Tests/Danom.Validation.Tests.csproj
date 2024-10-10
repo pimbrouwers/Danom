@@ -26,6 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\TestHelpers\TestHelpers.csproj" />
     <ProjectReference Include="..\..\src\Danom.Validation\Danom.Validation.csproj" />
   </ItemGroup>
 

@@ -1,5 +1,6 @@
-namespace Danom.Validation.Tests;
+namespace Danom.TestHelpers;
 
+using Danom;
 using Xunit;
 
 public static class AssertResult

@@ -26,7 +26,7 @@ $rootDir = $PSScriptRoot
 $actionDir = $rootDir
 
 switch ($Action) {
-  { "Pack", "Test" -eq $_ } {
+  { "Pack" -eq $_ } {
     if (!$Project) {
       Write-Error "The project parameter is required when packing."
       exit 1
