@@ -22,8 +22,14 @@ jobs:
       - name: Install dependencies
         run: dotnet restore
 
-      - name: Build
+      - name: Build Core
         run: dotnet build src/Danom -c Release
 
       - name: Test Core
         run: dotnet test test/Danom.Tests -c Release
+
+      - name: Build Validtion
+        run: dotnet build src/Danom.Validation -c Release
+
+      - name: Test Validation
+        run: dotnet test test/Danom.Validation.Tests -c Release
