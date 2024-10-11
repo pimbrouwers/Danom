@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <AssemblyName>Danom.Mvc</AssemblyName>
-    <Version>1.0.0-alpha1</Version>
+    <Version>1.0.0-beta1</Version>
 
     <!-- General info -->
     <Description>ASP.NET Core MVC helpers for Danom.</Description>
@@ -43,14 +43,9 @@
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
-  <!-- <ItemGroup>
-    <ProjectReference Include="..\Danom\Danom.csproj" />
-    <ProjectReference Include="..\Danom.Validation\Danom.Validation.csproj" />
-  </ItemGroup> -->
-
   <ItemGroup>
-    <PackageReference Include="Danom" Version="1.0.0-alpha3" />
-    <PackageReference Include="Danom.Validation" Version="1.0.0-alpha*" />
+    <PackageReference Include="Danom" Version="1.0.0-beta1" />
+    <PackageReference Include="Danom.Validation" Version="1.0.0-beta1" />
   </ItemGroup>
 
 </Project>

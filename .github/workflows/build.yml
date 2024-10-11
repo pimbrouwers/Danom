@@ -28,8 +28,14 @@ jobs:
       - name: Test Core
         run: dotnet test test/Danom.Tests -c Release
 
-      - name: Build Validtion
+      - name: Build Validation
         run: dotnet build src/Danom.Validation -c Release
 
       - name: Test Validation
         run: dotnet test test/Danom.Validation.Tests -c Release
+
+      - name: Build Mvc
+        run: dotnet build src/Danom.Mvc -c Release
+
+      - name: Test Mvc
+        run: dotnet test test/Danom.Mvc.Tests -c Release
