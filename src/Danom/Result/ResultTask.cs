@@ -78,6 +78,22 @@ public static class ResultTaskExtensions
         resultTask.MatchAsync(bind, Result<U, TError>.ErrorAsync, cancellationToken);
 
     /// <summary>
+    /// Evaluates the bind delegate if Result is Ok otherwise return Error.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TError"></typeparam>
+    /// <typeparam name="U"></typeparam>
+    /// <param name="result"></param>
+    /// <param name="bind"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    public static Task<Result<U, TError>> BindAsync<T, TError, U>(
+        this Result<T, TError> result,
+        Func<T, Task<Result<U, TError>>> bind,
+        CancellationToken? cancellationToken = null) =>
+        Task.FromResult(result).BindAsync(bind, cancellationToken);
+
+    /// <summary>
     /// Evaluates the map delegate if Result is Ok otherwise return Error.
     /// </summary>
     /// <typeparam name="T"></typeparam>
@@ -110,6 +126,22 @@ public static class ResultTaskExtensions
         resultTask.BindAsync(x => Result<U, TError>.OkAsync(map(x)), cancellationToken);
 
     /// <summary>
+    /// Evaluates the map delegate if Result is Ok otherwise return Error.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TError"></typeparam>
+    /// <typeparam name="U"></typeparam>
+    /// <param name="result"></param>
+    /// <param name="map"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    public static Task<Result<U, TError>> MapAsync<T, TError, U>(
+        this Result<T, TError> result,
+        Func<T, Task<U>> map,
+        CancellationToken? cancellationToken = null) =>
+        Task.FromResult(result).MapAsync(map, cancellationToken);
+
+    /// <summary>
     /// Evaluates the mapError delegate if Result is Error otherwise return Ok.
     /// </summary>
     /// <typeparam name="T"></typeparam>
@@ -138,6 +170,21 @@ public static class ResultTaskExtensions
         Func<UError, Task<UError>> mapError,
         CancellationToken? cancellationToken = null) =>
         resultTask.MatchAsync(Result<T, UError>.OkAsync, e => Result<T, UError>.ErrorAsync(mapError(e)), cancellationToken);
+
+    /// <summary>
+    /// Evaluates the mapError delegate if Result is Error otherwise return Ok.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="UError"></typeparam>
+    /// <param name="result"></param>
+    /// <param name="mapError"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    public static Task<Result<T, UError>> MapErrorAsync<T, UError>(
+        this Result<T, UError> result,
+        Func<UError, Task<UError>> mapError,
+        CancellationToken? cancellationToken = null) =>
+        Task.FromResult(result).MapErrorAsync(mapError, cancellationToken);
 
     /// <summary>
     /// Returns the value of Result if it is T, otherwise returns the
@@ -177,6 +224,22 @@ public static class ResultTaskExtensions
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TError"></typeparam>
+    /// <param name="result"></param>
+    /// <param name="defaultValue"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    public static Task<T> DefaultValueAsync<T, TError>(
+        this Result<T, TError> result,
+        Task<T> defaultValue,
+        CancellationToken? cancellationToken = null) =>
+        Task.FromResult(result).DefaultValueAsync(defaultValue, cancellationToken);
+
+    /// <summary>
+    /// Returns the value of Result if it is T, otherwise returns the
+    /// specified default value.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TError"></typeparam>
     /// <param name="resultTask"></param>
     /// <param name="defaultWith"></param>
     /// <param name="cancellationToken"></param>
@@ -202,4 +265,20 @@ public static class ResultTaskExtensions
         Func<T> defaultWith,
         CancellationToken? cancellationToken = null) =>
         resultTask.MatchAsync(ok => ok, _ => defaultWith(), cancellationToken);
+
+    /// <summary>
+    /// Returns the value of Result if it is T, otherwise returns the
+    /// specified default value.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TError"></typeparam>
+    /// <param name="result"></param>
+    /// <param name="defaultWith"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    public static Task<T> DefaultWithAsync<T, TError>(
+        this Result<T, TError> result,
+        Func<Task<T>> defaultWith,
+        CancellationToken? cancellationToken = null) =>
+        Task.FromResult(result).DefaultWithAsync(defaultWith, cancellationToken);
 }

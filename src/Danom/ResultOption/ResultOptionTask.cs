@@ -84,6 +84,22 @@ public static class ResultOptionTaskExtensions
         resultOptionTask.MatchAsync(bind, ResultOption<U, TError>.NoneAsync, ResultOption<U, TError>.ErrorAsync, cancellationToken);
 
     /// <summary>
+    /// Evaluates the bind delegate if ResultOption is Ok.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TError"></typeparam>
+    /// <typeparam name="U"></typeparam>
+    /// <param name="resultOption"></param>
+    /// <param name="bind"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    public static Task<ResultOption<U, TError>> BindAsync<T, TError, U>(
+        this ResultOption<T, TError> resultOption,
+        Func<T, Task<ResultOption<U, TError>>> bind,
+        CancellationToken? cancellationToken = null) =>
+        Task.FromResult(resultOption).BindAsync(bind, cancellationToken);
+
+    /// <summary>
     /// Evaluates the map delegate if ResultOption is Ok.
     /// </summary>
     /// <typeparam name="T"></typeparam>
@@ -116,6 +132,22 @@ public static class ResultOptionTaskExtensions
         resultOptionTask.BindAsync(x => ResultOption<U, TError>.OkAsync(map(x)), cancellationToken);
 
     /// <summary>
+    /// Evaluates the map delegate if ResultOption is Ok.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TError"></typeparam>
+    /// <typeparam name="U"></typeparam>
+    /// <param name="resultOption"></param>
+    /// <param name="map"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    public static Task<ResultOption<U, TError>> MapAsync<T, TError, U>(
+        this ResultOption<T, TError> resultOption,
+        Func<T, Task<U>> map,
+        CancellationToken? cancellationToken = null) =>
+        Task.FromResult(resultOption).MapAsync(map, cancellationToken);
+
+    /// <summary>
     /// Returns the value of ResultOption if it is Ok, otherwise return the
     /// specified default value.
     /// </summary>
@@ -137,15 +169,31 @@ public static class ResultOptionTaskExtensions
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TError"></typeparam>
-    /// <param name="resultTask"></param>
+    /// <param name="resultOptionTask"></param>
     /// <param name="defaultValue"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     public static Task<T> DefaultValueAsync<T, TError>(
-        this Task<ResultOption<T, TError>> resultTask,
+        this Task<ResultOption<T, TError>> resultOptionTask,
         Task<T> defaultValue,
         CancellationToken? cancellationToken = null) =>
-        resultTask.MatchAsync(some => Task.FromResult(some), () => defaultValue, _ => defaultValue, cancellationToken);
+        resultOptionTask.MatchAsync(some => Task.FromResult(some), () => defaultValue, _ => defaultValue, cancellationToken);
+
+    /// <summary>
+    /// Returns the value of ResultOption if it is Ok, otherwise evaluate the
+    /// default delegate.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TError"></typeparam>
+    /// <param name="resultOption"></param>
+    /// <param name="defaultValue"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    public static Task<T> DefaultValueAsync<T, TError>(
+        this ResultOption<T, TError> resultOption,
+        Task<T> defaultValue,
+        CancellationToken? cancellationToken = null) =>
+        Task.FromResult(resultOption).DefaultValueAsync(defaultValue, cancellationToken);
 
     /// <summary>
     /// Returns the value of ResultOption if it is Ok, otherwise return the
@@ -178,4 +226,20 @@ public static class ResultOptionTaskExtensions
         Func<T> defaultWith,
         CancellationToken? cancellationToken = null) =>
         resultOptionTask.MatchAsync(ok => ok, defaultWith, _ => defaultWith(), cancellationToken);
+
+    /// <summary>
+    /// Returns the value of ResultOption if it is Ok, otherwise return the
+    /// specified default value.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TError"></typeparam>
+    /// <param name="resultOption"></param>
+    /// <param name="defaultWith"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    public static Task<T> DefaultWithAsync<T, TError>(
+        this ResultOption<T, TError> resultOption,
+        Func<Task<T>> defaultWith,
+        CancellationToken? cancellationToken = null) =>
+        Task.FromResult(resultOption).DefaultWithAsync(defaultWith, cancellationToken);
 }
