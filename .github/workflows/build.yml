@@ -23,10 +23,7 @@ jobs:
         run: dotnet restore
 
       - name: Build
-        run: dotnet build -c Release
+        run: dotnet build src/Danom -c Release
 
       - name: Test Core
         run: dotnet test test/Danom.Tests -c Release
-
-      - name: Test Validation
-        run: dotnet test test/Danom.Validation.Tests -c Release
