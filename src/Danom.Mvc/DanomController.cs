@@ -16,12 +16,20 @@ public class DanomController
     /// <param name="option"></param>
     /// <param name="viewName"></param>
     /// <param name="noneAction"></param>
+    /// <param name="errors"></param>
     /// <returns></returns>
     public IActionResult ViewOption<T>(
         Option<T> option,
         string? viewName = null,
-        Func<IActionResult>? noneAction = null) =>
-        option.Match(
+        Func<IActionResult>? noneAction = null,
+        ResultErrors? errors = null)
+    {
+        if (errors is not null)
+        {
+            ModelState.AddResultErrors(errors);
+        }
+
+        return option.Match(
             some: x =>
             {
                 if (viewName is not null)
@@ -42,6 +50,7 @@ public class DanomController
 
                 return NotFound();
             });
+    }
 
     /// <summary>
     /// Renders the specified view with the specified model, and add the
