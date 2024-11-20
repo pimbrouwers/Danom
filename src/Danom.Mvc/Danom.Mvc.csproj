@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <AssemblyName>Danom.Mvc</AssemblyName>
-    <Version>1.0.0-beta1</Version>
+    <Version>1.0.0</Version>
 
     <!-- General info -->
     <Description>ASP.NET Core MVC helpers for Danom.</Description>
@@ -11,7 +11,7 @@
     <NeutralLanguage>en-CA</NeutralLanguage>
 
     <!-- Build config -->
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <DebugType>embedded</DebugType>
@@ -44,8 +44,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Danom" Version="1.0.0-beta1" />
-    <PackageReference Include="Danom.Validation" Version="1.0.0-beta1" />
+    <PackageReference Include="Danom" Version="1.*" />
+    <PackageReference Include="Danom.Validation" Version="1.*" />
   </ItemGroup>
 
 </Project>
