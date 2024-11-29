@@ -12,10 +12,10 @@ Danom is a C# library that provides (monadic) structures to facilitate durable p
 - Integrated with [ASP.NET Core](#aspnet-core-mvc-integration) and [Fluent Validation](#fluent-validation-integration).
 
 ## Design Goals
-- **Simplicity**: Easy to use API for common monadic operations.
-- **Performance**: Efficient implementation to minimize overhead.
-- **Interoperability**: Seamless integration with existing C# code and libraries.
-- **Durability**: Prevent direct use of internal value, enforcing exhaustive matching.
+- Easy to use API for common monadic operations.
+- Efficient implementation to minimize overhead.
+- Seamless integration with existing C# code and libraries.
+- Prevent direct use of internal value, enforcing exhaustive matching.
 
 ## Getting Started
 
@@ -35,15 +35,17 @@ dotnet add package Danom
 ```csharp
 using Danom;
 
-// Create an Option
+// Working with Option type
 var option = Option<int>.Some(5);
 
 option.Match(
     some: x => Console.WriteLine("Value: {0}", x),
     none: () => Console.WriteLine("No value"));
 
-// Create a Result
-public Result<int, string> TryDivide(int numerator, int denominator) =>
+// Working with Result type
+public Result<int, string> TryDivide(
+    int numerator,
+    int denominator) =>
     denominator == 0
         ? Result<int, string>.Error("Cannot divide by zero")
         : Result<int, string>.Ok(numerator / denominator);
@@ -56,12 +58,15 @@ TryDivide(10, 2)
 
 ## Option
 
-Represents when an actual value might not exist for a value or named variable. An option has an underlying type and can hold a value of that type, or it might not have a value. Options are a fantastic means of reducing primitive congestion in your code, and they are a much safer way to handle null values and virutally eliminate null reference exceptions.
+Options have an underlying type and can "optionallu" hold a value of that type. Options are a much safer way to handle nullable values, they virtually eliminate null reference exceptions, and a fantastic means of reducing primitive congestion in your code.
 
 ### Creating Options
 
 ```csharp
 var option = Option<int>.Some(5);
+
+// or, with type inference
+var optionInferred = Option.Some(5);
 
 // or, with no value
 var optionNone = Option<int>.None();
@@ -72,7 +77,7 @@ var optionNull = Option<object>.Some(default!);
 
 ### Using Option
 
-Options are commonly used when a operation might not return a value. For example:
+Options are commonly used when a operation might not return a value. For example, the method below tries to find a number in a list that satisfies a predicate. If the number is found, it is returned as a `Some`, otherwise, `None` is returned.
 
 ```csharp
 public Option<int> TryFind(IEnumerable<int> numbers, Func<int, bool> predicate) =>
@@ -122,16 +127,19 @@ Option<int> optionOrElseWith =
 
 ## Result
 
-Represents the result of an operation that can either succeed or fail. These results can be chained together allowing you to form error-tolerant pipelines. This lets you break up functionality like this into small pieces which are as composable as you need them to be. Also benefiting from the exhaustive matching.
+Results are used to represent a success or failure outcome. They provide a more concrete way to manage the expected errors of an operation, then throwing exceptions. Especially in recoverable or reportable scenarios.
 
 ### Creating Results
 
 ```csharp
 var result = Result<int, string>.Ok(5);
+
 // or, with an error
 var resultError = Result<int, string>.Error("An error occurred");
+
 // or, using the built-in Error type
 var resultErrors = Result<int>.Ok(5);
+
 var resultErrorsError = Result<int>.Error("An error occurred");
 var resultErrorsMultiError = Result<int>.Error(["An error occurred", "Another error occurred"]);
 var resultErrorsTyped = Result<int>.Error(new ResultErrors("error-key", "An error occurred"));
@@ -139,7 +147,7 @@ var resultErrorsTyped = Result<int>.Error(new ResultErrors("error-key", "An erro
 
 ### Using Results
 
-Results are commonly used when an operation might not succeed, and you want to manage the _expected_ errors. For example:
+Results are commonly used when an operation might not succeed, and you want to manage or report back the _expected_ errors. For example:
 
 ```csharp
 public Result<int, string> TryDivide(int numerator, int denominator) =>
@@ -189,13 +197,20 @@ Result<int, string> resultOrElseWith =
             Result<int, string>.Ok(99)); // useful if creating the value is expensive
 ```
 
-Since error messages are frequently represented as string collections, often with keys (e.g., for validation), the `ResultErrors` type is provided to simplify Result creation. The flexible constructor allows errors to be initialized with a single string, a collection of strings, or a key-value pair.
+Since error messages are frequently represented as keyed string collections, the `ResultErrors` type is provided to simplify Result creation. The flexible constructor allows errors to be initialized with a single string, a collection of strings, or a key-value pair.
 
 ```csharp
-Result<int, ResultErrors> resultErrors = Result<int>.Ok(5);
-Result<int, ResultErrors> resultErrorsError = Result<int>.Error("An error occurred");
-Result<int, ResultErrors> resultErrorsMultiError = Result<int>.Error(["An error occurred", "Another error occurred"]);
-Result<int, ResultErrors> resultErrorsTyped = Result<int>.Error(new ResultErrors("error-key", "An error occurred"));
+var resultErrors =
+    Result<int>.Ok(5);
+
+var resultErrorsError =
+    Result<int>.Error("An error occurred");
+
+var resultErrorsMultiError =
+    Result<int>.Error(["An error occurred", "Another error occurred"]);
+
+var resultErrorsTyped =
+    Result<int>.Error(new ResultErrors("error-key", "An error occurred"));
 ```
 
 ## ResultOption
@@ -206,8 +221,10 @@ Represents a combination of the Result and Option monads. This is useful when yo
 
 ```csharp
 var resultOption = ResultOption<int, string>.Ok(5);
+
 // or, with an error
 var resultOptionError = ResultOption<int, string>.Error("An error occurred");
+
 // or, with no value
 var resultOptionNone = ResultOption<int, string>.None();
 ```
@@ -250,6 +267,10 @@ Documentation can be found [here](src/Danom.Validation/README.md).
 Danom is integrated with [ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/?view=aspnetcore-5.0) to provide a set of utilities to help integrate the Danom library with common tasks in ASP.NET Core MVC applications.
 
 Documentation can be found [here](src/Danom.Mvc/README.md).
+
+### ASP.NET Core Minimal API Integration
+
+> Coming soon
 
 ## Contribute
 
