@@ -58,7 +58,7 @@ TryDivide(10, 2)
 
 ## Option
 
-Options have an underlying type and can "optionallu" hold a value of that type. Options are a much safer way to handle nullable values, they virtually eliminate null reference exceptions, and a fantastic means of reducing primitive congestion in your code.
+Options have an underlying type and can "optionally" hold a value of that type. Options are a much safer way to handle nullable values, they virtually eliminate null reference exceptions, and a fantastic means of reducing primitive congestion in your code.
 
 ### Creating Options
 
