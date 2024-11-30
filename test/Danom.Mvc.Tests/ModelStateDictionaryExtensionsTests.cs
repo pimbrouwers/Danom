@@ -2,7 +2,6 @@ namespace Danom.Mvc.Tests;
 
 using Xunit;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Danom.TestHelpers;
 
 internal static class ModelStateDictionaryExtensions
 {
