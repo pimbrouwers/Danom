@@ -314,7 +314,7 @@ public static class OptionTaskExtensions
         (await x.WaitOrCancel(cancellationToken)).ToOption();
 
     /// <summary>
-    /// Converts a nullable strct to an option.
+    /// Converts a nullable strict to an option.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="x"></param>

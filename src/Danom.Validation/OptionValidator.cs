@@ -19,13 +19,13 @@ internal static partial class ValidationHelpers
             validationResult.Errors.ForEach(e =>
                 context.AddFailure(
                     propertyName: context.DisplayName,
-                    errorMessage: ValidationHelpers.ReplaceMissingDisplayName(e.ErrorMessage, quotedDisplayName)));
+                    errorMessage: ReplaceMissingDisplayName(e.ErrorMessage, quotedDisplayName)));
         }
 
         return validationResult.IsValid;
     }
 
-    static string ReplaceMissingDisplayName(string errorMessage, string properDisplayName) =>
+    private static string ReplaceMissingDisplayName(string errorMessage, string properDisplayName) =>
         QuotedDisplayNameRegex().Replace(errorMessage, properDisplayName);
 
     [GeneratedRegex(@"''")]

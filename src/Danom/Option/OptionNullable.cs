@@ -16,7 +16,7 @@ public static class OptionNullableExtensions
         x is not null && (!Equals(x, default(T))) ? Option<T>.Some(x) : Option<T>.None();
 
     /// <summary>
-    /// Converts a nullable strct to an option.
+    /// Converts a nullable strict to an option.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="x"></param>
