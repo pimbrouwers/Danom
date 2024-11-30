@@ -58,7 +58,7 @@ TryDivide(10, 2)
 
 ## Option
 
-Options have an underlying type and can "optionallu" hold a value of that type. Options are a much safer way to handle nullable values, they virtually eliminate null reference exceptions, and a fantastic means of reducing primitive congestion in your code.
+Options have an underlying type and can optionally hold a value of that type. Options are a much safer way to handle nullable values, they virtually eliminate null reference exceptions, and a fantastic means of reducing primitive congestion in your code.
 
 ### Creating Options
 
@@ -89,7 +89,7 @@ With this method defined we can begin performing operations against the Option r
 ```csharp
 IEnumerable<int> nums = [1,2,3];
 
-// Exhasutive matching
+// Exhaustive matching
 TryFind(nums, x => x == 1)
     .Match(
         some: x => Console.WriteLine("Found: {0}", x),
@@ -159,7 +159,7 @@ public Result<int, string> TryDivide(int numerator, int denominator) =>
 With this method defined we can begin performing operations against the Result result:
 
 ```csharp
-// Exhasutive matching
+// Exhaustive matching
 TryDivide(10, 2)
     .Match(
         ok: x => Console.WriteLine("Result: {0}", x),
