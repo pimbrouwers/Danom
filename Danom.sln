@@ -1,0 +1,64 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{606C9E49-7696-48B1-A799-B456E680C9F0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Danom", "src\Danom\Danom.csproj", "{2E1327A1-9244-49BA-BC31-9CCE3CE2335C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{624FD20E-2393-4198-8DC9-AB02DCC12338}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Danom.Tests", "test\Danom.Tests\Danom.Tests.csproj", "{C364C599-3120-44EF-9D7C-81EF68072FB7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Danom.Validation", "src\Danom.Validation\Danom.Validation.csproj", "{6D32D457-228C-46BA-B94A-9FB4206BE460}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Danom.Validation.Tests", "test\Danom.Validation.Tests\Danom.Validation.Tests.csproj", "{A30031C7-1B82-4DFF-BEE7-31BE90BAC74A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Danom.Mvc", "src\Danom.Mvc\Danom.Mvc.csproj", "{C34292FD-E8B7-4214-9844-A653746C1AFF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Danom.Mvc.Tests", "test\Danom.Mvc.Tests\Danom.Mvc.Tests.csproj", "{EF188F59-5C11-4BAA-A965-56C08C370C84}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2E1327A1-9244-49BA-BC31-9CCE3CE2335C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E1327A1-9244-49BA-BC31-9CCE3CE2335C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E1327A1-9244-49BA-BC31-9CCE3CE2335C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E1327A1-9244-49BA-BC31-9CCE3CE2335C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C364C599-3120-44EF-9D7C-81EF68072FB7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C364C599-3120-44EF-9D7C-81EF68072FB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C364C599-3120-44EF-9D7C-81EF68072FB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C364C599-3120-44EF-9D7C-81EF68072FB7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6D32D457-228C-46BA-B94A-9FB4206BE460}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D32D457-228C-46BA-B94A-9FB4206BE460}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D32D457-228C-46BA-B94A-9FB4206BE460}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D32D457-228C-46BA-B94A-9FB4206BE460}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A30031C7-1B82-4DFF-BEE7-31BE90BAC74A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A30031C7-1B82-4DFF-BEE7-31BE90BAC74A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A30031C7-1B82-4DFF-BEE7-31BE90BAC74A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A30031C7-1B82-4DFF-BEE7-31BE90BAC74A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C34292FD-E8B7-4214-9844-A653746C1AFF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C34292FD-E8B7-4214-9844-A653746C1AFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C34292FD-E8B7-4214-9844-A653746C1AFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C34292FD-E8B7-4214-9844-A653746C1AFF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EF188F59-5C11-4BAA-A965-56C08C370C84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF188F59-5C11-4BAA-A965-56C08C370C84}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EF188F59-5C11-4BAA-A965-56C08C370C84}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EF188F59-5C11-4BAA-A965-56C08C370C84}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{2E1327A1-9244-49BA-BC31-9CCE3CE2335C} = {606C9E49-7696-48B1-A799-B456E680C9F0}
+		{C364C599-3120-44EF-9D7C-81EF68072FB7} = {624FD20E-2393-4198-8DC9-AB02DCC12338}
+		{6D32D457-228C-46BA-B94A-9FB4206BE460} = {606C9E49-7696-48B1-A799-B456E680C9F0}
+		{A30031C7-1B82-4DFF-BEE7-31BE90BAC74A} = {624FD20E-2393-4198-8DC9-AB02DCC12338}
+		{C34292FD-E8B7-4214-9844-A653746C1AFF} = {606C9E49-7696-48B1-A799-B456E680C9F0}
+		{EF188F59-5C11-4BAA-A965-56C08C370C84} = {624FD20E-2393-4198-8DC9-AB02DCC12338}
+	EndGlobalSection
+EndGlobal

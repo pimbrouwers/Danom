@@ -6,7 +6,7 @@ using Danom.TestHelpers;
 public sealed class OptionNullableExtensionsTests
 {
     [Fact]
-    public void ConversionsShouldWork()
+    public void Conversions()
     {
         char? nullableChar = null;
         bool? nullableBool = null;

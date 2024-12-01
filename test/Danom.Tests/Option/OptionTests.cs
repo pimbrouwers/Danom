@@ -1,12 +1,13 @@
 namespace Danom.Tests;
 
+using System.Globalization;
 using Xunit;
 using Danom.TestHelpers;
 
 public sealed class OptionTests
 {
     [Fact]
-    public void SomeShouldWork()
+    public void Some()
     {
         var option = Option<int>.Some(1);
         AssertOption.IsSome(option);
@@ -15,7 +16,7 @@ public sealed class OptionTests
     }
 
     [Fact]
-    public async Task SomeAsyncFromValueShouldWork()
+    public async Task SomeAsyncFromValue()
     {
         var option = await Option<int>.SomeAsync(1);
         AssertOption.IsSome(option);
@@ -24,7 +25,7 @@ public sealed class OptionTests
     }
 
     [Fact]
-    public async Task SomeAsyncFromTaskShouldWork()
+    public async Task SomeAsyncFromTask()
     {
         var option = await Option<int>.SomeAsync(Task<int>.Factory.StartNew(() => 1));
         AssertOption.IsSome(option);
@@ -32,7 +33,25 @@ public sealed class OptionTests
     }
 
     [Fact]
-    public async Task NoneAsyncShouldWork()
+    public async Task SomeInferred()
+    {
+        var option = Option.Some(1);
+        AssertOption.IsSome(option);
+        Assert.False(option.IsNone);
+        Assert.Equal("Some(1)", option.ToString());
+
+        var optionAsync = await Option.SomeAsync(1);
+        AssertOption.IsSome(option);
+        Assert.False(option.IsNone);
+        Assert.Equal("Some(1)", option.ToString());
+
+        var optionTask = await Option.SomeAsync(Task<int>.Factory.StartNew(() => 1));
+        AssertOption.IsSome(option);
+        Assert.False(option.IsNone);
+    }
+
+    [Fact]
+    public async Task NoneAsync()
     {
         var option = await Option<int>.NoneAsync();
         AssertOption.IsNone(option);
@@ -40,7 +59,7 @@ public sealed class OptionTests
     }
 
     [Fact]
-    public void NoneShouldWork()
+    public void None()
     {
         var option = Option<int>.None();
         AssertOption.IsNone(option);
@@ -57,7 +76,7 @@ public sealed class OptionTests
     }
 
     [Fact]
-    public void MatchShouldWork()
+    public void Match()
     {
         Assert.Equal(1,
             Option<int>.Some(1)
@@ -69,7 +88,7 @@ public sealed class OptionTests
     }
 
     [Fact]
-    public void MatchActionShouldWork()
+    public void MatchAction()
     {
         var some = Option<int>.Some(1);
         var none = Option<int>.None();
@@ -84,49 +103,67 @@ public sealed class OptionTests
     }
 
     [Fact]
-    public void BindShouldWork()
+    public void Bind()
     {
         AssertOption.IsSome(2, Option<int>.Some(1).Bind(x => Option<int>.Some(x + 1)));
         AssertOption.IsNone(Option<int>.None().Bind(x => Option<int>.Some(x + 1)));
     }
 
     [Fact]
-    public void MapShouldWork()
+    public void Map()
     {
         AssertOption.IsSome(2, Option<int>.Some(1).Map(x => x + 1));
         AssertOption.IsNone(Option<int>.None().Map(x => x + 1));
     }
 
     [Fact]
-    public void DefaultValueShouldWork()
+    public void DefaultValue()
     {
         Assert.Equal(1, Option<int>.None().DefaultValue(1));
         Assert.Equal(2, Option<int>.Some(2).DefaultValue(1));
     }
 
     [Fact]
-    public void DefaultWithShouldWork()
+    public void DefaultWith()
     {
         Assert.Equal(1, Option<int>.None().DefaultWith(() => 1));
         Assert.Equal(2, Option<int>.Some(2).DefaultWith(() => 1));
     }
 
     [Fact]
-    public void OrElseShouldWork()
+    public void OrElse()
     {
         AssertOption.IsSome(1, Option<int>.None().OrElse(Option<int>.Some(1)));
         AssertOption.IsSome(2, Option<int>.Some(2).OrElse(Option<int>.Some(1)));
     }
 
     [Fact]
-    public void OrElseWithShouldWork()
+    public void OrElseWith()
     {
         AssertOption.IsSome(1, Option<int>.None().OrElseWith(() => Option<int>.Some(1)));
         AssertOption.IsSome(2, Option<int>.Some(2).OrElseWith(() => Option<int>.Some(1)));
     }
 
     [Fact]
-    public void EqualityShouldWork()
+    public void TryGet()
+    {
+        if (Option<int>.Some(1).TryGet(out var x))
+        {
+            Assert.Equal(1, x);
+        }
+        else
+        {
+            Assert.Fail("Failed to TryGet Some(x)");
+        }
+
+        if (Option<int>.None().TryGet(out var y))
+        {
+            Assert.Fail("Should not succeed, value is None");
+        }
+    }
+
+    [Fact]
+    public void Equality()
     {
         Assert.Equal(Option<int>.None(), Option<int>.None());
         Assert.Equal(Option<int>.Some(1), Option<int>.Some(1));
@@ -141,7 +178,7 @@ public sealed class OptionTests
     }
 
     [Fact]
-    public void EqualityOperatorShouldWork()
+    public void EqualityOperator()
     {
         Assert.True(Option<int>.None() == Option<int>.None());
         Assert.True(Option<int>.Some(1) == Option<int>.Some(1));
@@ -150,11 +187,22 @@ public sealed class OptionTests
     }
 
     [Fact]
-    public void InequalityOperatorShouldWork()
+    public void InequalityOperator()
     {
         Assert.False(Option<int>.None() != Option<int>.None());
         Assert.False(Option<int>.Some(1) != Option<int>.Some(1));
         Assert.True(Option<int>.Some(1) != Option<int>.Some(2));
         Assert.True(Option<int>.Some(1) != Option<int>.None());
+    }
+
+    [Fact]
+    public void ToStringDefaultOrFormat()
+    {
+        Assert.Equal("1", Option<int>.Some(1).ToString("0"));
+        Assert.Equal("0", Option<int>.None().ToString("0"));
+
+        Assert.Equal("$1.99", Option<decimal>.Some(1.9878565765675M).ToString("0", "C2"));
+
+        Assert.Equal("£1.99", Option<decimal>.Some(1.9878565765675M).ToString("0", "C2", CultureInfo.CreateSpecificCulture("en-GB")));
     }
 }

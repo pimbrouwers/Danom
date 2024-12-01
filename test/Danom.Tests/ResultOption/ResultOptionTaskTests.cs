@@ -6,7 +6,7 @@ using Danom.TestHelpers;
 public sealed class ResultOptionTaskTests
 {
     [Fact]
-    public async Task MatchShouldWork()
+    public async Task Match()
     {
         var resultOk = await ResultOption<int, string>.OkAsync(1).MatchAsync(x => x, () => -1, _ => -1);
         Assert.Equal(1, resultOk);
@@ -16,7 +16,7 @@ public sealed class ResultOptionTaskTests
     }
 
     [Fact]
-    public async Task BindShouldWork()
+    public async Task Bind()
     {
         AssertResultOption.IsOk(2, await ResultOption<int, string>.OkAsync(1).BindAsync(x => ResultOption<int, string>.Ok(x + 1)));
         AssertResultOption.IsOk(2, await ResultOption<int, string>.OkAsync(1).BindAsync(x => ResultOption<int, string>.OkAsync(x + 1)));
@@ -25,7 +25,7 @@ public sealed class ResultOptionTaskTests
     }
 
     [Fact]
-    public async Task MapShouldWork()
+    public async Task Map()
     {
         AssertResultOption.IsOk(2, await ResultOption<int, string>.OkAsync(1).MapAsync(x => x + 1));
         AssertResultOption.IsOk(2, await ResultOption<int, string>.OkAsync(1).MapAsync(x => Task.FromResult(x + 1)));
@@ -34,7 +34,7 @@ public sealed class ResultOptionTaskTests
     }
 
     [Fact]
-    public async Task DefaultValueShouldWork()
+    public async Task DefaultValue()
     {
         Assert.Equal(1, await ResultOption<int, string>.ErrorAsync("Error").DefaultValueAsync(1));
         Assert.Equal(1, await ResultOption<int, string>.ErrorAsync("Error").DefaultValueAsync(Task.FromResult(1)));
@@ -43,7 +43,7 @@ public sealed class ResultOptionTaskTests
     }
 
     [Fact]
-    public async Task DefaultWithShouldWork()
+    public async Task DefaultWith()
     {
         Assert.Equal(1, await ResultOption<int, string>.ErrorAsync("Error").DefaultWithAsync(() => 1));
         Assert.Equal(1, await ResultOption<int, string>.ErrorAsync("Error").DefaultWithAsync(() => Task.FromResult(1)));

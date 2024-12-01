@@ -6,7 +6,7 @@ using Danom.TestHelpers;
 public sealed class ResultOptionTests
 {
     [Fact]
-    public void OkShouldWork()
+    public void Ok()
     {
         var result = ResultOption<int, string>.Ok(1);
         AssertResultOption.IsOk(result);
@@ -16,7 +16,7 @@ public sealed class ResultOptionTests
     }
 
     [Fact]
-    public async Task OkAsyncFromValueShouldWork()
+    public async Task OkAsyncFromValue()
     {
         var result = await ResultOption<int, string>.OkAsync(1);
         AssertResultOption.IsOk(result);
@@ -26,7 +26,7 @@ public sealed class ResultOptionTests
     }
 
     [Fact]
-    public async Task OkAsyncFromTaskShouldWork()
+    public async Task OkAsyncFromTask()
     {
         var result = await ResultOption<int, string>.OkAsync(Task<int>.Factory.StartNew(() => 1));
         AssertResultOption.IsOk(result);
@@ -36,7 +36,7 @@ public sealed class ResultOptionTests
     }
 
     [Fact]
-    public void NoneShouldWork()
+    public void None()
     {
         var result = ResultOption<int, string>.None();
         AssertResultOption.IsNone(result);
@@ -46,7 +46,7 @@ public sealed class ResultOptionTests
     }
 
     [Fact]
-    public async Task NoneAsyncShouldWork()
+    public async Task NoneAsync()
     {
         var result = await ResultOption<int, string>.NoneAsync();
         AssertResultOption.IsNone(result);
@@ -56,7 +56,7 @@ public sealed class ResultOptionTests
     }
 
     [Fact]
-    public void ErrorShouldWork()
+    public void Error()
     {
         var result = ResultOption<int, string>.Error("Error");
         AssertResultOption.IsError(result);
@@ -65,7 +65,7 @@ public sealed class ResultOptionTests
     }
 
     [Fact]
-    public async Task ErrorAsyncShouldWork()
+    public async Task ErrorAsync()
     {
         var result = await ResultOption<int, string>.ErrorAsync("Error");
         AssertResultOption.IsError(result);
@@ -74,7 +74,7 @@ public sealed class ResultOptionTests
     }
 
     [Fact]
-    public void MatchShouldWork()
+    public void Match()
     {
         Assert.Equal(1,
             ResultOption<int, string>.Ok(1)
@@ -86,7 +86,7 @@ public sealed class ResultOptionTests
     }
 
     [Fact]
-    public void MatchActionShouldWork()
+    public void MatchAction()
     {
         var ok = 0;
         var error = 0;
@@ -102,28 +102,28 @@ public sealed class ResultOptionTests
     }
 
     [Fact]
-    public void BindShouldWork()
+    public void Bind()
     {
         AssertResultOption.IsOk(2, ResultOption<int, string>.Ok(1).Bind(x => ResultOption<int, string>.Ok(x + 1)));
         AssertResultOption.IsError(ResultOption<int, string>.Error("Error").Bind(x => ResultOption<int, string>.Ok(x + 1)));
     }
 
     [Fact]
-    public void MapShouldWork()
+    public void Map()
     {
         AssertResultOption.IsOk(2, ResultOption<int, string>.Ok(1).Map(x => x + 1));
         AssertResultOption.IsError(ResultOption<int, string>.Error("Error").Map(x => x + 1));
     }
 
     [Fact]
-    public void DefaultValueShouldWork()
+    public void DefaultValue()
     {
         Assert.Equal(1, ResultOption<int, string>.Error("Error").DefaultValue(1));
         Assert.Equal(2, ResultOption<int, string>.Ok(2).DefaultValue(1));
     }
 
     [Fact]
-    public void DefaultWithShouldWork()
+    public void DefaultWith()
     {
         Assert.Equal(1, ResultOption<int, string>.Error("Error").DefaultWith(() => 1));
         Assert.Equal(2, ResultOption<int, string>.Ok(2).DefaultWith(() => 1));
@@ -131,7 +131,7 @@ public sealed class ResultOptionTests
 
 
     [Fact]
-    public void EqualityShouldWork()
+    public void Equality()
     {
         Assert.Equal(ResultOption<int, string>.None(), ResultOption<int, string>.None());
         Assert.Equal(ResultOption<int,string>.Error("Error"), ResultOption<int,string>.Error("Error"));
@@ -141,7 +141,7 @@ public sealed class ResultOptionTests
     }
 
     [Fact]
-    public void EqualityOperatorShouldWork()
+    public void EqualityOperator()
     {
         Assert.True(ResultOption<int, string>.None() == ResultOption<int, string>.None());
         Assert.True(ResultOption<int,string>.Error("Error") == ResultOption<int,string>.Error("Error"));
@@ -151,7 +151,7 @@ public sealed class ResultOptionTests
     }
 
     [Fact]
-    public void InequalityOperatorShouldWork()
+    public void InequalityOperator()
     {
         Assert.False(ResultOption<int, string>.None() != ResultOption<int, string>.None());
         Assert.False(ResultOption<int,string>.Error("Error") != ResultOption<int,string>.Error("Error"));

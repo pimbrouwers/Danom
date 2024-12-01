@@ -23,7 +23,7 @@ internal static class ModelStateDictionaryExtensions
 public sealed class ModelStateDictionaryExtensionsTests
 {
     [Fact]
-    public void AddResultErrorsShouldWork()
+    public void AddResultErrors()
     {
         var modelState = new ModelStateDictionary();
         var errors = new ResultErrors("Key1", "Error1");

@@ -6,7 +6,7 @@ using Danom.TestHelpers;
 public sealed class ResultTests
 {
     [Fact]
-    public void OkShouldWork()
+    public void Ok()
     {
         var result = Result<int, string>.Ok(1);
         AssertResult.IsOk(result);
@@ -15,7 +15,7 @@ public sealed class ResultTests
     }
 
     [Fact]
-    public async Task OkAsyncFromValueShouldWork()
+    public async Task OkAsyncFromValue()
     {
         var result = await Result<int, string>.OkAsync(1);
         AssertResult.IsOk(result);
@@ -24,7 +24,7 @@ public sealed class ResultTests
     }
 
     [Fact]
-    public async Task OkAsyncFromTaskShouldWork()
+    public async Task OkAsyncFromTask()
     {
         var result = await Result<int, string>.OkAsync(Task<int>.Factory.StartNew(() => 1));
         AssertResult.IsOk(result);
@@ -33,7 +33,7 @@ public sealed class ResultTests
     }
 
     [Fact]
-    public async Task ErrorAsyncShouldWork()
+    public async Task ErrorAsync()
     {
         var result = await Result<int, string>.ErrorAsync("Error");
         AssertResult.IsError(result);
@@ -42,7 +42,7 @@ public sealed class ResultTests
     }
 
     [Fact]
-    public void ErrorShouldWork()
+    public void Error()
     {
         var result = Result<int, string>.Error("Error");
         AssertResult.IsError(result);
@@ -51,7 +51,7 @@ public sealed class ResultTests
     }
 
     [Fact]
-    public void MatchShouldWork()
+    public void Match()
     {
         Assert.Equal(1,
             Result<int, string>.Ok(1)
@@ -63,7 +63,7 @@ public sealed class ResultTests
     }
 
     [Fact]
-    public void MatchActionShouldWork()
+    public void MatchAction()
     {
         var ok = false;
         var error = false;
@@ -85,35 +85,35 @@ public sealed class ResultTests
     }
 
     [Fact]
-    public void BindShouldWork()
+    public void Bind()
     {
         AssertResult.IsOk(2, Result<int, string>.Ok(1).Bind(x => Result<int, string>.Ok(x + 1)));
         AssertResult.IsError(Result<int, string>.Error("Error").Bind(x => Result<int, string>.Ok(x + 1)));
     }
 
     [Fact]
-    public void MapShouldWork()
+    public void Map()
     {
         AssertResult.IsOk(2, Result<int, string>.Ok(1).Map(x => x + 1));
         AssertResult.IsError(Result<int, string>.Error("Error").Map(x => x + 1));
     }
 
     [Fact]
-    public void DefaultValueShouldWork()
+    public void DefaultValue()
     {
         Assert.Equal(1, Result<int, string>.Error("Error").DefaultValue(1));
         Assert.Equal(2, Result<int, string>.Ok(2).DefaultValue(1));
     }
 
     [Fact]
-    public void DefaultWithShouldWork()
+    public void DefaultWith()
     {
         Assert.Equal(1, Result<int, string>.Error("Error").DefaultWith(() => 1));
         Assert.Equal(2, Result<int, string>.Ok(2).DefaultWith(() => 1));
     }
 
     [Fact]
-    public void EqualityShouldWork()
+    public void Equality()
     {
         Assert.Equal(Result<int,string>.Error("Error"), Result<int,string>.Error("Error"));
         Assert.Equal(Result<int,string>.Ok(1), Result<int,string>.Ok(1));
@@ -122,7 +122,7 @@ public sealed class ResultTests
     }
 
     [Fact]
-    public void EqualityOperatorShouldWork()
+    public void EqualityOperator()
     {
         Assert.True(Result<int,string>.Error("Error") == Result<int,string>.Error("Error"));
         Assert.True(Result<int,string>.Ok(1) == Result<int,string>.Ok(1));
@@ -131,7 +131,7 @@ public sealed class ResultTests
     }
 
     [Fact]
-    public void InequalityOperatorShouldWork()
+    public void InequalityOperator()
     {
         Assert.False(Result<int,string>.Error("Error") != Result<int,string>.Error("Error"));
         Assert.False(Result<int,string>.Ok(1) != Result<int,string>.Ok(1));

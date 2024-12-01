@@ -6,7 +6,7 @@ using Danom.TestHelpers;
 public sealed class OptionAsyncTests
 {
     [Fact]
-    public async Task MatchShouldWork()
+    public async Task Match()
     {
         var optionSome = await Option<int>.SomeAsync(1).MatchAsync(x => x, () => -1);
         Assert.Equal(1, optionSome);
@@ -16,7 +16,7 @@ public sealed class OptionAsyncTests
     }
 
     [Fact]
-    public async Task BindShouldWork()
+    public async Task Bind()
     {
         AssertOption.IsSome(2, await Option<int>.SomeAsync(1).BindAsync(x => Option<int>.Some(x + 1)));
         AssertOption.IsSome(2, await Option<int>.SomeAsync(1).BindAsync(x => Option<int>.SomeAsync(x + 1)));
@@ -25,7 +25,7 @@ public sealed class OptionAsyncTests
     }
 
     [Fact]
-    public async Task MapShouldWork()
+    public async Task Map()
     {
         AssertOption.IsSome(2, await Option<int>.SomeAsync(1).MapAsync(x => x + 1));
         AssertOption.IsSome(2, await Option<int>.SomeAsync(1).MapAsync(x => Task.FromResult(x + 1)));
@@ -34,7 +34,7 @@ public sealed class OptionAsyncTests
     }
 
     [Fact]
-    public async Task DefaultValueShouldWork()
+    public async Task DefaultValue()
     {
         Assert.Equal(1, await Option<int>.NoneAsync().DefaultValueAsync(1));
         Assert.Equal(1, await Option<int>.NoneAsync().DefaultValueAsync(Task.FromResult(1)));
@@ -43,7 +43,7 @@ public sealed class OptionAsyncTests
     }
 
     [Fact]
-    public async Task DefaultWithShouldWork()
+    public async Task DefaultWith()
     {
         Assert.Equal(1, await Option<int>.NoneAsync().DefaultWithAsync(() => 1));
         Assert.Equal(1, await Option<int>.NoneAsync().DefaultWithAsync(() => Task.FromResult(1)));
@@ -52,7 +52,7 @@ public sealed class OptionAsyncTests
     }
 
     [Fact]
-    public async Task OrElseShouldWork()
+    public async Task OrElse()
     {
         AssertOption.IsSome(1, await Option<int>.NoneAsync().OrElseAsync(Option<int>.Some(1)));
         AssertOption.IsSome(1, await Option<int>.NoneAsync().OrElseAsync(Option<int>.SomeAsync(1)));
@@ -61,7 +61,7 @@ public sealed class OptionAsyncTests
     }
 
     [Fact]
-    public async Task OrElseWithShouldWork()
+    public async Task OrElseWith()
     {
         AssertOption.IsSome(1, await Option<int>.NoneAsync().OrElseWithAsync(() => Option<int>.Some(1)));
         AssertOption.IsSome(1, await Option<int>.NoneAsync().OrElseWithAsync(() => Option<int>.SomeAsync(1)));

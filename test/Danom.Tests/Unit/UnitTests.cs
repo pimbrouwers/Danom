@@ -6,7 +6,7 @@ using Danom.TestHelpers;
 public sealed class UnitTests
 {
     [Fact]
-    public void EqualityShouldWork()
+    public void Equality()
     {
         Assert.Equal(Unit.Value, Unit.Value);
     }
@@ -24,7 +24,7 @@ public sealed class UnitTests
     }
 
     [Fact]
-    public void EqualityOperatorShouldWork()
+    public void EqualityOperator()
     {
 #pragma warning disable CS1718 // Comparison made to same variable
         Assert.True(Unit.Value == Unit.Value);
@@ -32,7 +32,7 @@ public sealed class UnitTests
     }
 
     [Fact]
-    public void InequalityOperatorShouldWork()
+    public void InequalityOperator()
     {
 #pragma warning disable CS1718 // Comparison made to same variable
         Assert.False(Unit.Value != Unit.Value);

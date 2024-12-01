@@ -115,6 +115,22 @@ public readonly struct Option<T>
         Func<Option<T>> ifNoneWith) =>
         Match(Option<T>.Some, ifNoneWith);
 
+    /// <summary>
+    /// Safely retrieve the value using procedural code.
+    /// </summary>
+    /// <param name="result"></param>
+    /// <returns></returns>
+    public bool TryGet(out T result)
+    {
+        var success = true;
+        result = DefaultWith(() =>
+        {
+            success = false;
+            // we return this only to satisfy the compiler
+            return default!;
+        });
+        return success;
+    }
 
     /// <summary>
     /// Creates a new <see cref="Option{T}"/> with the specified value.
@@ -214,6 +230,28 @@ public readonly struct Option<T>
         Match(
             some: x => $"Some({x})",
             none: () => "None");
+
+    /// <summary>
+    /// Returns the string representation of the <see cref="Option{T}"/> or the
+    /// provided default value.
+    ///
+    /// If format string and/or provider are provided, they are passed into
+    /// the objects `ToString` method.
+    /// </summary>
+    /// <param name="defaultValue"></param>
+    /// <param name="format"></param>
+    /// <param name="provider"></param>
+    /// <returns></returns>
+    public string ToString(
+        string defaultValue,
+        string? format = null,
+        IFormatProvider? provider = null) =>
+        Match(
+            some: x =>
+            x is IFormattable f ?
+                f!.ToString(format, provider) :
+                x!.ToString(),
+            none: () => defaultValue) ?? string.Empty;
 }
 
 /// <summary>
@@ -222,7 +260,8 @@ public readonly struct Option<T>
 public static class Option
 {
     /// <summary>
-    /// Creates a new <see cref="Option{T}"/> with the specified value.
+    /// Creates a new <see cref="Option{T}"/> with the specified value, with its
+    /// type provided via method invocation. Enables `Option.Some(1)` syntax.
     /// </summary>
     /// <param name="value"></param>
     /// <returns></returns>
@@ -235,7 +274,7 @@ public static class Option
     /// <param name="value"></param>
     /// <returns></returns>
     public static Task<Option<T>> SomeAsync<T>(T value) =>
-        Task.FromResult(Some(value));
+        Task.FromResult(Option<T>.Some(value));
 
     /// <summary>
     /// Creates a new <see cref="Option{T}"/> with the value of the awaited Task.
@@ -243,5 +282,5 @@ public static class Option
     /// <param name="value"></param>
     /// <returns></returns>
     public static async Task<Option<T>> SomeAsync<T>(Task<T> value) =>
-        Some(await value);
+        Option<T>.Some(await value);
 }
