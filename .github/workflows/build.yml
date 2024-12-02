@@ -19,7 +19,7 @@ jobs:
         with:
           dotnet-version: ${{ matrix.dotnet-version }}
 
-      - name: Install dependencies
+      - name: Install solution dependencies
         run: dotnet restore
 
       - name: Build Core
