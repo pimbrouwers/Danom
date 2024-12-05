@@ -152,16 +152,36 @@ public readonly struct Option<T>
     /// Creates a new <see cref="Option{T}"/> with the value of the awaited Task.
     /// </summary>
     /// <param name="value"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public static async Task<Option<T>> SomeAsync(Task<T> value) =>
-        Some(await value);
+    public static async Task<Option<T>> SomeAsync(
+        Task<T> value,
+        CancellationToken? cancellationToken = null)
+    {
+        var result = await value.WaitOrCancel(cancellationToken);
+        return Some(result);
+    }
+
+    /// <summary>
+    /// An Option of <see cref="Option{T}"/> with no value.
+    /// </summary>
+    /// <returns></returns>
+    public static Option<T> NoneValue =>
+        new();
 
     /// <summary>
     /// Creates a new <see cref="Option{T}"/> with no value.
     /// </summary>
     /// <returns></returns>
     public static Option<T> None() =>
-        new();
+        NoneValue;
+
+    /// <summary>
+    /// An Option of <see cref="Option{T}"/> with no value wrapped in a completed Task.
+    /// </summary>
+    /// <returns></returns>
+    public static Task<Option<T>> NoneValueAsync =>
+        Task.FromResult(None());
 
     /// <summary>
     /// Creates a new <see cref="Option{T}"/> with no value wrapped in a completed Task.
@@ -280,7 +300,13 @@ public static class Option
     /// Creates a new <see cref="Option{T}"/> with the value of the awaited Task.
     /// </summary>
     /// <param name="value"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public static async Task<Option<T>> SomeAsync<T>(Task<T> value) =>
-        Option<T>.Some(await value);
+    public static async Task<Option<T>> SomeAsync<T>(
+        Task<T> value,
+        CancellationToken? cancellationToken = null)
+    {
+        var result = await value.WaitOrCancel(cancellationToken);
+        return Option<T>.Some(result);
+    }
 }
