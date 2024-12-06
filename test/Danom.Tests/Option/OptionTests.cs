@@ -51,20 +51,22 @@ public sealed class OptionTests
     }
 
     [Fact]
-    public async Task NoneAsync()
-    {
-        var option = await Option<int>.NoneAsync();
-        AssertOption.IsNone(option);
-        Assert.False(option.IsSome);
-    }
-
-    [Fact]
     public void None()
     {
+        AssertOption.IsNone(Option<int>.NoneValue);
         var option = Option<int>.None();
         AssertOption.IsNone(option);
         Assert.False(option.IsSome);
         Assert.Equal("None", option.ToString());
+    }
+
+    [Fact]
+    public async Task NoneAsync()
+    {
+        AssertOption.IsNone(await Option<int>.NoneValueAsync);
+        var option = await Option<int>.NoneAsync();
+        AssertOption.IsNone(option);
+        Assert.False(option.IsSome);
     }
 
     [Fact]
