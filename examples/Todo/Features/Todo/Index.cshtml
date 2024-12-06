@@ -1,0 +1,29 @@
+@model TodoList
+
+<h1>Todo MVC</h1>
+
+<nav>
+    <a asp-controller=Todo asp-action=Create>Create Todo</a>
+</nav>
+
+@if(Model.Incomplete.Any())
+{
+    <ul>
+        @foreach(var todo in Model.Incomplete)
+        {
+            <li>@todo.Title</li>
+        }
+    </ul>
+}
+
+@if(Model.Complete.Any())
+{
+    <h2><i>Completed</i></h2>
+
+    <ul>
+        @foreach(var todo in Model.Complete)
+        {
+            <li>@todo.Title (Completed:@todo.CompletedDate.Map(x => x.ToLocalTime().ToString()).DefaultValue("-"))</li>
+        }
+    </ul>
+}

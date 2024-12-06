@@ -12,8 +12,8 @@ public sealed class ValidationOptionTests
         var input = new TestInput { Value = 1 };
         var result = ValidationOption<TestInput>.From<TestInputValidator>(input);
 
-        AssertOption.IsNone(result);
-        Assert.False(result.IsSome);
+        AssertOption.IsSome(result);
+        Assert.False(result.IsNone);
     }
 
     [Fact]

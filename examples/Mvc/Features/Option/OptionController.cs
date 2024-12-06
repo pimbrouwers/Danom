@@ -1,4 +1,4 @@
-namespace Danom.Samples.Mvc;
+namespace Danom.Examples.Mvc;
 
 using Danom.Mvc;
 using Microsoft.AspNetCore.Mvc;
