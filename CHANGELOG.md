@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.0] - 2024-12-06
+
+### Added
+
+- Option `TryParse` for: `bool`, `byte`, `short`, `int`, `long`, `decimal`, `double`, `float`, `Guid`, `DateTimeOffset`, `DateTime`, `DateOnly`, `TimeOnly`, `TimeSpan`, `Enum` (ex: `intOption.TryParse`).
+- `ModelStateDictionary.AddResultErrors()` extension method to add `Result` errors to the `ModelStateDictionary`.
+- `ValidationOption<T>` for scenarios non-message based validation scenarios.
+
+## [1.1.1] - 2024-12-06
+
+### Fixed
+
+- Option<T>.NoneValue, Option<T>.NoneValueAsync properties.
+
 ## [1.1.0] - 2024-12-01
 
 ### Added
