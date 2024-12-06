@@ -44,6 +44,14 @@ public static class shortOption
     /// <returns></returns>
     public static Option<short> TryParse(string? x, IFormatProvider? provider = null) =>
         short.TryParse(x, provider, out var y) ? Option.Some(y) : Option<short>.NoneValue;
+
+    /// <summary>
+    /// Attempt to parse string as short, return None if invalid, Some if valid.
+    /// </summary>
+    /// <param name="x"></param>
+    /// <returns></returns>
+    public static Option<short> TryParse(string? x) =>
+        TryParse(x, null);
 }
 
 /// <summary>
@@ -59,6 +67,14 @@ public static class intOption
     /// <returns></returns>
     public static Option<int> TryParse(string? x, IFormatProvider? provider = null) =>
         int.TryParse(x, provider, out var y) ? Option.Some(y) : Option<int>.NoneValue;
+
+    /// <summary>
+    /// Attempt to parse string as int, return None if invalid, Some if valid.
+    /// </summary>
+    /// <param name="x"></param>
+    /// <returns></returns>
+    public static Option<int> TryParse(string? x) =>
+        TryParse(x, null);
 }
 
 /// <summary>
@@ -74,6 +90,14 @@ public static class longOption
     /// <returns></returns>
     public static Option<long> TryParse(string? x, IFormatProvider? provider = null) =>
         long.TryParse(x, provider, out var y) ? Option.Some(y) : Option<long>.NoneValue;
+
+    /// <summary>
+    /// Attempt to parse string as long, return None if invalid, Some if valid.
+    /// </summary>
+    /// <param name="x"></param>
+    /// <returns></returns>
+    public static Option<long> TryParse(string? x) =>
+        TryParse(x, null);
 }
 
 /// <summary>
@@ -89,6 +113,14 @@ public static class decimalOption
     /// <returns></returns>
     public static Option<decimal> TryParse(string? x, IFormatProvider? provider = null) =>
         decimal.TryParse(x, provider, out var y) ? Option.Some(y) : Option<decimal>.NoneValue;
+
+    /// <summary>
+    /// Attempt to parse string as decimal, return None if invalid, Some if valid.
+    /// </summary>
+    /// <param name="x"></param>
+    /// <returns></returns>
+    public static Option<decimal> TryParse(string? x) =>
+        TryParse(x, null);
 }
 
 /// <summary>
@@ -104,6 +136,14 @@ public static class doubleOption
     /// <returns></returns>
     public static Option<double> TryParse(string? x, IFormatProvider? provider = null) =>
         double.TryParse(x, provider, out var y) ? Option.Some(y) : Option<double>.NoneValue;
+
+    /// <summary>
+    /// Attempt to parse string as double, return None if invalid, Some if valid.
+    /// </summary>
+    /// <param name="x"></param>
+    /// <returns></returns>
+    public static Option<double> TryParse(string? x) =>
+        TryParse(x, null);
 }
 
 /// <summary>
@@ -119,6 +159,14 @@ public static class floatOption
     /// <returns></returns>
     public static Option<float> TryParse(string? x, IFormatProvider? provider = null) =>
         float.TryParse(x, provider, out var y) ? Option.Some(y) : Option<float>.NoneValue;
+
+    /// <summary>
+    /// Attempt to parse string as float, return None if invalid, Some if valid.
+    /// </summary>
+    /// <param name="x"></param>
+    /// <returns></returns>
+    public static Option<float> TryParse(string? x) =>
+        TryParse(x, null);
 }
 
 /// <summary>
@@ -134,6 +182,14 @@ public static class GuidOption
     /// <returns></returns>
     public static Option<Guid> TryParse(string? x, IFormatProvider? provider = null) =>
         Guid.TryParse(x, provider, out var y) ? Option.Some(y) : Option<Guid>.NoneValue;
+
+    /// <summary>
+    /// Attempt to parse string as Guid, return None if invalid, Some if valid.
+    /// </summary>
+    /// <param name="x"></param>
+    /// <returns></returns>
+    public static Option<Guid> TryParse(string? x) =>
+        TryParse(x, null);
 
     /// <summary>
     /// Attempt to parse string as Guid, return None if invalid, Some if valid.
@@ -158,6 +214,14 @@ public static class DateTimeOffsetOption
     /// <returns></returns>
     public static Option<DateTimeOffset> TryParse(string? x, IFormatProvider? provider = null) =>
         DateTimeOffset.TryParse(x, provider, out var y) ? Option.Some(y) : Option<DateTimeOffset>.NoneValue;
+
+    /// <summary>
+    /// Attempt to parse string as DateTimeOffset, return None if invalid, Some if valid.
+    /// </summary>
+    /// <param name="x"></param>
+    /// <returns></returns>
+    public static Option<DateTimeOffset> TryParse(string? x) =>
+        TryParse(x, null);
 
     /// <summary>
     /// Attempt to parse string as DateTimeOffset, return None if invalid, Some if valid.
@@ -189,6 +253,14 @@ public static class DateTimeOption
     /// Attempt to parse string as DateTime, return None if invalid, Some if valid.
     /// </summary>
     /// <param name="x"></param>
+    /// <returns></returns>
+    public static Option<DateTime> TryParse(string? x) =>
+        TryParse(x, null);
+
+    /// <summary>
+    /// Attempt to parse string as DateTime, return None if invalid, Some if valid.
+    /// </summary>
+    /// <param name="x"></param>
     /// <param name="format"></param>
     /// <param name="provider"></param>
     /// <param name="dateTimeStyles"></param>
@@ -210,6 +282,14 @@ public static class DateOnlyOption
     /// <returns></returns>
     public static Option<DateOnly> TryParse(string? x, IFormatProvider? provider = null) =>
         DateOnly.TryParse(x, provider, out var y) ? Option.Some(y) : Option<DateOnly>.NoneValue;
+
+    /// <summary>
+    /// Attempt to parse string as DateOnly, return None if invalid, Some if valid.
+    /// </summary>
+    /// <param name="x"></param>
+    /// <returns></returns>
+    public static Option<DateOnly> TryParse(string? x) =>
+        TryParse(x, null);
 
     /// <summary>
     /// Attempt to parse string as DateOnly, return None if invalid, Some if valid.
@@ -241,6 +321,14 @@ public static class TimeOnlyOption
     /// Attempt to parse string as TimeOnly, return None if invalid, Some if valid.
     /// </summary>
     /// <param name="x"></param>
+    /// <returns></returns>
+    public static Option<TimeOnly> TryParse(string? x) =>
+        TryParse(x, null);
+
+    /// <summary>
+    /// Attempt to parse string as TimeOnly, return None if invalid, Some if valid.
+    /// </summary>
+    /// <param name="x"></param>
     /// <param name="format"></param>
     /// <param name="provider"></param>
     /// <param name="dateTimeStyles"></param>
@@ -262,6 +350,14 @@ public static class TimeSpanOption
     /// <returns></returns>
     public static Option<TimeSpan> TryParse(string? x, IFormatProvider? provider = null) =>
         TimeSpan.TryParse(x, provider, out var y) ? Option.Some(y) : Option<TimeSpan>.NoneValue;
+
+    /// <summary>
+    /// Attempt to parse string as TimeSpan, return None if invalid, Some if valid.
+    /// </summary>
+    /// <param name="x"></param>
+    /// <returns></returns>
+    public static Option<TimeSpan> TryParse(string? x) =>
+        TryParse(x, null);
 
     /// <summary>
     /// Attempt to parse string as TimeSpan, return None if invalid, Some if valid.
