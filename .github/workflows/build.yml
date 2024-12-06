@@ -20,7 +20,7 @@ jobs:
           dotnet-version: ${{ matrix.dotnet-version }}
 
       - name: Install solution dependencies
-        run: dotnet restore
+        run: dotnet restore --force-evaluate --no-http-cache --force
 
       - name: Build Core
         run: dotnet build src/Danom -c Release

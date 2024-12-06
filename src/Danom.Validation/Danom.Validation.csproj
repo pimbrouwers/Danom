@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <AssemblyName>Danom.Validation</AssemblyName>
-    <Version>1.1.1</Version>
+    <Version>1.2.0</Version>
 
     <!-- General info -->
     <Description>Validators and validation helpers for Danom based on FluentValidation.</Description>
@@ -40,7 +40,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Danom" Version="1.1.1" />
+    <PackageReference Include="Danom" Version="1.2.0" />
     <PackageReference Include="FluentValidation" Version="11.11.0" />
   </ItemGroup>
 </Project>
