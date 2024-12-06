@@ -2,9 +2,17 @@ namespace Danom.Mvc;
 
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-internal static class ModelStateDictionaryExtensions
+/// <summary>
+/// Danom extension methods for <see cref="ModelStateDictionary" />.
+/// </summary>
+public static class ModelStateDictionaryExtensions
 {
-    internal static void AddResultErrors(
+    /// <summary>
+    /// Adds <see cref="ResultErrors" /> to the <see cref="ModelStateDictionary" />.
+    /// </summary>
+    /// <param name="modelState"></param>
+    /// <param name="errors"></param>
+    public static void AddResultErrors(
         this ModelStateDictionary modelState,
         ResultErrors errors)
     {
