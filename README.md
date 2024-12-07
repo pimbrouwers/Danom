@@ -228,7 +228,7 @@ using Danom;
 // a common pattern
 var x = int.TryParse("123", out var y) ? Option<int>.Some(y) : Option<int>.None();
 
-// or, more  using the TryParse API
+// or, more simply using the TryParse API
 var myInt = intOption.TryParse("123"); // -> Some(123)
 var myDouble = doubleOption.TryParse("123.45"); // -> Some(123.45)
 var myBool = boolOption.TryParse("true"); // -> Some(true)
