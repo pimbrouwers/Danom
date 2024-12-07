@@ -5,13 +5,16 @@
 Danom is a C# library that provides (monadic) structures to facilitate durable programming patterns in C# using [Option](#option) and [Result](#result).
 
 ## Key Features
-- Implementation of common monads like [Option](#option), [Result](#result), and [ResultOption](#resultoption).
+
+- Implementation of common monads: [Option](#option) and [Result](#result).
+- Exhaustive matching to prevent null reference exceptions.
 - Fluent API for chaining operations.
-- [Error handling](#using-results) with monads.
-- Support for asynchronous operations.
 - Integrated with [ASP.NET Core](#aspnet-core-mvc-integration) and [Fluent Validation](#fluent-validation-integration).
+- API for [parsing strings](#string-parsing) into .NET primitives and value types.
+- Supports asynchronous operations.
 
 ## Design Goals
+
 - Easy to use API for common monadic operations.
 - Efficient implementation to minimize overhead.
 - Seamless integration with existing C# code and libraries.
@@ -213,52 +216,138 @@ var resultErrorsTyped =
     Result<int>.Error(new ResultErrors("error-key", "An error occurred"));
 ```
 
-## ResultOption
+## String Parsing
 
-Represents a combination of the Result and Option monads. This is useful when you want to handle both the success and failure of an operation, but also want to handle the case where a value might not exist. It simplifies the inspection by eliminating the redundant nested `Match` calls.
+Most applications will at some point need to parse strings into primitives and value types. This is especially true when working with external data sources.
 
-### Creating ResultOptions
+`Option` provides a natural mechanism to handle the case where the string cannot be parsed. The "TryParse" API is provided to simplify the process of parsing strings into .NET primitives and value types.
 
 ```csharp
-var resultOption = ResultOption<int, string>.Ok(5);
+using Danom;
 
-// or, with an error
-var resultOptionError = ResultOption<int, string>.Error("An error occurred");
+// a common pattern
+var x = int.TryParse("123", out var y) ? Option<int>.Some(y) : Option<int>.None();
 
-// or, with no value
-var resultOptionNone = ResultOption<int, string>.None();
+// or, more  using the TryParse API
+var myInt = intOption.TryParse("123"); // -> Some(123)
+var myDouble = doubleOption.TryParse("123.45"); // -> Some(123.45)
+var myBool = boolOption.TryParse("true"); // -> Some(true)
+
+// if the string cannot be parsed
+var myIntNone = intOption.TryParse("danom"); // -> None
+var myDoubleNone = doubleOption.TryParse("danom"); // -> None
+var myBoolNone = boolOption.TryParse("danom"); // -> None
+
+// null strings are treated as None
+var myIntNull = intOption.TryParse(null); // -> None
 ```
 
-### Using ResultOptions
-
-ResultOptions are commonly used when an operation might not succeed, but also where a value might not exist. For example:
+The full API is below:
 
 ```csharp
-public Option<int> LookupUserId(string username) => // ...
+public static class boolOption {
+    public static Option<bool> TryParse(string? x); }
 
-public ResultOption<int, string> GetUserId(string username)
-{
-    if(username == "admin")
-    {
-        return ResultOption<int,string>.Error("Invalid username");
-    }
+public static class byteOption {
+    public static Option<byte> TryParse(string? x, IFormatProvider? provider = null); }
 
-    return LookupUserId(username).Match(
-        some: id => ResultOption<int, string>.Ok(1) :
-        none: ResultOption<int, string>.None);
+public static class shortOption {
+    public static Option<short> TryParse(string? x, IFormatProvider? provider = null);
+    public static Option<short> TryParse(string? x); }
 
-    // or, using the extension method
-    // return LookupUserId(username).ToResultOption();
-}
+public static class intOption {
+    public static Option<int> TryParse(string? x, IFormatProvider? provider = null);
+    public static Option<int> TryParse(string? x); }
+
+public static class longOption {
+    public static Option<long> TryParse(string? x, IFormatProvider? provider = null);
+    public static Option<long> TryParse(string? x); }
+
+public static class decimalOption {
+    public static Option<decimal> TryParse(string? x, IFormatProvider? provider = null);
+    public static Option<decimal> TryParse(string? x); }
+
+public static class doubleOption {
+    public static Option<double> TryParse(string? x, IFormatProvider? provider = null);
+    public static Option<double> TryParse(string? x); }
+
+public static class floatOption {
+    public static Option<float> TryParse(string? x, IFormatProvider? provider = null);
+    public static Option<float> TryParse(string? x); }
+
+public static class GuidOption {
+    public static Option<Guid> TryParse(string? x, IFormatProvider? provider = null);
+    public static Option<Guid> TryParse(string? x);
+    public static Option<Guid> TryParseExact(string? x, string? format); }
+
+public static class DateTimeOffsetOption {
+    public static Option<DateTimeOffset> TryParse(string? x, IFormatProvider? provider = null);
+    public static Option<DateTimeOffset> TryParse(string? x);
+    public static Option<DateTimeOffset> TryParseExact(string? x, string? format, IFormatProvider? provider = null, DateTimeStyles dateTimeStyles = DateTimeStyles.None); }
+
+public static class DateTimeOption {
+    public static Option<DateTime> TryParse(string? x, IFormatProvider? provider = null);
+    public static Option<DateTime> TryParse(string? x);
+    public static Option<DateTime> TryParseExact(string? x, string? format, IFormatProvider? provider = null, DateTimeStyles dateTimeStyles = DateTimeStyles.None); }
+
+public static class DateOnlyOption {
+    public static Option<DateOnly> TryParse(string? x, IFormatProvider? provider = null);
+    public static Option<DateOnly> TryParse(string? x);
+    public static Option<DateOnly> TryParseExact(string? x, string? format, IFormatProvider? provider = null, DateTimeStyles dateTimeStyles = DateTimeStyles.None); }
+
+public static class TimeOnlyOption {
+    public static Option<TimeOnly> TryParse(string? x, IFormatProvider? provider = null);
+    public static Option<TimeOnly> TryParse(string? x);
+    public static Option<TimeOnly> TryParseExact(string? x, string? format, IFormatProvider? provider = null, DateTimeStyles dateTimeStyles = DateTimeStyles.None); }
+
+public static class TimeSpanOption {
+    public static Option<TimeSpan> TryParse(string? x, IFormatProvider? provider = null);
+    public static Option<TimeSpan> TryParse(string? x);
+    public static Option<TimeSpan> TryParseExact(string? x, string? format, IFormatProvider? provider = null); }
+
+public static class EnumOption {
+    public static Option<TEnum> TryParse<TEnum>(string? x) where TEnum : struct; }
 ```
 
 ## Integrations
 
-Since Danom introduces types that are most commonly found in your model and business logic layers, external integrations are not only inevitable but required to provide a seamless experience when build applications.
+Since Danom introduces types that are most commonly found in your model and business logic layers, external integrations are not only inevitable but required to provide a seamless experience when building applications.
 
 ### Fluent Validation Integration
 
 Danom is integrated with [Fluent Validation](https://fluentvalidation.net/) to provide a seamless way to validate your models and return a `Result` or `ResultOption` with the validation errors.
+
+A quick example:
+
+```csharp
+using Danom;
+using Danom.Validation;
+using FluentValidation;
+
+public record Person(
+    string Name,
+    Option<string> Email);
+
+public class PersonValidator
+    : AbstractValidator<Person>
+{
+    public PersonValidator()
+    {
+        RuleFor(x => x.Name).NotEmpty();
+        RuleFor(x => x.Email).Optional(x => x.EmailAddress());
+    }
+}
+
+var result =
+    ValidationResult<Person>
+        .From<PersonValidator>(new(
+            Name: "John Doe",
+            Email: Option.Some("john@doe.com")));
+
+result.Match(
+    x => Console.WriteLine("Input is valid: {0}", x),
+    e => Console.WriteLine("Input is invalid: {0}", e));
+```
 
 Documentation can be found [here](src/Danom.Validation/README.md).
 
