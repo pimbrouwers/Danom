@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Danom.Mvc.Tests", "test\Dan
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestHelpers", "test\TestHelpers\TestHelpers.csproj", "{B78AD031-6E72-4006-A007-ABA49570F17E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DanomBenchmark", "benchmark\DanomBenchmark.csproj", "{E198BC9B-74F8-4EF3-8404-910F1F3DCD4C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -58,6 +60,10 @@ Global
 		{B78AD031-6E72-4006-A007-ABA49570F17E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B78AD031-6E72-4006-A007-ABA49570F17E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B78AD031-6E72-4006-A007-ABA49570F17E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E198BC9B-74F8-4EF3-8404-910F1F3DCD4C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E198BC9B-74F8-4EF3-8404-910F1F3DCD4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E198BC9B-74F8-4EF3-8404-910F1F3DCD4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E198BC9B-74F8-4EF3-8404-910F1F3DCD4C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{2E1327A1-9244-49BA-BC31-9CCE3CE2335C} = {606C9E49-7696-48B1-A799-B456E680C9F0}
