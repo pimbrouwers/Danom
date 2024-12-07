@@ -205,4 +205,28 @@ public sealed class OptionTests
         Assert.NotEqual("0", Option<decimal>.Some(1.9878565765675M).ToString("0", "C2"));
         Assert.Equal("£1.99", Option<decimal>.Some(1.9878565765675M).ToString("0", "C2", CultureInfo.CreateSpecificCulture("en-GB")));
     }
+
+#pragma warning disable CS1718 // Comparison made to same variable
+    [Fact]
+    public void Comparability()
+    {
+        var some1 = Option<int>.Some(1);
+        var some2 = Option<int>.Some(2);
+        var none = Option<int>.None();
+
+        Assert.True(some1 < some2);
+        Assert.True(some1 <= some2);
+        Assert.True(some2 > some1);
+        Assert.True(some2 >= some1);
+        Assert.True(some1 <= some1);
+        Assert.True(some1 >= some1);
+
+        Assert.True(none < some1);
+        Assert.True(none <= some1);
+        Assert.True(some1 > none);
+        Assert.True(some1 >= none);
+        Assert.True(none <= none);
+        Assert.True(none >= none);
+    }
 }
+#pragma warning restore CS1718 // Comparison made to same variable

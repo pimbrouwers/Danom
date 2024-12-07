@@ -6,7 +6,7 @@ namespace Danom;
 /// </summary>
 /// <typeparam name="T"></typeparam>
 public readonly struct Option<T>
-    : IEquatable<Option<T>>
+    : IEquatable<Option<T>>, IComparable<Option<T>>
 {
     private readonly T? _some = default;
 
@@ -209,6 +209,42 @@ public readonly struct Option<T>
         !(left == right);
 
     /// <summary>
+    /// Returns true if the specified <see cref="Option{T}"/> is less than the other.
+    /// </summary>
+    /// <param name="left"></param>
+    /// <param name="right"></param>
+    /// <returns></returns>
+    public static bool operator <(Option<T> left, Option<T> right) =>
+        left.CompareTo(right) < 0;
+
+    /// <summary>
+    /// Returns true if the specified <see cref="Option{T}"/> is less than or equal to the other.
+    /// </summary>
+    /// <param name="left"></param>
+    /// <param name="right"></param>
+    /// <returns></returns>
+    public static bool operator <=(Option<T> left, Option<T> right) =>
+        left.CompareTo(right) <= 0;
+
+    /// <summary>
+    /// Returns true if the specified <see cref="Option{T}"/> is greater than the other.
+    /// </summary>
+    /// <param name="left"></param>
+    /// <param name="right"></param>
+    /// <returns></returns>
+    public static bool operator >(Option<T> left, Option<T> right) =>
+        left.CompareTo(right) > 0;
+
+    /// <summary>
+    /// Returns true if the specified <see cref="Option{T}"/> is greater than or equal to the other.
+    /// </summary>
+    /// <param name="left"></param>
+    /// <param name="right"></param>
+    /// <returns></returns>
+    public static bool operator >=(Option<T> left, Option<T> right) =>
+        left.CompareTo(right) >= 0;
+
+    /// <summary>
     /// Returns true if the specified <see cref="Option{T}"/>s are equal.
     /// </summary>
     /// <param name="obj"></param>
@@ -241,6 +277,23 @@ public readonly struct Option<T>
         Match(
             some: x => x is null ? 0 : x.GetHashCode(),
             none: () => 0);
+
+    /// <summary>
+    /// Compares the <see cref="Option{T}"/> to another <see cref="Option{T}"/>.
+    /// </summary>
+    /// <param name="other"></param>
+    /// <returns></returns>
+    public int CompareTo(Option<T> other) =>
+        Match(
+            some: x1 =>
+                other.Match(
+                    some: x2 => Comparer<T>.Default.Compare(x1, x2),
+                    none: () => 1),
+            none: () =>
+                other.Match(
+                    some: _ => -1,
+                    none: () => 0)
+            );
 
     /// <summary>
     /// Returns the string representation of the <see cref="Option{T}"/>.
