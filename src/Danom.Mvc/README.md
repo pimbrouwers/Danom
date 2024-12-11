@@ -119,8 +119,6 @@ public sealed class ResultController
 
 ## View
 
-### Option
-
 While not explicitly part of the `Danom.Mvc` library, there are some patterns that make rendering the `Option` type easier in Razor views. Two methods from the base library are especially valuable: `TryGet` and `ToString`.
 
 The `TryGet` method is used to extract the value from an `Option` type. If the `Option` is `Some`, the value is assigned to the `out` parameter and the method returns `true`. If the `Option` is `None`, the method returns `false`.
