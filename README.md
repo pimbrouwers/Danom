@@ -8,17 +8,16 @@ Danom is a C# library that provides (monadic) structures to facilitate durable p
 
 - Implementation of common monads: [Option](#option) and [Result](#result).
 - Exhaustive matching to prevent null reference exceptions.
-- Fluent API for chaining operations.
+- Fluent API for chaining operations, including async support.
 - Integrated with [ASP.NET Core](#aspnet-core-mvc-integration) and [Fluent Validation](#fluent-validation-integration).
 - API for [parsing strings](#string-parsing) into .NET primitives and value types.
-- Supports asynchronous operations.
 
 ## Design Goals
 
-- Easy to use API for common monadic operations.
-- Efficient implementation to minimize overhead.
-- Seamless integration with existing C# code and libraries.
+- Provide a safe and expressive way to handle nullable values.
 - Prevent direct use of internal value, enforcing exhaustive matching.
+- Efficient implementation to minimize overhead.
+- Opionated monads to encourage consistent use.
 
 ## Getting Started
 
@@ -200,6 +199,8 @@ Result<int, string> resultOrElseWith =
             Result<int, string>.Ok(99)); // useful if creating the value is expensive
 ```
 
+### Result Errors
+
 Since error messages are frequently represented as keyed string collections, the `ResultErrors` type is provided to simplify Result creation. The flexible constructor allows errors to be initialized with a single string, a collection of strings, or a key-value pair.
 
 ```csharp
@@ -315,7 +316,7 @@ Since Danom introduces types that are most commonly found in your model and busi
 
 ### Fluent Validation Integration
 
-Danom is integrated with [Fluent Validation](https://fluentvalidation.net/) to provide a seamless way to validate your models and return a `Result` or `ResultOption` with the validation errors.
+[Fluent Validation](https://fluentvalidation.net/) is an excellent library for building validation rules for your models. A first-class integration is available via [Danom.Validation](src/Danom.Validation/README.md) to provide a seamless way to validate your models and return a `Result` or `ResultOption` with the validation errors.
 
 A quick example:
 
@@ -353,9 +354,7 @@ Documentation can be found [here](src/Danom.Validation/README.md).
 
 ### ASP.NET Core MVC Integration
 
-Danom is integrated with [ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/?view=aspnetcore-5.0) to provide a set of utilities to help integrate the Danom library with common tasks in ASP.NET Core MVC applications.
-
-Documentation can be found [here](src/Danom.Mvc/README.md).
+Danom is integrated with ASP.NET Core via [Danom.Mvc](src/Danom.Mvc/README.md). This library provides a set of utilities to help integrate the core types with common tasks in ASP.NET Core MVC applications.
 
 ### ASP.NET Core Minimal API Integration
 
