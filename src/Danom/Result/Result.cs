@@ -118,6 +118,57 @@ public readonly struct Result<T, TError>
         Match(ok => ok, _ => defaultWith());
 
     /// <summary>
+    /// Safely retrieve value using procedural code.
+    /// </summary>
+    /// <param name="result"></param>
+    public bool TryGet(out T result)
+    {
+        var success = false;
+
+        result =
+            Match(
+                ok: x =>
+                {
+                    if (x is not null)
+                    {
+                        success = true;
+                        return x;
+                    }
+
+                    return default!;
+                },
+                error: _ => default!);
+
+        return success;
+    }
+
+    /// <summary>
+    /// Safely retrieve error value using procedural code.
+    /// </summary>
+    /// <param name="result"></param>
+    /// <returns></returns>
+    public bool TryGetError(out TError result)
+    {
+        var success = false;
+
+        result =
+            Match(
+                ok: _ => default!,
+                error: e =>
+                {
+                    if (e is not null)
+                    {
+                        success = true;
+                        return e;
+                    }
+
+                    return default!;
+                });
+
+        return success;
+    }
+
+    /// <summary>
     /// Creates a new <see cref="Result{T, TError}"/> with the specified value.
     /// </summary>
     /// <param name="value"></param>
@@ -180,7 +231,7 @@ public readonly struct Result<T, TError>
     /// </summary>
     /// <param name="other"></param>
     /// <returns></returns>
-    public readonly bool Equals(Result<T, TError> other) =>
+    public bool Equals(Result<T, TError> other) =>
         Match(
             ok: x1 =>
                 other.Match(

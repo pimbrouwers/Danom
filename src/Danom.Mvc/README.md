@@ -1,8 +1,9 @@
 # Danom.Mvc
+
 [![NuGet Version](https://img.shields.io/nuget/v/Danom.Mvc.svg)](https://www.nuget.org/packages/Danom.Mvc)
 [![build](https://github.com/eastcitysoftware/danom/actions/workflows/build.yml/badge.svg)](https://github.com/eastcitysoftware/danom/actions/workflows/build.yml)
 
-Danom.Mvc is a library that provides a set of utilities to help integrate the [Danom](../../README.md) library with common tasks in ASP.NET Core MVC applications.
+Danom.Mvc is a library that provides a set of utilities to help integrate the [Danom](../../README.md) library with common tasks in ASP.NET Core [MVC](#mvc) and [Razor Pages](#razor-pages) applications.
 
 ## Getting Started
 
@@ -17,7 +18,7 @@ Or using the dotnet CLI
 dotnet add package Danom.Mvc
 ```
 
-## Controller
+## MVC
 
 The `DanomController` class extends the base controller class to provide a set of methods to help work with `Result`, `Option`, and `ResultOption` types in ASP.NET Core MVC applications.
 
@@ -117,7 +118,7 @@ public sealed class ResultController
 }
 ```
 
-## View
+### View
 
 While not explicitly part of the `Danom.Mvc` library, there are some patterns that make rendering the `Option` type easier in Razor views. Two methods from the base library are especially valuable: `TryGet` and `ToString`.
 
@@ -154,6 +155,27 @@ The `TryGet` and `ToString` methods can be used in a Razor view to help render t
 else
 {
     <p>You are an ageless wonder!</p>
+}
+```
+
+## Razor Pages
+
+The `DanomPageModel` class extends the base page model class to provide method(s) to help work with `Result`, `Option`, and `ResultOption` types in ASP.NET Core Razor Pages applications.
+
+```csharp
+using Danom.Mvc;
+
+public sealed class IndexModel
+    : DanomPageModel
+{
+    public void OnGet()
+    {
+        var resultWithErrors = Result<string, string>.Error("An error occurred.");
+        if(resultWithErrors.TryGetError(out var e))
+        {
+            return Page(e);
+        }
+    }
 }
 ```
 

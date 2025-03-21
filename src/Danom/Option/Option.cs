@@ -116,6 +116,14 @@ public readonly struct Option<T>
         Match(Option<T>.Some, ifNoneWith);
 
     /// <summary>
+    /// If <see cref="Option{T}"/> is Some evaluate the some delegate, otherwise do nothing.
+    /// </summary>
+    /// <param name="some"></param>
+    public void Iter(
+        Action<T> some) =>
+        Match(some, () => { });
+
+    /// <summary>
     /// Safely retrieve the value using procedural code.
     /// </summary>
     /// <param name="result"></param>

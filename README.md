@@ -352,9 +352,9 @@ result.Match(
 
 Documentation can be found [here](src/Danom.Validation/README.md).
 
-### ASP.NET Core MVC Integration
+### ASP.NET Core MVC & Razor Pages Integration
 
-Danom is integrated with ASP.NET Core via [Danom.Mvc](src/Danom.Mvc/README.md). This library provides a set of utilities to help integrate the core types with common tasks in ASP.NET Core MVC applications.
+Danom is integrated with ASP.NET Core MVC via [Danom.Mvc](src/Danom.Mvc/README.md). This library provides a set of utilities to help integrate the core types with common tasks in ASP.NET Core MVC applications.
 
 ### ASP.NET Core Minimal API Integration
 
