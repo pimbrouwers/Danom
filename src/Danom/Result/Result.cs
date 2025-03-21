@@ -126,14 +126,6 @@ public readonly struct Result<T, TError>
         new(value);
 
     /// <summary>
-    /// Creates <see cref="Result{T, TError}"/> with the specified value wrapped in a completed Task.
-    /// </summary>
-    /// <param name="value"></param>
-    /// <returns></returns>
-    public static Task<Result<T, TError>> OkAsync(T value) =>
-        Task.FromResult(Ok(value));
-
-    /// <summary>
     /// Creates <see cref="Result{T, TError}"/> with the value of the awaited Task.
     /// </summary>
     /// <param name="valueTask"></param>
@@ -148,14 +140,6 @@ public readonly struct Result<T, TError>
     /// <returns></returns>
     public static Result<T, TError> Error(TError errors) =>
         new(errors);
-
-    /// <summary>
-    /// Creates <see cref="Result{T, TError}"/> with the specified error wrapped in a completed Task.
-    /// </summary>
-    /// <param name="errors"></param>
-    /// <returns></returns>
-    public static Task<Result<T, TError>> ErrorAsync(TError errors) =>
-        Task.FromResult(Error(errors));
 
     /// <summary>
     /// Creates <see cref="Result{T, TError}"/> with the value of the awaited Task.
@@ -243,14 +227,6 @@ public static class Result<T>
         Result<T, ResultErrors>.Ok(value);
 
     /// <summary>
-    /// Creates <see cref="Result{T, ResultErrors}"/> with the specified value wrapped in a completed Task.
-    /// </summary>
-    /// <param name="value"></param>
-    /// <returns></returns>
-    public static Task<Result<T, ResultErrors>> OkAsync(T value) =>
-        Result<T, ResultErrors>.OkAsync(value);
-
-    /// <summary>
     /// Creates <see cref="Result{T, ResultErrors}"/> with the value of the awaited Task.
     /// </summary>
     /// <param name="valueTask"></param>
@@ -265,38 +241,6 @@ public static class Result<T>
     /// <returns></returns>
     public static Result<T, ResultErrors> Error(ResultErrors errors) =>
         Result<T, ResultErrors>.Error(errors);
-
-    /// <summary>
-    /// Creates <see cref="Result{T, ResultErrors}"/> with the specified error wrapped in a completed Task.
-    /// </summary>
-    /// <param name="errors"></param>
-    /// <returns></returns>
-    public static Task<Result<T, ResultErrors>> ErrorAsync(ResultErrors errors) =>
-        Task.FromResult(Error(errors));
-
-    /// <summary>
-    /// Creates a new <see cref="Result{T, ResultErrors}"/> with the specified error.
-    /// </summary>
-    /// <param name="messages"></param>
-    /// <returns></returns>
-    public static Result<T, ResultErrors> Error(IEnumerable<string> messages) =>
-        Error(new ResultErrors(messages));
-
-    /// <summary>
-    /// Creates <see cref="Result{T, ResultErrors}"/> with the specified error wrapped in a completed Task.
-    /// </summary>
-    /// <param name="message"></param>
-    /// <returns></returns>
-    public static Result<T, ResultErrors> Error(string message) =>
-        Error([message]);
-
-    /// <summary>
-    /// Creates <see cref="Result{T, ResultErrors}"/> with the specified error wrapped in a completed Task.
-    /// </summary>
-    /// <param name="message"></param>
-    /// <returns></returns>
-    public static Task<Result<T, ResultErrors>> ErrorAsync(string message) =>
-        Task.FromResult(Error(message));
 }
 
 /// <summary>
@@ -312,14 +256,6 @@ public static class Result
     /// <returns></returns>
     public static Result<T, ResultErrors> Ok<T>(T value) =>
         Result<T, ResultErrors>.Ok(value);
-
-    /// <summary>
-    /// Creates <see cref="Result{T, ResultErrors}"/> with the specified value wrapped in a completed Task.
-    /// </summary>
-    /// <param name="value"></param>
-    /// <returns></returns>
-    public static Task<Result<T, ResultErrors>> OkAsync<T>(T value) =>
-        Result<T, ResultErrors>.OkAsync(value);
 
     /// <summary>
     /// Creates <see cref="Result{T, ResultErrors}"/> with the value of the awaited Task.

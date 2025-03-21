@@ -56,7 +56,7 @@ public static class OptionTaskExtensions
         this Task<Option<T>> optionTask,
         Func<T, Task<Option<U>>> bind,
         CancellationToken? cancellationToken = null) =>
-        optionTask.MatchAsync(bind, Option<U>.NoneAsync, cancellationToken);
+        optionTask.MatchAsync(bind, () => Task.FromResult(Option<U>.NoneValue), cancellationToken);
 
     /// <summary>
     /// Evaluates the bind delegate if the Option is Some otherwise return None.

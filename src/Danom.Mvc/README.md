@@ -1,6 +1,6 @@
 # Danom.Mvc
 [![NuGet Version](https://img.shields.io/nuget/v/Danom.Mvc.svg)](https://www.nuget.org/packages/Danom.Mvc)
-[![build](https://github.com/pimbrouwers/Danom/actions/workflows/build.yml/badge.svg)](https://github.com/pimbrouwers/Danom/actions/workflows/build.yml)
+[![build](https://github.com/eastcitysoftware/danom/actions/workflows/build.yml/badge.svg)](https://github.com/eastcitysoftware/danom/actions/workflows/build.yml)
 
 Danom.Mvc is a library that provides a set of utilities to help integrate the [Danom](../../README.md) library with common tasks in ASP.NET Core MVC applications.
 
@@ -159,8 +159,8 @@ else
 
 ## Find a bug?
 
-There's an [issue](https://github.com/pimbrouwers/Danom/issues) for that.
+There's an [issue](https://github.com/eastcitysoftware/danom/issues) for that.
 
 ## License
 
-Built with ♥ by [Pim Brouwers](https://github.com/pimbrouwers) in Toronto, ON. Licensed under [Apache License 2.0](https://github.com/pimbrouwers/Danom/blob/master/LICENSE).
+Built with ♥ by [Pim Brouwers](https://github.com/pimbrouwers) in Toronto, ON. Licensed under [Apache License 2.0](https://github.com/eastcitysoftware/danom/blob/master/LICENSE).

@@ -177,20 +177,6 @@ public readonly struct Option<T>
         NoneValue;
 
     /// <summary>
-    /// An Option of <see cref="Option{T}"/> with no value wrapped in a completed Task.
-    /// </summary>
-    /// <returns></returns>
-    public static Task<Option<T>> NoneValueAsync =>
-        Task.FromResult(None());
-
-    /// <summary>
-    /// Creates a new <see cref="Option{T}"/> with no value wrapped in a completed Task.
-    /// </summary>
-    /// <returns></returns>
-    public static Task<Option<T>> NoneAsync() =>
-        Task.FromResult(None());
-
-    /// <summary>
     /// Returns true if the specified <see cref="Option{T}"/>s are equal.
     /// </summary>
     /// <param name="left"></param>
@@ -340,14 +326,6 @@ public static class Option
     /// <returns></returns>
     public static Option<T> Some<T>(T value) =>
         new(value);
-
-    /// <summary>
-    /// Creates <see cref="Option{T}"/> with the specified value wrapped in a completed Task.
-    /// </summary>
-    /// <param name="value"></param>
-    /// <returns></returns>
-    public static Task<Option<T>> SomeAsync<T>(T value) =>
-        Task.FromResult(Option<T>.Some(value));
 
     /// <summary>
     /// Creates a new <see cref="Option{T}"/> with the value of the awaited Task.

@@ -22,12 +22,12 @@
     <!-- NuGet config -->
     <PackageId>Danom.Validation</PackageId>
     <PackageTags>validation;validation-result;danom;</PackageTags>
-    <PackageProjectUrl>https://github.com/pimbrouwers/Danom</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/eastcitysoftware/danom</PackageProjectUrl>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <RepositoryType>git</RepositoryType>
-    <RepositoryUrl>https://github.com/pimbrouwers/Danom</RepositoryUrl>
+    <RepositoryUrl>https://github.com/eastcitysoftware/danom</RepositoryUrl>
 
     <!-- SourceLink settings -->
     <PublishRepositoryUrl>true</PublishRepositoryUrl>

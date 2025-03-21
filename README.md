@@ -1,6 +1,6 @@
 # Danom
 [![NuGet Version](https://img.shields.io/nuget/v/Danom.svg)](https://www.nuget.org/packages/Danom)
-[![build](https://github.com/pimbrouwers/Danom/actions/workflows/build.yml/badge.svg)](https://github.com/pimbrouwers/Danom/actions/workflows/build.yml)
+[![build](https://github.com/eastcitysoftware/danom/actions/workflows/build.yml/badge.svg)](https://github.com/eastcitysoftware/danom/actions/workflows/build.yml)
 
 Danom is a C# library that provides (monadic) structures to facilitate durable programming patterns in C# using [Option](#option) and [Result](#result).
 
@@ -142,9 +142,9 @@ var resultError = Result<int, string>.Error("An error occurred");
 // or, using the built-in Error type
 var resultErrors = Result<int>.Ok(5);
 
-var resultErrorsError = Result<int>.Error("An error occurred");
-var resultErrorsMultiError = Result<int>.Error(["An error occurred", "Another error occurred"]);
-var resultErrorsTyped = Result<int>.Error(new ResultErrors("error-key", "An error occurred"));
+var resultErrorsError = Result<int>.Error(new("An error occurred"));
+var resultErrorsMultiError = Result<int>.Error(new(["An error occurred", "Another error occurred"]));
+var resultErrorsTyped = Result<int>.Error(new("error-key", "An error occurred"));
 ```
 
 ### Using Results
@@ -208,10 +208,10 @@ var resultErrors =
     Result<int>.Ok(5);
 
 var resultErrorsError =
-    Result<int>.Error("An error occurred");
+    Result<int>.Error(new("An error occurred"));
 
 var resultErrorsMultiError =
-    Result<int>.Error(["An error occurred", "Another error occurred"]);
+    Result<int>.Error(new(["An error occurred", "Another error occurred"]));
 
 var resultErrorsTyped =
     Result<int>.Error(new ResultErrors("error-key", "An error occurred"));
@@ -364,19 +364,19 @@ Danom is integrated with ASP.NET Core via [Danom.Mvc](src/Danom.Mvc/README.md). 
 
 Thank you for considering contributing to Danom, and to those who have already contributed! We appreciate (and actively resolve) PRs of all shapes and sizes.
 
-We kindly ask that before submitting a pull request, you first submit an [issue](https://github.com/pimbrouwers/Danom/issues) or open a [discussion](https://github.com/pimbrouwers/Danom/discussions).
+We kindly ask that before submitting a pull request, you first submit an [issue](https://github.com/eastcitysoftware/danom/issues) or open a [discussion](https://github.com/eastcitysoftware/danom/discussions).
 
-If functionality is added to the API, or changed, please kindly update the relevant [document](https://github.com/pimbrouwers/Danom/tree/master/docs). Unit tests must also be added and/or updated before a pull request can be successfully merged.
+If functionality is added to the API, or changed, please kindly update the relevant [document](https://github.com/eastcitysoftware/danom/tree/master/docs). Unit tests must also be added and/or updated before a pull request can be successfully merged.
 
 Only pull requests which pass all build checks and comply with the general coding guidelines can be approved.
 
-If you have any further questions, submit an [issue](https://github.com/pimbrouwers/Danom/issues) or open a [discussion](https://github.com/pimbrouwers/Danom/discussions).
+If you have any further questions, submit an [issue](https://github.com/eastcitysoftware/danom/issues) or open a [discussion](https://github.com/eastcitysoftware/danom/discussions).
 
 
 ## Find a bug?
 
-There's an [issue](https://github.com/pimbrouwers/Danom/issues) for that.
+There's an [issue](https://github.com/eastcitysoftware/danom/issues) for that.
 
 ## License
 
-Built with ♥ by [Pim Brouwers](https://github.com/pimbrouwers) in Toronto, ON. Licensed under [Apache License 2.0](https://github.com/pimbrouwers/Danom/blob/master/LICENSE).
+Built with ♥ by [Pim Brouwers](https://github.com/pimbrouwers) in Toronto, ON. Licensed under [Apache License 2.0](https://github.com/eastcitysoftware/danom/blob/master/LICENSE).

@@ -96,6 +96,14 @@ public sealed class ResultErrors : IEnumerable<ResultError>
         : this([new ResultError(error)]) { }
 
     /// <summary>
+    /// Creates a new instance of <see cref="ResultErrors"/> from the specified
+    /// errors.
+    /// </summary>
+    /// <param name="errors"></param>/
+    public ResultErrors(ResultErrors errors) =>
+        _errors.AddRange(errors);
+
+    /// <summary>
     /// Adds a new error to the collection.
     /// </summary>
     /// <param name="error"></param>

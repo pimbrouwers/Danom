@@ -40,11 +40,6 @@ public sealed class OptionTests
         Assert.False(option.IsNone);
         Assert.Equal("Some(1)", option.ToString());
 
-        var optionAsync = await Option.SomeAsync(1);
-        AssertOption.IsSome(option);
-        Assert.False(option.IsNone);
-        Assert.Equal("Some(1)", option.ToString());
-
         var optionTask = await Option.SomeAsync(Task<int>.Factory.StartNew(() => 1));
         AssertOption.IsSome(option);
         Assert.False(option.IsNone);
@@ -58,15 +53,6 @@ public sealed class OptionTests
         AssertOption.IsNone(option);
         Assert.False(option.IsSome);
         Assert.Equal("None", option.ToString());
-    }
-
-    [Fact]
-    public async Task NoneAsync()
-    {
-        AssertOption.IsNone(await Option<int>.NoneValueAsync);
-        var option = await Option<int>.NoneAsync();
-        AssertOption.IsNone(option);
-        Assert.False(option.IsSome);
     }
 
     [Fact]

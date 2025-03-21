@@ -75,7 +75,7 @@ public static class ResultTaskExtensions
         this Task<Result<T, TError>> resultTask,
         Func<T, Task<Result<U, TError>>> bind,
         CancellationToken? cancellationToken = null) =>
-        resultTask.MatchAsync(bind, Result<U, TError>.ErrorAsync, cancellationToken);
+        resultTask.MatchAsync(bind, e => Task.FromResult(Result<U, TError>.Error(e)), cancellationToken);
 
     /// <summary>
     /// Evaluates the bind delegate if Result is Ok otherwise return Error.
@@ -169,7 +169,7 @@ public static class ResultTaskExtensions
         this Task<Result<T, UError>> resultTask,
         Func<UError, Task<UError>> mapError,
         CancellationToken? cancellationToken = null) =>
-        resultTask.MatchAsync(Result<T, UError>.OkAsync, e => Result<T, UError>.ErrorAsync(mapError(e)), cancellationToken);
+        resultTask.MatchAsync(x => Task.FromResult(Result<T, UError>.Ok(x)), e => Result<T, UError>.ErrorAsync(mapError(e)), cancellationToken);
 
     /// <summary>
     /// Evaluates the mapError delegate if Result is Error otherwise return Ok.
