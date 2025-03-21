@@ -379,4 +379,4 @@ There's an [issue](https://github.com/eastcitysoftware/danom/issues) for that.
 
 ## License
 
-Built with ♥ by [Pim Brouwers](https://github.com/pimbrouwers) in Toronto, ON. Licensed under [Apache License 2.0](https://github.com/eastcitysoftware/danom/blob/master/LICENSE).
+Licensed under [Apache License 2.0](https://github.com/eastcitysoftware/danom/blob/master/LICENSE).
