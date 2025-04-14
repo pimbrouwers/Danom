@@ -9,8 +9,7 @@ using System.Collections;
 /// <param name="Errors"></param>
 public sealed record ResultError(
     string Key,
-    IEnumerable<string> Errors)
-{
+    IEnumerable<string> Errors) {
 
     /// <summary>
     /// Creates a new instance of <see cref="ResultError"/> from the specified
@@ -41,8 +40,7 @@ public sealed record ResultError(
     /// Returns a string representation of the <see cref="ResultError"/>.
     /// </summary>
     /// <returns></returns>
-    public override string ToString()
-    {
+    public override string ToString() {
         var errors = string.Join(", ", Errors);
         return string.IsNullOrWhiteSpace(Key) ?
             errors :
@@ -53,8 +51,7 @@ public sealed record ResultError(
 /// <summary>
 /// Represents a collection of <see cref="ResultError"/> instances.
 /// </summary>
-public sealed class ResultErrors : IEnumerable<ResultError>
-{
+public sealed class ResultErrors : IEnumerable<ResultError> {
     private readonly List<ResultError> _errors = [];
 
     /// <summary>
@@ -128,8 +125,7 @@ public sealed class ResultErrors : IEnumerable<ResultError>
     /// Returns a string representation of the <see cref="ResultErrors"/>.
     /// </summary>
     /// <returns></returns>
-    public override string ToString()
-    {
+    public override string ToString() {
         var errors = string.Join(", ", _errors);
         return string.Concat(["[ ", errors, " ]"]);
     }

@@ -1,14 +1,12 @@
 namespace Danom.Tests;
 
 using System.Globalization;
-using Xunit;
 using Danom.TestHelpers;
+using Xunit;
 
-public sealed class OptionParseTests
-{
+public sealed class OptionParseTests {
     [Fact]
-    public void boolOptionTryParse()
-    {
+    public void boolOptionTryParse() {
         AssertOption.IsNone(boolOption.TryParse(null));
         AssertOption.IsNone(boolOption.TryParse("danom"));
         AssertOption.IsSome(boolOption.TryParse("true"));
@@ -16,8 +14,7 @@ public sealed class OptionParseTests
     }
 
     [Fact]
-    public void byteOptionTryParse()
-    {
+    public void byteOptionTryParse() {
         AssertOption.IsNone(byteOption.TryParse(null));
         AssertOption.IsNone(byteOption.TryParse("danom"));
         AssertOption.IsSome(byteOption.TryParse("0"));
@@ -25,8 +22,7 @@ public sealed class OptionParseTests
     }
 
     [Fact]
-    public void shortOptionTryParse()
-    {
+    public void shortOptionTryParse() {
         AssertOption.IsNone(shortOption.TryParse(null));
         AssertOption.IsNone(shortOption.TryParse("danom"));
         AssertOption.IsSome(Option.Some("-32768").Bind(shortOption.TryParse));
@@ -35,8 +31,7 @@ public sealed class OptionParseTests
     }
 
     [Fact]
-    public void intOptionTryParse()
-    {
+    public void intOptionTryParse() {
         AssertOption.IsNone(intOption.TryParse(null, null));
         AssertOption.IsNone(intOption.TryParse("danom", null));
         AssertOption.IsSome(Option.Some("-2147483648").Bind(intOption.TryParse));
@@ -49,8 +44,7 @@ public sealed class OptionParseTests
     }
 
     [Fact]
-    public void longOptionTryParse()
-    {
+    public void longOptionTryParse() {
         AssertOption.IsNone(longOption.TryParse(null, null));
         AssertOption.IsNone(longOption.TryParse("danom", null));
         AssertOption.IsSome(Option.Some("-9223372036854775808").Bind(longOption.TryParse));
@@ -61,8 +55,7 @@ public sealed class OptionParseTests
     }
 
     [Fact]
-    public void decimalOptionTryParse()
-    {
+    public void decimalOptionTryParse() {
         AssertOption.IsNone(decimalOption.TryParse(null, null));
         AssertOption.IsNone(decimalOption.TryParse("danom", null));
         AssertOption.IsSome(Option.Some("-79228162514264337593543950335").Bind(decimalOption.TryParse));
@@ -73,8 +66,7 @@ public sealed class OptionParseTests
     }
 
     [Fact]
-    public void doubleOptionTryParse()
-    {
+    public void doubleOptionTryParse() {
         AssertOption.IsNone(doubleOption.TryParse(null, null));
         AssertOption.IsNone(doubleOption.TryParse("danom", null));
         AssertOption.IsSome(Option.Some("-1.7976931348623157E+308").Bind(doubleOption.TryParse));
@@ -85,8 +77,7 @@ public sealed class OptionParseTests
     }
 
     [Fact]
-    public void floatOptionTryParse()
-    {
+    public void floatOptionTryParse() {
         AssertOption.IsNone(floatOption.TryParse(null, null));
         AssertOption.IsNone(floatOption.TryParse("danom", null));
         AssertOption.IsSome(Option.Some("-3.40282347E+38").Bind(floatOption.TryParse));
@@ -97,8 +88,7 @@ public sealed class OptionParseTests
     }
 
     [Fact]
-    public void GuidOptionTryParse()
-    {
+    public void GuidOptionTryParse() {
         AssertOption.IsNone(GuidOption.TryParse(null));
         AssertOption.IsNone(GuidOption.TryParse("danom"));
         AssertOption.IsSome(Option.Some("00000000-0000-0000-0000-000000000000").Bind(GuidOption.TryParse));
@@ -107,8 +97,7 @@ public sealed class OptionParseTests
     }
 
     [Fact]
-    public void GuidOptionTryParseExact()
-    {
+    public void GuidOptionTryParseExact() {
         AssertOption.IsNone(GuidOption.TryParseExact(null, null));
         AssertOption.IsNone(GuidOption.TryParseExact("danom", "N"));
         AssertOption.IsSome(GuidOption.TryParseExact("00000000-0000-0000-0000-000000000000", "D"));
@@ -119,8 +108,7 @@ public sealed class OptionParseTests
     }
 
     [Fact]
-    public void DateTimeOffsetOptionTryParse()
-    {
+    public void DateTimeOffsetOptionTryParse() {
         AssertOption.IsNone(DateTimeOffsetOption.TryParse(null, null));
         AssertOption.IsNone(DateTimeOffsetOption.TryParse("danom", null));
         AssertOption.IsSome(Option.Some("0001-01-01T00:00:00.0000000+00:00").Bind(DateTimeOffsetOption.TryParse));
@@ -129,8 +117,7 @@ public sealed class OptionParseTests
     }
 
     [Fact]
-    public void DateTimeOffsetOptionTryParseExact()
-    {
+    public void DateTimeOffsetOptionTryParseExact() {
         AssertOption.IsNone(DateTimeOffsetOption.TryParseExact(null, null, null));
         AssertOption.IsNone(DateTimeOffsetOption.TryParseExact("danom", null, null));
 
@@ -143,8 +130,7 @@ public sealed class OptionParseTests
     }
 
     [Fact]
-    public void DateOnlyOptionTryParse()
-    {
+    public void DateOnlyOptionTryParse() {
         AssertOption.IsNone(DateOnlyOption.TryParse(null, null));
         AssertOption.IsNone(DateOnlyOption.TryParse("danom", null));
         AssertOption.IsSome(Option.Some("0001-01-01").Bind(DateOnlyOption.TryParse));
@@ -153,8 +139,7 @@ public sealed class OptionParseTests
     }
 
     [Fact]
-    public void TimeOnlyOptionTryParse()
-    {
+    public void TimeOnlyOptionTryParse() {
         AssertOption.IsNone(TimeOnlyOption.TryParse(null, null));
         AssertOption.IsNone(TimeOnlyOption.TryParse("danom", null));
         AssertOption.IsSome(Option.Some("00:00:00").Bind(TimeOnlyOption.TryParse));
@@ -163,8 +148,7 @@ public sealed class OptionParseTests
     }
 
     [Fact]
-    public void TimeSpanOptionTryParse()
-    {
+    public void TimeSpanOptionTryParse() {
         AssertOption.IsNone(TimeSpanOption.TryParse(null, null));
         AssertOption.IsNone(TimeSpanOption.TryParse("danom", null));
         AssertOption.IsSome(Option.Some("00:00:00").Bind(TimeSpanOption.TryParse));
@@ -173,8 +157,7 @@ public sealed class OptionParseTests
     }
 
     [Fact]
-    public void TimeSpanOptionTryParseExact()
-    {
+    public void TimeSpanOptionTryParseExact() {
         AssertOption.IsNone(TimeSpanOption.TryParseExact(null, null, null));
         AssertOption.IsNone(TimeSpanOption.TryParseExact("danom", null, null));
         AssertOption.IsSome(TimeSpanOption.TryParseExact("10675199.02:48:05.4775807", "c", null));
@@ -185,15 +168,13 @@ public sealed class OptionParseTests
         AssertOption.IsSome(TimeSpanOption.TryParseExact("3:17:14:48.153", "G", CultureInfo.CurrentUICulture));
     }
 
-    enum Borp
-    {
+    enum Borp {
         Meep,
         Morp
     }
 
     [Fact]
-    public void EnumOptionTryParse()
-    {
+    public void EnumOptionTryParse() {
         AssertOption.IsNone(EnumOption.TryParse<Borp>(null));
         AssertOption.IsNone(EnumOption.TryParse<Borp>("danom"));
         AssertOption.IsSome(EnumOption.TryParse<Borp>("Meep"));

@@ -7,19 +7,16 @@ namespace Danom;
 /// <typeparam name="T"></typeparam>
 /// <typeparam name="TError"></typeparam>
 public readonly struct Result<T, TError>
-    : IEquatable<Result<T, TError>>
-{
+    : IEquatable<Result<T, TError>> {
     private readonly T? _ok = default;
     private readonly TError? _error = default;
 
-    private Result(T t)
-    {
+    private Result(T t) {
         _ok = t;
         IsOk = true;
     }
 
-    private Result(TError tError)
-    {
+    private Result(TError tError) {
         _error = tError;
     }
 
@@ -53,16 +50,13 @@ public readonly struct Result<T, TError>
     /// otherwise evaluates
     /// the none delegate.
     /// </summary>
-    public void Match(Action<T> ok, Action<TError> error)
-    {
+    public void Match(Action<T> ok, Action<TError> error) {
         Match(
-            ok: x =>
-            {
+            ok: x => {
                 ok(x);
                 return Unit.Value;
             },
-            error: e =>
-            {
+            error: e => {
                 error(e);
                 return Unit.Value;
             });
@@ -121,16 +115,13 @@ public readonly struct Result<T, TError>
     /// Safely retrieve value using procedural code.
     /// </summary>
     /// <param name="result"></param>
-    public bool TryGet(out T result)
-    {
+    public bool TryGet(out T result) {
         var success = false;
 
         result =
             Match(
-                ok: x =>
-                {
-                    if (x is not null)
-                    {
+                ok: x => {
+                    if (x is not null) {
                         success = true;
                         return x;
                     }
@@ -147,17 +138,14 @@ public readonly struct Result<T, TError>
     /// </summary>
     /// <param name="result"></param>
     /// <returns></returns>
-    public bool TryGetError(out TError result)
-    {
+    public bool TryGetError(out TError result) {
         var success = false;
 
         result =
             Match(
                 ok: _ => default!,
-                error: e =>
-                {
-                    if (e is not null)
-                    {
+                error: e => {
+                    if (e is not null) {
                         success = true;
                         return e;
                     }
@@ -235,7 +223,7 @@ public readonly struct Result<T, TError>
         Match(
             ok: x1 =>
                 other.Match(
-                    ok: x2 => x1 is not null &&  x2 is not null && x2.Equals(x1),
+                    ok: x2 => x1 is not null && x2 is not null && x2.Equals(x1),
                     error: _ => false),
             error: e1 =>
                 other.Match(
@@ -267,8 +255,7 @@ public readonly struct Result<T, TError>
 /// as the predefined error type.
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public static class Result<T>
-{
+public static class Result<T> {
     /// <summary>
     /// Creates a new <see cref="Result{T, ResultErrors}"/> with the specified value.
     /// </summary>
@@ -298,8 +285,7 @@ public static class Result<T>
 /// The <see cref="Result{T, ResultErrors}"/> with <see cref="ResultErrors"/>
 /// as the predefined error type.
 /// </summary>
-public static class Result
-{
+public static class Result {
     /// <summary>
     /// Creates a new <see cref="Result{T, ResultErrors}"/> with the specified value.
     /// </summary>

@@ -6,8 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 /// A controller that provides helper methods for working with Danom's monad types.
 /// </summary>
 public class DanomController
-    : Controller
-{
+    : Controller {
     /// <summary>
     /// An action result that returns a 404 Not Found response if the option is
     /// None, otherwise display the specified view with the option value.
@@ -22,29 +21,22 @@ public class DanomController
         Option<T> option,
         string? viewName = null,
         Func<IActionResult>? noneAction = null,
-        ResultErrors? errors = null)
-    {
-        if (errors is not null)
-        {
+        ResultErrors? errors = null) {
+        if (errors is not null) {
             ModelState.AddResultErrors(errors);
         }
 
         return option.Match(
-            some: x =>
-            {
-                if (viewName is not null)
-                {
+            some: x => {
+                if (viewName is not null) {
                     return View(viewName, x);
                 }
-                else
-                {
+                else {
                     return View(x);
                 }
             },
-            none: () =>
-            {
-                if (noneAction is not null)
-                {
+            none: () => {
+                if (noneAction is not null) {
                     return noneAction();
                 }
 
@@ -63,24 +55,19 @@ public class DanomController
     public IActionResult ViewResultErrors(
         ResultErrors errors,
         string? viewName = null,
-        object? model = null)
-    {
+        object? model = null) {
         ModelState.AddResultErrors(errors);
 
-        if (viewName is not null && model is not null)
-        {
+        if (viewName is not null && model is not null) {
             return View(viewName, model);
         }
-        else if (viewName is not null)
-        {
+        else if (viewName is not null) {
             return View(viewName);
         }
-        else if (model is not null)
-        {
+        else if (model is not null) {
             return View(model);
         }
-        else
-        {
+        else {
             return View();
         }
     }
@@ -102,22 +89,17 @@ public class DanomController
         string? viewName = null,
         object? model = null) =>
         result.Match(
-            ok: x =>
-            {
-                if (viewName is not null && model is not null)
-                {
+            ok: x => {
+                if (viewName is not null && model is not null) {
                     return View(viewName, model);
                 }
-                else if (viewName is not null)
-                {
+                else if (viewName is not null) {
                     return View(viewName, x);
                 }
-                else if (model is not null)
-                {
+                else if (model is not null) {
                     return View(model);
                 }
-                else
-                {
+                else {
                     return View(x);
                 }
             },
@@ -141,65 +123,5 @@ public class DanomController
             viewName: viewName,
             model: model,
             errorAction: e => ViewResultErrors(e, viewName, model));
-
-    /// <summary>
-    /// An action result that renders the specified view with the specified model
-    /// if the result is Ok, NotFound if the result is None, otherwise execute
-    /// the error action.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <typeparam name="TError"></typeparam>
-    /// <param name="resultOption"></param>
-    /// <param name="errorAction"></param>
-    /// <param name="viewName"></param>
-    /// <param name="model"></param>
-    /// <returns></returns>
-    public IActionResult ViewResultOption<T, TError>(
-        ResultOption<T, TError> resultOption,
-        Func<TError, IActionResult> errorAction,
-        string? viewName = null,
-        object? model = null) =>
-        resultOption.Match(
-            ok: x =>
-            {
-                if (viewName is not null && model is not null)
-                {
-                    return View(viewName, model);
-                }
-                else if (viewName is not null)
-                {
-                    return View(viewName, x);
-                }
-                else if (model is not null)
-                {
-                    return View(model);
-                }
-                else
-                {
-                    return View(x);
-                }
-            },
-            none: NotFound,
-            error: errorAction);
-
-    /// <summary>
-    /// An action result that renders the specified view with the specified model
-    /// if the result is Ok, NotFound if the result is None, otherwise display
-    /// the errors in the model state.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="resultOption"></param>
-    /// <param name="viewName"></param>
-    /// <param name="model"></param>
-    /// <returns></returns>
-    public IActionResult ViewResultOption<T>(
-        ResultOption<T, ResultErrors> resultOption,
-        string? viewName = null,
-        object? model = null) =>
-        ViewResultOption(
-            resultOption: resultOption,
-            errorAction: e => ViewResultErrors(e, viewName, model),
-            viewName: viewName,
-            model: model);
 
 }

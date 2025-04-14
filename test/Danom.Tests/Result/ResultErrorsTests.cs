@@ -1,40 +1,33 @@
 namespace Danom.Tests;
 
-using Xunit;
 using Danom.TestHelpers;
+using Xunit;
 
-public sealed class ResultErrorTests
-{
+public sealed class ResultErrorTests {
     [Fact]
-    public void CanCreateFromString()
-    {
+    public void CanCreateFromString() {
         Assert.Equal("Error", new ResultError("Error").ToString());
     }
 
     [Fact]
-    public void CanCreateFromStringWithKey()
-    {
+    public void CanCreateFromStringWithKey() {
         Assert.Equal("Key - Error", new ResultError("Key", "Error").ToString());
     }
 
     [Fact]
-    public void CanCreateFromStrings()
-    {
+    public void CanCreateFromStrings() {
         Assert.Equal("Error1, Error2", new ResultError(["Error1", "Error2"]).ToString());
     }
 
     [Fact]
-    public void CanCreateFromStringsWithKey()
-    {
+    public void CanCreateFromStringsWithKey() {
         Assert.Equal("Key - Error1, Error2", new ResultError("Key", ["Error1", "Error2"]).ToString());
     }
 }
 
-public sealed class ResultErrorsTests
-{
+public sealed class ResultErrorsTests {
     [Fact]
-    public void CanCreateAndEnumerate()
-    {
+    public void CanCreateAndEnumerate() {
         var resultErrors = new ResultErrors([
             new ResultError("Error1"),
             new ResultError("Error2")]);
@@ -45,8 +38,7 @@ public sealed class ResultErrorsTests
     }
 
     [Fact]
-    public void CanAdd()
-    {
+    public void CanAdd() {
         var resultErrors = new ResultErrors();
         resultErrors.Add(new("Error"));
         Assert.Single(resultErrors);
@@ -54,8 +46,7 @@ public sealed class ResultErrorsTests
     }
 
     [Fact]
-    public void CanCreateFromString()
-    {
+    public void CanCreateFromString() {
         var resultErrors = new ResultErrors("Error");
         Assert.Single(resultErrors);
         Assert.Equal($"[ Error ]", resultErrors.ToString());

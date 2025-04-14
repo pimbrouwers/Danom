@@ -23,5 +23,3 @@ var wapp = bldr.Build();
 wapp.MapDefaultControllerRoute();
 
 wapp.Run();
-
-public sealed class DbConnection

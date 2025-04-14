@@ -4,8 +4,7 @@ namespace Danom;
 /// Contains Task extension methods for <see cref="Result{T, TError}"/> that allow for
 /// asynchronous operations containing <see cref="Result{T, TError}"/>.
 /// </summary>
-public static class ResultTaskExtensions
-{
+public static class ResultTaskExtensions {
     /// <summary>
     /// If Result is Ok evaluate the ok delegate, otherwise error.
     /// </summary>
@@ -21,8 +20,7 @@ public static class ResultTaskExtensions
         this Task<Result<T, TError>> resultTask,
         Func<T, Task<U>> ok,
         Func<TError, Task<U>> error,
-        CancellationToken? cancellationToken = null)
-    {
+        CancellationToken? cancellationToken = null) {
         var option = await resultTask.WaitOrCancel(cancellationToken);
         return await option.Match(ok, error).WaitOrCancel(cancellationToken);
     }

@@ -7,8 +7,7 @@ using FluentValidation;
 /// <see cref="Result{T, ResultErrors}" />.
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public static class ValidationResult<T>
-{
+public static class ValidationResult<T> {
     /// <summary>
     /// Converts an input value to a <see cref="Result{T, ResultErrors}" />
     /// using the provided validator.
@@ -17,16 +16,13 @@ public static class ValidationResult<T>
     /// <param name="input"></param>
     /// <returns></returns>
     public static Result<T, ResultErrors> From<TValidator>(T input)
-        where TValidator : IValidator<T>, new()
-    {
+        where TValidator : IValidator<T>, new() {
         var validator = new TValidator();
         var validationResult = validator.Validate(input);
-        if (validationResult.IsValid)
-        {
+        if (validationResult.IsValid) {
             return Result<T, ResultErrors>.Ok(input);
         }
-        else
-        {
+        else {
             return Result<T, ResultErrors>.Error(
                 new ResultErrors(
                     validationResult.Errors

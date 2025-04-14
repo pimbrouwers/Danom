@@ -316,7 +316,7 @@ Since Danom introduces types that are most commonly found in your model and busi
 
 ### Fluent Validation Integration
 
-[Fluent Validation](https://fluentvalidation.net/) is an excellent library for building validation rules for your models. A first-class integration is available via [Danom.Validation](src/Danom.Validation/README.md) to provide a seamless way to validate your models and return a `Result` or `ResultOption` with the validation errors.
+[Fluent Validation](https://fluentvalidation.net/) is an excellent library for building validation rules for your models. A first-class integration is available via [Danom.Validation](src/Danom.Validation/README.md) to provide a seamless way to validate your models and return a `Result` with the validation errors.
 
 A quick example:
 

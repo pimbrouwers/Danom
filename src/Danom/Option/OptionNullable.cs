@@ -4,8 +4,7 @@ namespace Danom;
 /// Contains extension methods for <see cref="Option{T}"/> that allow for
 /// converting between nullable types and options.
 /// </summary>
-public static class OptionNullableExtensions
-{
+public static class OptionNullableExtensions {
     /// <summary>
     /// Converts a nullable value to an option.
     /// </summary>

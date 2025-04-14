@@ -20,7 +20,7 @@ dotnet add package Danom.Mvc
 
 ## MVC
 
-The `DanomController` class extends the base controller class to provide a set of methods to help work with `Result`, `Option`, and `ResultOption` types in ASP.NET Core MVC applications.
+The `DanomController` class extends the base controller class to provide a set of methods to help work with `Result` and `Option` types in ASP.NET Core MVC applications.
 
 
 ### Option
@@ -160,7 +160,7 @@ else
 
 ## Razor Pages
 
-The `DanomPageModel` class extends the base page model class to provide method(s) to help work with `Result`, `Option`, and `ResultOption` types in ASP.NET Core Razor Pages applications.
+The `DanomPageModel` class extends the base page model class to provide method(s) to help work with `Result` and `Option` types in ASP.NET Core Razor Pages applications.
 
 ```csharp
 using Danom.Mvc;

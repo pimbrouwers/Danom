@@ -1,13 +1,11 @@
 namespace Danom.Tests;
 
-using Xunit;
 using Danom.TestHelpers;
+using Xunit;
 
-public sealed class ResultTests
-{
+public sealed class ResultTests {
     [Fact]
-    public void Ok()
-    {
+    public void Ok() {
         var result = Result<int, string>.Ok(1);
         AssertResult.IsOk(result);
         Assert.False(result.IsError);
@@ -15,8 +13,7 @@ public sealed class ResultTests
     }
 
     [Fact]
-    public async Task OkAsyncFromTask()
-    {
+    public async Task OkAsyncFromTask() {
         var result = await Result<int, string>.OkAsync(Task<int>.Factory.StartNew(() => 1));
         AssertResult.IsOk(result);
         Assert.False(result.IsError);
@@ -24,8 +21,7 @@ public sealed class ResultTests
     }
 
     [Fact]
-    public void Error()
-    {
+    public void Error() {
         var result = Result<int, string>.Error(new("Error"));
         AssertResult.IsError(result);
         Assert.False(result.IsOk);
@@ -33,8 +29,7 @@ public sealed class ResultTests
     }
 
     [Fact]
-    public void Match()
-    {
+    public void Match() {
         Assert.Equal(1,
             Result<int, string>.Ok(1)
                 .Match(x => x, _ => -1));
@@ -45,8 +40,7 @@ public sealed class ResultTests
     }
 
     [Fact]
-    public void MatchAction()
-    {
+    public void MatchAction() {
         var ok = false;
         var error = false;
 
@@ -67,67 +61,58 @@ public sealed class ResultTests
     }
 
     [Fact]
-    public void Bind()
-    {
+    public void Bind() {
         AssertResult.IsOk(2, Result<int, string>.Ok(1).Bind(x => Result<int, string>.Ok(x + 1)));
         AssertResult.IsError(Result<int, string>.Error(new("Error")).Bind(x => Result<int, string>.Ok(x + 1)));
     }
 
     [Fact]
-    public void Map()
-    {
+    public void Map() {
         AssertResult.IsOk(2, Result<int, string>.Ok(1).Map(x => x + 1));
         AssertResult.IsError(Result<int, string>.Error(new("Error")).Map(x => x + 1));
     }
 
     [Fact]
-    public void DefaultValue()
-    {
+    public void DefaultValue() {
         Assert.Equal(1, Result<int, string>.Error(new("Error")).DefaultValue(1));
         Assert.Equal(2, Result<int, string>.Ok(2).DefaultValue(1));
     }
 
     [Fact]
-    public void DefaultWith()
-    {
+    public void DefaultWith() {
         Assert.Equal(1, Result<int, string>.Error(new("Error")).DefaultWith(() => 1));
         Assert.Equal(2, Result<int, string>.Ok(2).DefaultWith(() => 1));
     }
 
     [Fact]
-    public void Equality()
-    {
-        Assert.Equal(Result<int,string>.Error(new("Error")), Result<int,string>.Error(new("Error")));
-        Assert.Equal(Result<int,string>.Ok(1), Result<int,string>.Ok(1));
-        Assert.NotEqual(Result<int,string>.Ok(1), Result<int,string>.Ok(2));
-        Assert.NotEqual(Result<int,string>.Ok(1), Result<int,string>.Error(new("Error")));
+    public void Equality() {
+        Assert.Equal(Result<int, string>.Error(new("Error")), Result<int, string>.Error(new("Error")));
+        Assert.Equal(Result<int, string>.Ok(1), Result<int, string>.Ok(1));
+        Assert.NotEqual(Result<int, string>.Ok(1), Result<int, string>.Ok(2));
+        Assert.NotEqual(Result<int, string>.Ok(1), Result<int, string>.Error(new("Error")));
     }
 
     [Fact]
-    public void EqualityOperator()
-    {
-        Assert.True(Result<int,string>.Error(new("Error")) == Result<int,string>.Error(new("Error")));
-        Assert.True(Result<int,string>.Ok(1) == Result<int,string>.Ok(1));
-        Assert.False(Result<int,string>.Ok(1) == Result<int,string>.Ok(2));
-        Assert.False(Result<int,string>.Ok(1) == Result<int,string>.Error(new("Error")));
+    public void EqualityOperator() {
+        Assert.True(Result<int, string>.Error(new("Error")) == Result<int, string>.Error(new("Error")));
+        Assert.True(Result<int, string>.Ok(1) == Result<int, string>.Ok(1));
+        Assert.False(Result<int, string>.Ok(1) == Result<int, string>.Ok(2));
+        Assert.False(Result<int, string>.Ok(1) == Result<int, string>.Error(new("Error")));
     }
 
     [Fact]
-    public void InequalityOperator()
-    {
-        Assert.False(Result<int,string>.Error(new("Error")) != Result<int,string>.Error(new("Error")));
-        Assert.False(Result<int,string>.Ok(1) != Result<int,string>.Ok(1));
-        Assert.True(Result<int,string>.Ok(1) != Result<int,string>.Ok(2));
-        Assert.True(Result<int,string>.Ok(1) != Result<int,string>.Error(new("Error")));
+    public void InequalityOperator() {
+        Assert.False(Result<int, string>.Error(new("Error")) != Result<int, string>.Error(new("Error")));
+        Assert.False(Result<int, string>.Ok(1) != Result<int, string>.Ok(1));
+        Assert.True(Result<int, string>.Ok(1) != Result<int, string>.Ok(2));
+        Assert.True(Result<int, string>.Ok(1) != Result<int, string>.Error(new("Error")));
     }
 }
 
 
-public sealed class ResultTTests
-{
+public sealed class ResultTTests {
     [Fact]
-    public void Ok()
-    {
+    public void Ok() {
         var result = Result<int>.Ok(1);
         AssertResult.IsOk(result);
         Assert.False(result.IsError);
@@ -135,40 +120,35 @@ public sealed class ResultTTests
     }
 
     [Fact]
-    public async Task OkAsyncFromValue()
-    {
+    public async Task OkAsyncFromValue() {
         var result = await Task.FromResult(Result<int>.Ok(1));
         AssertResult.IsOk(result);
         Assert.False(result.IsError);
     }
 
     [Fact]
-    public async Task OkAsyncFromTask()
-    {
+    public async Task OkAsyncFromTask() {
         var result = await Result<int>.OkAsync(Task<int>.Factory.StartNew(() => 1));
         AssertResult.IsOk(result);
         Assert.False(result.IsError);
     }
 
     [Fact]
-    public async Task ErrorAsync()
-    {
+    public async Task ErrorAsync() {
         var result = await Task.FromResult(Result<int>.Error(new("Error")));
         AssertResult.IsError(result);
         Assert.False(result.IsOk);
     }
 
     [Fact]
-    public void Error()
-    {
+    public void Error() {
         var result = Result<int>.Error(new("Error"));
         AssertResult.IsError(result);
         Assert.False(result.IsOk);
     }
 
     [Fact]
-    public void Match()
-    {
+    public void Match() {
         Assert.Equal(1,
             Result<int>.Ok(1)
                 .Match(x => x, _ => -1));
@@ -179,39 +159,33 @@ public sealed class ResultTTests
     }
 
     [Fact]
-    public void Bind()
-    {
+    public void Bind() {
         AssertResult.IsOk(2, Result<int>.Ok(1).Bind(x => Result<int>.Ok(x + 1)));
         AssertResult.IsError(Result<int>.Error(new("Error")).Bind(x => Result<int>.Ok(x + 1)));
     }
 
     [Fact]
-    public void Map()
-    {
+    public void Map() {
         AssertResult.IsOk(2, Result<int>.Ok(1).Map(x => x + 1));
         AssertResult.IsError(Result<int>.Error(new("Error")).Map(x => x + 1));
     }
 
     [Fact]
-    public void DefaultValue()
-    {
+    public void DefaultValue() {
         Assert.Equal(1, Result<int>.Error(new("Error")).DefaultValue(1));
         Assert.Equal(2, Result<int>.Ok(2).DefaultValue(1));
     }
 
     [Fact]
-    public void DefaultWith()
-    {
+    public void DefaultWith() {
         Assert.Equal(1, Result<int>.Error(new("Error")).DefaultWith(() => 1));
         Assert.Equal(2, Result<int>.Ok(2).DefaultWith(() => 1));
     }
 }
 
-public sealed class ResultTAsyncTests
-{
+public sealed class ResultTAsyncTests {
     [Fact]
-    public async Task Match()
-    {
+    public async Task Match() {
         var resultOk = await Task.FromResult(Result<int>.Ok(1)).MatchAsync(x => x, _ => -1);
         Assert.Equal(1, resultOk);
 
@@ -220,8 +194,7 @@ public sealed class ResultTAsyncTests
     }
 
     [Fact]
-    public async Task Bind()
-    {
+    public async Task Bind() {
         AssertResult.IsOk(2, await Task.FromResult(Result<int>.Ok(1)).BindAsync(x => Result<int>.Ok(x + 1)));
         AssertResult.IsOk(2, await Task.FromResult(Result<int>.Ok(1)).BindAsync(x => Result<int>.OkAsync(Task.FromResult(x + 1))));
         AssertResult.IsError(await Task.FromResult(Result<int>.Error(new("Error"))).BindAsync(x => Result<int>.Ok(x + 1)));
@@ -229,8 +202,7 @@ public sealed class ResultTAsyncTests
     }
 
     [Fact]
-    public async Task Map()
-    {
+    public async Task Map() {
         AssertResult.IsOk(2, await Task.FromResult(Result<int>.Ok(1)).MapAsync(x => x + 1));
         AssertResult.IsOk(2, await Task.FromResult(Result<int>.Ok(1)).MapAsync(x => Task.FromResult(x + 1)));
         AssertResult.IsError(await Task.FromResult(Result<int>.Error(new("Error"))).MapAsync(x => x + 1));
@@ -238,8 +210,7 @@ public sealed class ResultTAsyncTests
     }
 
     [Fact]
-    public async Task DefaultValue()
-    {
+    public async Task DefaultValue() {
         Assert.Equal(1, await Task.FromResult(Result<int>.Error(new("Error"))).DefaultValueAsync(1));
         Assert.Equal(1, await Task.FromResult(Result<int>.Error(new("Error"))).DefaultValueAsync(Task.FromResult(1)));
         Assert.Equal(2, await Task.FromResult(Result<int>.Ok(2)).DefaultValueAsync(1));
@@ -247,8 +218,7 @@ public sealed class ResultTAsyncTests
     }
 
     [Fact]
-    public async Task DefaultWith()
-    {
+    public async Task DefaultWith() {
         Assert.Equal(1, await Task.FromResult(Result<int>.Error(new("Error"))).DefaultWithAsync(() => 1));
         Assert.Equal(1, await Task.FromResult(Result<int>.Error(new("Error"))).DefaultWithAsync(() => Task.FromResult(1)));
         Assert.Equal(2, await Task.FromResult(Result<int>.Ok(2)).DefaultWithAsync(() => 1));

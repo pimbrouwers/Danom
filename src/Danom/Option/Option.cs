@@ -6,14 +6,11 @@ namespace Danom;
 /// </summary>
 /// <typeparam name="T"></typeparam>
 public readonly struct Option<T>
-    : IEquatable<Option<T>>, IComparable<Option<T>>
-{
+    : IEquatable<Option<T>>, IComparable<Option<T>> {
     private readonly T? _some = default;
 
-    internal Option(T t)
-    {
-        if (t is not null)
-        {
+    internal Option(T t) {
+        if (t is not null) {
             _some = t;
             IsSome = true;
         }
@@ -48,13 +45,11 @@ public readonly struct Option<T>
     /// <param name="none"></param>
     public void Match(Action<T> some, Action none) =>
         Match(
-            some: x =>
-            {
+            some: x => {
                 some(x);
                 return Unit.Value;
             },
-            none: () =>
-            {
+            none: () => {
                 none();
                 return Unit.Value;
             });
@@ -128,11 +123,9 @@ public readonly struct Option<T>
     /// </summary>
     /// <param name="result"></param>
     /// <returns></returns>
-    public bool TryGet(out T result)
-    {
+    public bool TryGet(out T result) {
         var success = true;
-        result = DefaultWith(() =>
-        {
+        result = DefaultWith(() => {
             success = false;
             // we return this only to satisfy the compiler
             return default!;
@@ -164,8 +157,7 @@ public readonly struct Option<T>
     /// <returns></returns>
     public static async Task<Option<T>> SomeAsync(
         Task<T> value,
-        CancellationToken? cancellationToken = null)
-    {
+        CancellationToken? cancellationToken = null) {
         var result = await value.WaitOrCancel(cancellationToken);
         return Some(result);
     }
@@ -324,8 +316,7 @@ public readonly struct Option<T>
 /// <summary>
 /// Provides static methods for creating <see cref="Option{T}"/>s.
 /// </summary>
-public static class Option
-{
+public static class Option {
     /// <summary>
     /// Creates a new <see cref="Option{T}"/> with the specified value, with its
     /// type provided via method invocation. Enables `Option.Some(1)` syntax.
@@ -343,8 +334,7 @@ public static class Option
     /// <returns></returns>
     public static async Task<Option<T>> SomeAsync<T>(
         Task<T> value,
-        CancellationToken? cancellationToken = null)
-    {
+        CancellationToken? cancellationToken = null) {
         var result = await value.WaitOrCancel(cancellationToken);
         return Option<T>.Some(result);
     }

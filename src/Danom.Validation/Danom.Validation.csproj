@@ -40,7 +40,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Danom" Version="1.2.0" />
+    <!-- <PackageReference Include="Danom" Version="1.2.0" /> -->
+    <ProjectReference Include="..\Danom\Danom.csproj" />
     <PackageReference Include="FluentValidation" Version="11.11.0" />
   </ItemGroup>
 </Project>

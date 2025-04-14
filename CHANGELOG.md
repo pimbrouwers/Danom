@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Added
+
+- `Result<T, TError>.TryGet(out var ok)` and `Result<T, TError>.TryGetError(out var error)` to safely provide the internal value. A return value indicates whether or not the Result was Ok or Error.
+- `DanomPageModel` base class for Razor Pages to provide a consistent API for handling options and results.
+- `Option<T>` implementation for `IComparable<T>`.
+
+### Removed
+
+- `ResultOption<T>` and `ResultOption<T, TError>` types. Use `Option<T>` and `Result<T, TError>` instead.
+- Async helpers for `Option<T>` and `Result<T, TError>` to allow for async operations.
+
 ## [1.2.0] - 2024-12-06
 
 ### Added
