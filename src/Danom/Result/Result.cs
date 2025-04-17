@@ -115,43 +115,22 @@ public readonly struct Result<T, TError>
     /// Safely retrieve value using procedural code.
     /// </summary>
     /// <param name="result"></param>
-    public bool TryGet(out T result) {
-        var success = false;
+    /// <param name="error"></param>
+    /// <returns>True if the Result is in the Ok state, false if in the
+    /// Error state</returns>
+    public bool TryGet(out T? result, out TError? error) {
+        bool success;
 
-        result =
-            Match(
-                ok: x => {
-                    if (x is not null) {
-                        success = true;
-                        return x;
-                    }
-
-                    return default!;
-                },
-                error: _ => default!);
-
-        return success;
-    }
-
-    /// <summary>
-    /// Safely retrieve error value using procedural code.
-    /// </summary>
-    /// <param name="result"></param>
-    /// <returns></returns>
-    public bool TryGetError(out TError result) {
-        var success = false;
-
-        result =
-            Match(
-                ok: _ => default!,
-                error: e => {
-                    if (e is not null) {
-                        success = true;
-                        return e;
-                    }
-
-                    return default!;
-                });
+        if (IsOk) {
+            success = true;
+            result = _ok;
+            error = default;
+        }
+        else {
+            result = default;
+            error = _error;
+            success = false;
+        }
 
         return success;
     }

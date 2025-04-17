@@ -2,11 +2,11 @@
 
   <PropertyGroup>
     <AssemblyName>Danom.Mvc</AssemblyName>
-    <Version>1.2.0</Version>
+    <Version>2.0.0</Version>
 
     <!-- General info -->
-    <Description>ASP.NET Core MVC helpers for Danom.</Description>
-    <Copyright>Copyright 2024 Pim Brouwers</Copyright>
+    <Description>ASP.NET Core MVC and Razor Pages helpers for Danom.</Description>
+    <Copyright>Copyright 2025 Pim Brouwers</Copyright>
     <Authors>Pim Brouwers</Authors>
     <NeutralLanguage>en-CA</NeutralLanguage>
 
@@ -23,7 +23,7 @@
     <PackageId>Danom.Mvc</PackageId>
     <PackageTags>aspnetcore;mvc;validation;danom;</PackageTags>
     <PackageProjectUrl>https://github.com/eastcitysoftware/danom</PackageProjectUrl>
-    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageLicenseExpression>mit</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <RepositoryType>git</RepositoryType>
@@ -44,8 +44,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- <PackageReference Include="Danom" Version="1.2.0" /> -->
-    <!-- <PackageReference Include="Danom.Validation" Version="1.2.0" /> -->
+    <!-- <PackageReference Include="Danom" Version="2.0.0" /> -->
+    <!-- <PackageReference Include="Danom.Validation" Version="2.0.0" /> -->
     <ProjectReference Include="..\Danom\Danom.csproj" />
     <ProjectReference Include="..\Danom.Validation\Danom.Validation.csproj" />
   </ItemGroup>

@@ -2,11 +2,11 @@
 
   <PropertyGroup>
     <AssemblyName>Danom</AssemblyName>
-    <Version>1.2.0</Version>
+    <Version>2.0.0</Version>
 
     <!-- General info -->
     <Description>Monadic structures to simplify functional programming patterns in C#.</Description>
-    <Copyright>Copyright 2024 Pim Brouwers</Copyright>
+    <Copyright>Copyright 2025 Pim Brouwers</Copyright>
     <Authors>Pim Brouwers</Authors>
     <NeutralLanguage>en-CA</NeutralLanguage>
 
@@ -23,7 +23,7 @@
     <PackageId>Danom</PackageId>
     <PackageTags>monads;error-handling;option-type;option;result;railway-oriented-programming;result-type</PackageTags>
     <PackageProjectUrl>https://github.com/eastcitysoftware/danom</PackageProjectUrl>
-    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageLicenseExpression>mit</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <RepositoryType>git</RepositoryType>

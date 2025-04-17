@@ -107,6 +107,28 @@ public sealed class ResultTests {
         Assert.True(Result<int, string>.Ok(1) != Result<int, string>.Ok(2));
         Assert.True(Result<int, string>.Ok(1) != Result<int, string>.Error(new("Error")));
     }
+
+    [Fact]
+    public void TryGet() {
+        var result = Result<int, string>.Ok(1);
+        if(result.TryGet(out var value, out string? error)) {
+            Assert.Equal(1, value);
+            Assert.Null(error);
+        } else {
+            Assert.Fail("Expected Ok result but got Error.");
+        }
+    }
+
+    [Fact]
+    public void TryGetError() {
+        var resultE = Result<int, string>.Error(new("Error"));
+        if(resultE.TryGet(out var valueE, out var errorE) == false) {
+            Assert.Equal(default, valueE);
+            Assert.Equal("Error", errorE);
+        } else {
+            Assert.Fail("Expected Error result but got Ok.");
+        }
+    }
 }
 
 

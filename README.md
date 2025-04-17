@@ -97,12 +97,12 @@ TryFind(nums, x => x == 1)
         some: x => Console.WriteLine("Found: {0}", x),
         none: () => Console.WriteLine("Did not find number"));
 
-// Mapping the value
+// Mapping the value (i.e., I want to access the value)
 Option<int> optionSum =
     TryFind(nums, x => x == 1)
         .Map(x => x + 1);
 
-// Binding the option
+// Binding the option (i.e., when a nested operation also returns an Option)
 Option<int> optionBindSum =
     TryFind(nums, x => x == 1)
         .Bind(num1 =>
@@ -138,27 +138,43 @@ var result = Result<int, string>.Ok(5);
 
 // or, with an error
 var resultError = Result<int, string>.Error("An error occurred");
+```
 
-// or, using the built-in Error type
+### Built-in Error Type
+
+Danom provides a built-in error type, `ResultErrors`, to simplify the creation of results with multiple errors. This type can be initialized with a single string, a collection of strings, or a key-value pair. It can be thought of as a domain-specific dictionary of string keys and N string values.
+
+```csharp
 var resultErrors = Result<int>.Ok(5);
 
-var resultErrorsError = Result<int>.Error(new("An error occurred"));
-var resultErrorsMultiError = Result<int>.Error(new(["An error occurred", "Another error occurred"]));
-var resultErrorsTyped = Result<int>.Error(new("error-key", "An error occurred"));
+var resultErrorsError =
+    Result<int>.Error(new("An error occurred"));
+
+var resultErrorsMultiError =
+    Result<int>.Error(new(["An error occurred", "Another error occurred"]));
+
+var resultErrorsTyped =
+    Result<int>.Error(new("error-key", "An error occurred"));
+
+var resultErrorsTyped =
+    Result<int>.Error(new("error-key", ["An error occurred", "Another error occurred"]));
+
 ```
 
 ### Using Results
 
 Results are commonly used when an operation might not succeed, and you want to manage or report back the _expected_ errors. For example:
 
+Let's create a simple inline function to divide two numbers. If the denominator is zero, we want to return an error message.
+
 ```csharp
-public Result<int, string> TryDivide(int numerator, int denominator) =>
+Result<int, string> TryDivide(int numerator, int denominator) =>
     denominator == 0
         ? Result<int, string>.Error("Cannot divide by zero")
         : Result<int, string>.Ok(numerator / denominator);
 ```
 
-With this method defined we can begin performing operations against the Result result:
+With this method defined we can begin performing operations against the result:
 
 ```csharp
 // Exhaustive matching
@@ -215,6 +231,50 @@ var resultErrorsMultiError =
 
 var resultErrorsTyped =
     Result<int>.Error(new ResultErrors("error-key", "An error occurred"));
+```
+
+## Procedural Programming
+
+Inevitably you'll need to interact with these functional types in a procedural way. Both [Option](#option-tryget) and [Result](#result) provide a `TryGet` method to retrieve the underlying value. This method will return a `bool` indicating whether the value was successfully retrieved and the value itself as an output parameter.
+
+### Option TryGet
+
+```csharp
+using Danom;
+
+var option = Option<int>.Some(5);
+
+if (option.TryGet(out var value)) {
+    Console.WriteLine("Value: {0}", value);
+}
+else {
+    Console.WriteLine("No value");
+}
+```
+
+
+### Result TryGet
+
+```csharp
+using Danom;
+
+var result = Result<int, string>.Ok(5);
+
+if (result.TryGet(out var value, out var error)) {
+    Console.WriteLine("Result: {0}", value);
+}
+else {
+    Console.WriteLine("Error: {0}", error);
+}
+
+var result2 = Result<int, string>.Error("An error occurred");
+
+if (result2.TryGet(out var value2, out var error2) && error2 is not null) {
+    Console.WriteLine("Error: {0}", error2);
+}
+else {
+    Console.WriteLine("Result: {0}", value2);
+}
 ```
 
 ## String Parsing
@@ -330,8 +390,7 @@ public record Person(
     Option<string> Email);
 
 public class PersonValidator
-    : AbstractValidator<Person>
-{
+    : AbstractValidator<Person> {
     public PersonValidator()
     {
         RuleFor(x => x.Name).NotEmpty();

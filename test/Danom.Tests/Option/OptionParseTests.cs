@@ -121,6 +121,7 @@ public sealed class OptionParseTests {
         AssertOption.IsNone(DateTimeOffsetOption.TryParseExact(null, null, null));
         AssertOption.IsNone(DateTimeOffsetOption.TryParseExact("danom", null, null));
 
+        // TODO determine how to make these work consistently across operating systems
         // AssertOption.IsSome(DateTimeOffsetOption.TryParseExact("0001-01-01T00:00:00.0000000+00:00", "O", null));
         // AssertOption.IsSome(DateTimeOffsetOption.TryParseExact("9999-12-31T23:59:59.9999999+00:00", "O", null));
         // AssertOption.IsSome(DateTimeOffsetOption.TryParseExact("0001-01-01T00:00:00.0000000+00:00", "s", null));
