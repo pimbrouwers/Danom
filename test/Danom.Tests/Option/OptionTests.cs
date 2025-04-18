@@ -1,8 +1,8 @@
 namespace Danom.Tests;
 
 using System.Globalization;
-using Xunit;
 using Danom.TestHelpers;
+using Xunit;
 
 public sealed class OptionTests
 {
@@ -156,7 +156,7 @@ public sealed class OptionTests
     [Fact]
     public void TryGetNone()
     {
-        if (Option<int>.NoneValue.TryGet(out var y ))
+        if (Option<int>.NoneValue.TryGet(out var y))
         {
             Assert.Fail("Expected None but got Some.");
         }

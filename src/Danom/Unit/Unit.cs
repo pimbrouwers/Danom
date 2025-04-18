@@ -6,7 +6,8 @@ namespace Danom;
 /// value exists or is needed.
 /// </summary>
 public readonly struct Unit
-    : IEquatable<Unit> {
+    : IEquatable<Unit>
+{
     /// <summary>
     /// The single value of the unit type.
     /// </summary>
@@ -70,7 +71,8 @@ public readonly struct Unit
 /// Contains extension methods for <see cref="Unit"/> that allow for converting
 /// between <see cref="Unit"/> and <see cref="Action"/>.
 /// </summary>
-public static class UnitActionExtensions {
+public static class UnitActionExtensions
+{
     /// <summary>
     /// Converts the specified action to a function that returns
     /// <see cref="Unit"/>.
@@ -78,8 +80,10 @@ public static class UnitActionExtensions {
     /// <typeparam name="TResult"></typeparam>
     /// <param name="action"></param>
     /// <returns></returns>
-    public static Func<TResult, Unit> ToUnitFunc<TResult>(this Action<TResult> action) {
-        return result => {
+    public static Func<TResult, Unit> ToUnitFunc<TResult>(this Action<TResult> action)
+    {
+        return result =>
+        {
             action(result);
             return Unit.Value;
         };
@@ -91,8 +95,10 @@ public static class UnitActionExtensions {
     /// </summary>
     /// <param name="action"></param>
     /// <returns></returns>
-    public static Func<Unit, Unit> ToUnitFunc(this Action action) {
-        return _ => {
+    public static Func<Unit, Unit> ToUnitFunc(this Action action)
+    {
+        return _ =>
+        {
             action();
             return Unit.Value;
         };

@@ -4,14 +4,17 @@ using System.Text.RegularExpressions;
 using FluentValidation;
 using FluentValidation.Validators;
 
-internal static partial class ValidationHelpers {
+internal static partial class ValidationHelpers
+{
     internal static bool Validate<T, TValue>(
         ValidationContext<T> context,
         IValidator<TValue> validator,
-        TValue instance) {
+        TValue instance)
+    {
         var validationResult = validator.Validate(instance);
 
-        if (!validationResult.IsValid) {
+        if (!validationResult.IsValid)
+        {
             var quotedDisplayName = string.Concat("'", context.DisplayName, "'");
             validationResult.Errors.ForEach(e =>
                 context.AddFailure(
@@ -37,7 +40,8 @@ internal static partial class ValidationHelpers {
 /// <typeparam name="TValue"></typeparam>
 /// <param name="validator"></param>
 public sealed class OptionalValidator<T, TValue>(IValidator<TValue> validator)
-    : PropertyValidator<T, Option<TValue>> {
+    : PropertyValidator<T, Option<TValue>>
+{
     /// <summary>
     /// Specifies the name of the validator.
     /// </summary>
@@ -70,7 +74,8 @@ public sealed class OptionalValidator<T, TValue>(IValidator<TValue> validator)
 /// <typeparam name="T"></typeparam>
 /// <typeparam name="TValue"></typeparam>
 /// <param name="validator"></param>
-public class RequiredValidator<T, TValue>(IValidator<TValue> validator) : PropertyValidator<T, Option<TValue>> {
+public class RequiredValidator<T, TValue>(IValidator<TValue> validator) : PropertyValidator<T, Option<TValue>>
+{
     /// <summary>
     /// Specifies the name of the validator.
     /// </summary>
@@ -99,7 +104,8 @@ public class RequiredValidator<T, TValue>(IValidator<TValue> validator) : Proper
 /// <summary>
 /// Contains extension methods for <see cref="IRuleBuilder{T, TValue}"/>.
 /// </summary>
-public static class OptionValidatorExtensions {
+public static class OptionValidatorExtensions
+{
     /// <summary>
     /// Set the validator for an Option value. The value is considered valid if
     /// it is None.
@@ -125,7 +131,8 @@ public static class OptionValidatorExtensions {
     /// <returns></returns>
     public static IRuleBuilder<T, Option<TValue>> Optional<T, TValue>(
         this IRuleBuilder<T, Option<TValue>> ruleBuilder,
-        Action<IRuleBuilder<TValue, TValue>> action) {
+        Action<IRuleBuilder<TValue, TValue>> action)
+    {
         var inlineValidator = new InlineValidator<TValue>();
         action(inlineValidator.RuleFor(x => x));
         var optionValidator = new OptionalValidator<T, TValue>(inlineValidator);
@@ -166,7 +173,8 @@ public static class OptionValidatorExtensions {
     /// <returns></returns>
     public static IRuleBuilder<T, Option<TValue>> Required<T, TValue>(
         this IRuleBuilder<T, Option<TValue>> ruleBuilder,
-        Action<IRuleBuilder<TValue, TValue>> action) {
+        Action<IRuleBuilder<TValue, TValue>> action)
+    {
         var inlineValidator = new InlineValidator<TValue>();
         action(inlineValidator.RuleFor(x => x));
         var optionValidator = new RequiredValidator<T, TValue>(inlineValidator);

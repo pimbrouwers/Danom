@@ -3,9 +3,11 @@ namespace Danom.Tests;
 using Danom.TestHelpers;
 using Xunit;
 
-public sealed class OptionNullableExtensionsTests {
+public sealed class OptionNullableExtensionsTests
+{
     [Fact]
-    public void Conversions() {
+    public void Conversions()
+    {
         char? nullableChar = null;
         bool? nullableBool = null;
         byte? nullableByte = null;

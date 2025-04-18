@@ -3,7 +3,8 @@ namespace Danom.TestHelpers;
 using Danom;
 using Xunit;
 
-public static class AssertResult {
+public static class AssertResult
+{
     public static void IsOk<T, TError>(Func<T, bool> predicate, Result<T, TError> result) =>
         Assert.True(result.Match(predicate, _ => false));
 

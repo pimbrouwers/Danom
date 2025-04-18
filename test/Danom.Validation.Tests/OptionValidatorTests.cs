@@ -4,10 +4,13 @@ using Danom.TestHelpers;
 using FluentValidation;
 using Xunit;
 
-public sealed class OptionValidatorTests {
-    public sealed class Optional {
+public sealed class OptionValidatorTests
+{
+    public sealed class Optional
+    {
         [Fact]
-        public void ReturnsOkResult_WhenValidationSucceeds() {
+        public void ReturnsOkResult_WhenValidationSucceeds()
+        {
 
             var input = new TestInput { Value = Option<int>.Some(1) };
             var result = ValidationResult<TestInput>.From<TestInputValidator>(input);
@@ -17,7 +20,8 @@ public sealed class OptionValidatorTests {
         }
 
         [Fact]
-        public void ReturnsErrorResult_WhenValidationFails() {
+        public void ReturnsErrorResult_WhenValidationFails()
+        {
             var input = new TestInput { Value = Option<int>.Some(0) };
             var result = ValidationResult<TestInput>.From<TestInputValidator>(input);
 
@@ -28,60 +32,76 @@ public sealed class OptionValidatorTests {
                 result.ToString());
         }
 
-        public sealed class TestInput {
+        public sealed class TestInput
+        {
             public Option<int> Value { get; set; }
 
             public override string ToString() => Value.ToString();
         }
 
-        public sealed class TestInputValidator : AbstractValidator<TestInput> {
-            public TestInputValidator() {
+        public sealed class TestInputValidator : AbstractValidator<TestInput>
+        {
+            public TestInputValidator()
+            {
                 RuleFor(x => x.Value).Optional(x => x.GreaterThan(0));
             }
         }
     }
 
-    public sealed class Required {
-        public sealed class TestInput {
+    public sealed class Required
+    {
+        public sealed class TestInput
+        {
             public Option<int> Value { get; set; }
 
             public override string ToString() => Value.ToString();
         }
 
-        public sealed class TestInputValidator : AbstractValidator<TestInput> {
-            public TestInputValidator() {
+        public sealed class TestInputValidator : AbstractValidator<TestInput>
+        {
+            public TestInputValidator()
+            {
                 RuleFor(x => x.Value).Required();
             }
         }
 
-        public sealed class TestInputValidator2 : AbstractValidator<TestInput> {
-            public TestInputValidator2() {
+        public sealed class TestInputValidator2 : AbstractValidator<TestInput>
+        {
+            public TestInputValidator2()
+            {
                 RuleFor(x => x.Value).Required(x => x.GreaterThan(2));
             }
         }
 
-        public sealed class TestId {
+        public sealed class TestId
+        {
             public int Value { get; set; }
         }
 
-        public sealed class TestIdValidator : AbstractValidator<TestId> {
-            public TestIdValidator() {
+        public sealed class TestIdValidator : AbstractValidator<TestId>
+        {
+            public TestIdValidator()
+            {
                 RuleFor(x => x.Value).GreaterThan(0).WithMessage("{PropertyName} must be a valid TestId.");
             }
         }
 
-        public sealed class TestIdInput {
+        public sealed class TestIdInput
+        {
             public Option<TestId> TestId { get; set; }
         }
 
-        public sealed class TestIdInputValidator : AbstractValidator<TestIdInput> {
-            public TestIdInputValidator() {
+        public sealed class TestIdInputValidator : AbstractValidator<TestIdInput>
+        {
+            public TestIdInputValidator()
+            {
                 RuleFor(x => x.TestId).Required(new TestIdValidator());
             }
         }
 
         [Fact]
-        public void ReturnsErrorResult_WhenValueIsNone() {
+        public void ReturnsErrorResult_WhenValueIsNone()
+        {
             var input = new TestInput { Value = Option<int>.None() };
             var result = ValidationResult<TestInput>.From<TestInputValidator>(input);
 
@@ -90,7 +110,8 @@ public sealed class OptionValidatorTests {
         }
 
         [Fact]
-        public void ReturnsOkResult_WhenValueIsSome() {
+        public void ReturnsOkResult_WhenValueIsSome()
+        {
             var input = new TestInput { Value = Option<int>.Some(1) };
             var result = ValidationResult<TestInput>.From<TestInputValidator>(input);
 
@@ -99,7 +120,8 @@ public sealed class OptionValidatorTests {
         }
 
         [Fact]
-        public void ReturnsOkResult_WhenValueIsSome2() {
+        public void ReturnsOkResult_WhenValueIsSome2()
+        {
             var input = new TestInput { Value = Option<int>.Some(3) };
             var result = ValidationResult<TestInput>.From<TestInputValidator2>(input);
 
@@ -108,7 +130,8 @@ public sealed class OptionValidatorTests {
         }
 
         [Fact]
-        public void ReturnsErrorResult_WhenValueIsNone2() {
+        public void ReturnsErrorResult_WhenValueIsNone2()
+        {
             var input = new TestInput { Value = Option<int>.None() };
             var result = ValidationResult<TestInput>.From<TestInputValidator2>(input);
 
@@ -130,7 +153,8 @@ public sealed class OptionValidatorTests {
         }
 
         [Fact]
-        public void ReturnsOkResult_WhenTestIdIsSome() {
+        public void ReturnsOkResult_WhenTestIdIsSome()
+        {
             var input = new TestIdInput { TestId = Option<TestId>.Some(new TestId() { Value = 1 }) };
             var result = ValidationResult<TestIdInput>.From<TestIdInputValidator>(input);
 
@@ -139,7 +163,8 @@ public sealed class OptionValidatorTests {
         }
 
         [Fact]
-        public void ReturnsErrorResult_WhenTestIdIsNone() {
+        public void ReturnsErrorResult_WhenTestIdIsNone()
+        {
             var input = new TestIdInput { TestId = Option<TestId>.None() };
             var result = ValidationResult<TestIdInput>.From<TestIdInputValidator>(input);
 

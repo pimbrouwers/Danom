@@ -4,9 +4,11 @@ using Danom.TestHelpers;
 using FluentValidation;
 using Xunit;
 
-public sealed class ValidationResultTests {
+public sealed class ValidationResultTests
+{
     [Fact]
-    public void ReturnsOkResult_WhenValidationSucceeds() {
+    public void ReturnsOkResult_WhenValidationSucceeds()
+    {
         var input = new TestInput { Value = 1 };
         var result = ValidationResult<TestInput>.From<TestInputValidator>(input);
 
@@ -15,7 +17,8 @@ public sealed class ValidationResultTests {
     }
 
     [Fact]
-    public void ReturnsErrorResult_WhenValidationFails() {
+    public void ReturnsErrorResult_WhenValidationFails()
+    {
         var input = new TestInput { Value = 0 };
         var result = ValidationResult<TestInput>.From<TestInputValidator>(input);
 
@@ -23,14 +26,17 @@ public sealed class ValidationResultTests {
         Assert.False(result.IsOk);
     }
 
-    public sealed class TestInput {
+    public sealed class TestInput
+    {
         public int Value { get; set; }
 
         public override string ToString() => Value.ToString();
     }
 
-    public sealed class TestInputValidator : AbstractValidator<TestInput> {
-        public TestInputValidator() {
+    public sealed class TestInputValidator : AbstractValidator<TestInput>
+    {
+        public TestInputValidator()
+        {
             RuleFor(x => x.Value).GreaterThan(0);
         }
     }

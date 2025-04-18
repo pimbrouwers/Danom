@@ -7,16 +7,19 @@ namespace Danom;
 /// <typeparam name="T"></typeparam>
 /// <typeparam name="TError"></typeparam>
 public readonly struct Result<T, TError>
-    : IEquatable<Result<T, TError>> {
+    : IEquatable<Result<T, TError>>
+{
     private readonly T? _ok = default;
     private readonly TError? _error = default;
 
-    private Result(T t) {
+    private Result(T t)
+    {
         _ok = t;
         IsOk = true;
     }
 
-    private Result(TError tError) {
+    private Result(TError tError)
+    {
         _error = tError;
     }
 
@@ -50,13 +53,16 @@ public readonly struct Result<T, TError>
     /// otherwise evaluates
     /// the none delegate.
     /// </summary>
-    public void Match(Action<T> ok, Action<TError> error) {
+    public void Match(Action<T> ok, Action<TError> error)
+    {
         Match(
-            ok: x => {
+            ok: x =>
+            {
                 ok(x);
                 return Unit.Value;
             },
-            error: e => {
+            error: e =>
+            {
                 error(e);
                 return Unit.Value;
             });
@@ -118,15 +124,18 @@ public readonly struct Result<T, TError>
     /// <param name="error"></param>
     /// <returns>True if the Result is in the Ok state, false if in the
     /// Error state</returns>
-    public bool TryGet(out T? result, out TError? error) {
+    public bool TryGet(out T? result, out TError? error)
+    {
         bool success;
 
-        if (IsOk) {
+        if (IsOk)
+        {
             success = true;
             result = _ok;
             error = default;
         }
-        else {
+        else
+        {
             result = default;
             error = _error;
             success = false;
@@ -234,7 +243,8 @@ public readonly struct Result<T, TError>
 /// as the predefined error type.
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public static class Result<T> {
+public static class Result<T>
+{
     /// <summary>
     /// Creates a new <see cref="Result{T, ResultErrors}"/> with the specified value.
     /// </summary>
@@ -264,7 +274,31 @@ public static class Result<T> {
 /// The <see cref="Result{T, ResultErrors}"/> with <see cref="ResultErrors"/>
 /// as the predefined error type.
 /// </summary>
-public static class Result {
+public static class Result
+{
+    /// <summary>
+    /// Creates a new <see cref="Result{Unit, ResultErrors}"/> with <see cref="Unit"/> value.
+    /// </summary>
+    /// <returns></returns>
+    public static Result<Unit, ResultErrors> Ok() =>
+        Result<Unit, ResultErrors>.Ok(Unit.Value);
+
+    /// <summary>
+    /// Creates a new <see cref="Result{Unit, ResultErrors}"/> with the specified error.
+    /// </summary>
+    /// <param name="errors"></param>
+    /// <returns></returns>
+    public static Result<Unit, ResultErrors> Error(ResultErrors errors) =>
+        Result<Unit, ResultErrors>.Error(errors);
+
+    /// <summary>
+    /// Creates a new <see cref="Result{Unit, ResultErrors}"/> with the specified error.
+    /// </summary>
+    /// <param name="error"></param>
+    /// <returns></returns>
+    public static Result<Unit, ResultErrors> Error(string error) =>
+        Result<Unit, ResultErrors>.Error(new(error));
+
     /// <summary>
     /// Creates a new <see cref="Result{T, ResultErrors}"/> with the specified value.
     /// </summary>

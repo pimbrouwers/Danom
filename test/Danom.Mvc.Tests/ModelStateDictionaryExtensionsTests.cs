@@ -4,21 +4,27 @@ using Danom.TestHelpers;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Xunit;
 
-internal static class ModelStateDictionaryExtensions {
+internal static class ModelStateDictionaryExtensions
+{
     internal static void AddResultErrors(
         this ModelStateDictionary modelState,
-        ResultErrors errors) {
-        foreach (var error in errors) {
-            foreach (var err in error.Errors) {
+        ResultErrors errors)
+    {
+        foreach (var error in errors)
+        {
+            foreach (var err in error.Errors)
+            {
                 modelState.AddModelError(error.Key, err);
             }
         }
     }
 }
 
-public sealed class ModelStateDictionaryExtensionsTests {
+public sealed class ModelStateDictionaryExtensionsTests
+{
     [Fact]
-    public void AddResultErrors() {
+    public void AddResultErrors()
+    {
         var modelState = new ModelStateDictionary();
         var errors = new ResultErrors("Key1", "Error1");
         modelState.AddResultErrors(errors);
@@ -27,7 +33,8 @@ public sealed class ModelStateDictionaryExtensionsTests {
     }
 
     [Fact]
-    public void AddResultErrorsShouldWorkWithMultipleErrors() {
+    public void AddResultErrorsShouldWorkWithMultipleErrors()
+    {
         var modelState = new ModelStateDictionary();
         var errors = new ResultErrors([
             new ResultError("Key1", "Error1"),
