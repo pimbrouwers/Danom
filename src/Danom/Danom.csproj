@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <AssemblyName>Danom</AssemblyName>
-    <Version>2.0.0</Version>
+    <Version>2.0.0-beta1</Version>
 
     <!-- General info -->
     <Description>Monadic structures to simplify functional programming patterns in C#.</Description>
@@ -23,7 +23,7 @@
     <PackageId>Danom</PackageId>
     <PackageTags>monads;error-handling;option-type;option;result;railway-oriented-programming;result-type</PackageTags>
     <PackageProjectUrl>https://github.com/eastcitysoftware/danom</PackageProjectUrl>
-    <PackageLicenseExpression>mit</PackageLicenseExpression>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <RepositoryType>git</RepositoryType>

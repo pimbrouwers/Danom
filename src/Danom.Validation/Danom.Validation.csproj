@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <AssemblyName>Danom.Validation</AssemblyName>
-    <Version>2.0.0</Version>
+    <Version>2.0.0-beta1</Version>
 
     <!-- General info -->
     <Description>Validators and validation helpers for Danom based on FluentValidation.</Description>
@@ -23,7 +23,7 @@
     <PackageId>Danom.Validation</PackageId>
     <PackageTags>validation;validation-result;danom;</PackageTags>
     <PackageProjectUrl>https://github.com/eastcitysoftware/danom</PackageProjectUrl>
-    <PackageLicenseExpression>mit</PackageLicenseExpression>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <RepositoryType>git</RepositoryType>
@@ -40,8 +40,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- <PackageReference Include="Danom" Version="2.0.0" /> -->
-    <ProjectReference Include="..\Danom\Danom.csproj" />
+    <PackageReference Include="Danom" Version="2.0.0-beta1" />
     <PackageReference Include="FluentValidation" Version="11.11.0" />
   </ItemGroup>
 </Project>
