@@ -1,6 +1,6 @@
 # Danom.Validation
 [![NuGet Version](https://img.shields.io/nuget/v/Danom.Validation.svg)](https://www.nuget.org/packages/Danom.Validation)
-[![build](https://github.com/eastcitysoftware/danom/actions/workflows/build.yml/badge.svg)](https://github.com/eastcitysoftware/danom/actions/workflows/build.yml)
+[![build](https://github.com/pimbrouwers/Danom/actions/workflows/build.yml/badge.svg)](https://github.com/pimbrouwers/Danom/actions/workflows/build.yml)
 
 One of the places the `Result` type really shines is input validation. It's a natural step in most workflows to validate input data before processing it, and the Result type is a great way to handle this. The [Danom.Validation](https://www.nuget.org/packages/Danom.Validation/) library provides a set of utilities to help with this, integrating with the wonderful [FluentValidation](https://github.com/FluentValidation/FluentValidation) library.
 
@@ -62,8 +62,8 @@ result.Match(
 
 ## Find a bug?
 
-There's an [issue](https://github.com/eastcitysoftware/danom/issues) for that.
+There's an [issue](https://github.com/pimbrouwers/Danom/issues) for that.
 
 ## License
 
-Built with ♥ by [Pim Brouwers](https://github.com/pimbrouwers) in Toronto, ON. Licensed under [Apache License 2.0](https://github.com/eastcitysoftware/danom/blob/master/LICENSE).
+Built with ♥ by [Pim Brouwers](https://github.com/pimbrouwers) in Toronto, ON. Licensed under [Apache License 2.0](https://github.com/pimbrouwers/Danom/blob/master/LICENSE).
