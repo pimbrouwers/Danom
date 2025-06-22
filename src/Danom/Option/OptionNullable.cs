@@ -13,7 +13,7 @@ public static class OptionNullableExtensions
     /// <param name="x"></param>
     /// <returns></returns>
     public static Option<T> ToOption<T>(this T? x) =>
-        x is not null && (!Equals(x, default(T))) ? Option<T>.Some(x) : Option<T>.None();
+        x is not null ? Option<T>.Some(x) : Option<T>.None();
 
     /// <summary>
     /// Converts a nullable strict to an option.
