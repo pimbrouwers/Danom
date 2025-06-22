@@ -438,4 +438,4 @@ There's an [issue](https://github.com/pimbrouwers/Danom/issues) for that.
 
 ## License
 
-Licensed under [Apache License 2.0](https://github.com/pimbrouwers/Danom/blob/master/LICENSE).
+Licensed under [MIT](https://github.com/pimbrouwers/Danom/blob/master/LICENSE).
