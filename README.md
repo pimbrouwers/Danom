@@ -374,6 +374,8 @@ public static class EnumOption {
 
 Since Danom introduces types that are most commonly found in your model and business logic layers, external integrations are not only inevitable but required to provide a seamless experience when building applications.
 
+These are completely optional, but provide a great way to integrate Danom with your codebase.
+
 ### Fluent Validation Integration
 
 [Fluent Validation](https://fluentvalidation.net/) is an excellent library for building validation rules for your models. A first-class integration is available via [Danom.Validation](src/Danom.Validation/README.md) to provide a seamless way to validate your models and return a `Result` with the validation errors.
