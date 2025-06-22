@@ -31,6 +31,9 @@ jobs:
       - name: Build Validation
         run: dotnet build src/Danom.Validation -c Release
 
+      - name: Test Validation
+        run: dotnet test test/Danom.Validation.Tests -c Release
+
       - name: Build Mvc
         run: dotnet build src/Danom.Mvc -c Release
 

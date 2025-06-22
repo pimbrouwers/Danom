@@ -27,11 +27,15 @@ public static class ValidationResult<T>
         }
         else
         {
-            return Result<T, ResultErrors>.Error(
-                new ResultErrors(
-                    validationResult.Errors
-                        .GroupBy(x => x.PropertyName, x => x.ErrorMessage)
-                        .Select(x => new ResultError(x.Key, (string[])x.AsEnumerable()))));
+            var validationErrors =
+                validationResult.Errors
+                    .GroupBy(x => x.PropertyName, x => x.ErrorMessage)
+                    .Select(x =>
+                    {
+                        var errors = x.AsEnumerable().ToArray();
+                        return new ResultError(x.Key, errors);
+                    });
+            return Result<T, ResultErrors>.Error([.. validationErrors]);
         }
     }
 }
