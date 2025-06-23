@@ -19,6 +19,7 @@ public sealed class OptionNullableExtensionsTests
         Guid[] guidList = [Guid.Empty, Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid()];
         DateTime[] dateTimeList = [DateTime.MinValue, DateTime.UtcNow, DateTime.UtcNow.AddDays(1), DateTime.UtcNow.AddDays(2)];
         DateOnly[] dateOnlyList = [DateOnly.MinValue, DateOnly.FromDateTime(DateTime.UtcNow), DateOnly.FromDateTime(DateTime.UtcNow.AddDays(1)), DateOnly.FromDateTime(DateTime.UtcNow.AddDays(2))];
+
         AssertOption.IsSome('a', charList.FirstOrDefault(x => x == 'a').ToOption());
         AssertOption.IsSome((byte)0, byteList.FirstOrDefault(x => x == 0).ToOption());
         AssertOption.IsSome((short)0, shortList.FirstOrDefault(x => x == 0).ToOption());
@@ -33,7 +34,7 @@ public sealed class OptionNullableExtensionsTests
     }
 
     [Fact]
-    public void Conversions()
+    public void ConversionsFromNull()
     {
         char? nullableChar = null;
         bool? nullableBool = null;
@@ -78,21 +79,25 @@ public sealed class OptionNullableExtensionsTests
         Assert.Null(nullableDateOnly.ToOption().ToNullable());
         Assert.Null(nullableObj.ToOption().ToNullable());
         Assert.Null(objFunc().ToOption().ToNullable());
+    }
 
-        nullableChar = Char.MinValue;
-        nullableBool = true;
-        nullableByte = Byte.MinValue;
-        nullableShort = short.MinValue;
-        nullableInt = int.MinValue;
-        nullableLong = long.MinValue;
-        nullableDecimal = decimal.MinValue;
-        nullableDouble = double.MinValue;
-        nullableFloat = float.MinValue;
-        nullableGuid = Guid.Empty;
-        nullableDateTime = DateTime.MinValue;
-        nullableDateOnly = DateOnly.MinValue;
-        nullableObj = new object();
-        objFunc = () => new object();
+    [Fact]
+    public void ConversionsFromDefault()
+    {
+        char? nullableChar = char.MinValue;
+        bool? nullableBool = true;
+        byte? nullableByte = byte.MinValue;
+        short? nullableShort = short.MinValue;
+        int? nullableInt = int.MinValue;
+        long? nullableLong = long.MinValue;
+        decimal? nullableDecimal = decimal.MinValue;
+        double? nullableDouble = double.MinValue;
+        float? nullableFloat = float.MinValue;
+        Guid? nullableGuid = Guid.Empty;
+        DateTime? nullableDateTime = DateTime.MinValue;
+        DateOnly? nullableDateOnly = DateOnly.MinValue;
+        object? nullableObj = new object();
+        Func<object?> objFunc = () => new object();
 
         AssertOption.IsSome(nullableChar.ToOption());
         AssertOption.IsSome(nullableBool.ToOption());
