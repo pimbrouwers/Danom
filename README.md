@@ -37,13 +37,27 @@ dotnet add package Danom
 ```csharp
 using Danom;
 
+//
 // Working with Option type
-var option = Option<int>.Some(5);
+var option = Option.Some(5);
 
 option.Match(
     some: x => Console.WriteLine("Value: {0}", x),
     none: () => Console.WriteLine("No value"));
 
+// Mapping the value
+var mappedOption = option.Map(x => x + 1);
+
+// Binding the option (i.e., when a nested operation also returns an Option)
+var boundOption = option.Bind(num1 =>
+    Option.Some(num1 + 2));
+
+// Defaulting the option
+var defaultOption = option.DefaultValue(99);
+var defaultOptionWith = option.DefaultWith(() => 99);
+// ^-- useful if creating the value is costly
+
+//
 // Working with Result type
 public Result<int, string> TryDivide(
     int numerator,
@@ -82,6 +96,8 @@ var optionNull = Option<object>.Some(default!);
 Options are commonly used when a operation might not return a value. For example, the method below tries to find a number in a list that satisfies a predicate. If the number is found, it is returned as a `Some`, otherwise, `None` is returned.
 
 ```csharp
+using Danom;
+
 public Option<int> TryFind(IEnumerable<int> numbers, Func<int, bool> predicate) =>
     numbers.FirstOrDefault(predicate).ToOption();
 ```
@@ -89,6 +105,8 @@ public Option<int> TryFind(IEnumerable<int> numbers, Func<int, bool> predicate) 
 With this method defined we can begin performing operations against the Option result:
 
 ```csharp
+using Danom;
+
 IEnumerable<int> nums = [1,2,3];
 
 // Exhaustive matching
@@ -134,6 +152,8 @@ Results are used to represent a success or failure outcome. They provide a more 
 ### Creating Results
 
 ```csharp
+using Danom;
+
 var result = Result<int, string>.Ok(5);
 
 // or, with an error
@@ -145,6 +165,8 @@ var resultError = Result<int, string>.Error("An error occurred");
 Danom provides a built-in error type, `ResultErrors`, to simplify the creation of results with multiple errors. This type can be initialized with a single string, a collection of strings, or a key-value pair. It can be thought of as a domain-specific dictionary of string keys and N string values.
 
 ```csharp
+using Danom;
+
 var resultErrors = Result<int>.Ok(5);
 
 var resultErrorsError =
@@ -168,6 +190,8 @@ Results are commonly used when an operation might not succeed, and you want to m
 Let's create a simple inline function to divide two numbers. If the denominator is zero, we want to return an error message.
 
 ```csharp
+using Danom;
+
 Result<int, string> TryDivide(int numerator, int denominator) =>
     denominator == 0
         ? Result<int, string>.Error("Cannot divide by zero")
@@ -177,6 +201,8 @@ Result<int, string> TryDivide(int numerator, int denominator) =>
 With this method defined we can begin performing operations against the result:
 
 ```csharp
+using Danom;
+
 // Exhaustive matching
 TryDivide(10, 2)
     .Match(
@@ -220,6 +246,8 @@ Result<int, string> resultOrElseWith =
 Since error messages are frequently represented as keyed string collections, the `ResultErrors` type is provided to simplify Result creation. The flexible constructor allows errors to be initialized with a single string, a collection of strings, or a key-value pair.
 
 ```csharp
+using Danom;
+
 var resultErrors =
     Result<int>.Ok(5);
 
