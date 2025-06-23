@@ -2,7 +2,7 @@
 [![NuGet Version](https://img.shields.io/nuget/v/Danom.svg)](https://www.nuget.org/packages/Danom)
 [![build](https://github.com/pimbrouwers/Danom/actions/workflows/build.yml/badge.svg)](https://github.com/pimbrouwers/Danom/actions/workflows/build.yml)
 
-Danom is a C# library that provides (monadic) structures to facilitate durable programming patterns in C# using [Option](#option) and [Result](#result). These discriminated unions are a powerful way to handle nullable values and expected errors in a type-safe manner, while also providing a fluent API for chaining operations.
+Danom is a C# library that provides (monadic) structures to facilitate durable programming patterns in C#, using [Option](#option) and [Result](#result). These discriminated unions are a powerful way to handle nullable values and expected errors in a type-safe manner, while also providing a fluent API for chaining operations.
 
 ## Key Features
 

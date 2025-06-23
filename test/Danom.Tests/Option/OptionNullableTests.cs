@@ -6,6 +6,33 @@ using Xunit;
 public sealed class OptionNullableExtensionsTests
 {
     [Fact]
+    public void ValueCollections()
+    {
+        char[] charList = ['a', 'b', 'c', 'd'];
+        byte[] byteList = [0, 1, 2, 3];
+        short[] shortList = [0, 1, 2, 3];
+        int[] intList = [0, 1, 2, 3];
+        long[] longList = [0L, 1L, 2L, 3L];
+        decimal[] decimalList = [0m, 1m, 2m, 3m];
+        double[] doubleList = [0.0, 1.0, 2.0, 3.0];
+        float[] floatList = [0f, 1f, 2f, 3f];
+        Guid[] guidList = [Guid.Empty, Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid()];
+        DateTime[] dateTimeList = [DateTime.MinValue, DateTime.UtcNow, DateTime.UtcNow.AddDays(1), DateTime.UtcNow.AddDays(2)];
+        DateOnly[] dateOnlyList = [DateOnly.MinValue, DateOnly.FromDateTime(DateTime.UtcNow), DateOnly.FromDateTime(DateTime.UtcNow.AddDays(1)), DateOnly.FromDateTime(DateTime.UtcNow.AddDays(2))];
+        AssertOption.IsSome('a', charList.FirstOrDefault(x => x == 'a').ToOption());
+        AssertOption.IsSome((byte)0, byteList.FirstOrDefault(x => x == 0).ToOption());
+        AssertOption.IsSome((short)0, shortList.FirstOrDefault(x => x == 0).ToOption());
+        AssertOption.IsSome(0, intList.FirstOrDefault(x => x == 0).ToOption());
+        AssertOption.IsSome(0L, longList.FirstOrDefault(x => x == 0L).ToOption());
+        AssertOption.IsSome(0m, decimalList.FirstOrDefault(x => x == 0m).ToOption());
+        AssertOption.IsSome(0.0, doubleList.FirstOrDefault(x => x == 0.0).ToOption());
+        AssertOption.IsSome(0f, floatList.FirstOrDefault(x => x == 0f).ToOption());
+        AssertOption.IsSome(Guid.Empty, guidList.FirstOrDefault(x => x == Guid.Empty).ToOption());
+        AssertOption.IsSome(DateTime.MinValue, dateTimeList.FirstOrDefault(x => x == DateTime.MinValue).ToOption());
+        AssertOption.IsSome(DateOnly.MinValue, dateOnlyList.FirstOrDefault(x => x == DateOnly.MinValue).ToOption());
+    }
+
+    [Fact]
     public void Conversions()
     {
         char? nullableChar = null;
