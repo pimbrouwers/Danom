@@ -124,30 +124,25 @@ namespace Danom
             Match(ok => ok, _ => defaultWith());
 
         /// <summary>
-        /// Safely retrieve value using procedural code.
+        /// Safely retrieves the value if the Result is in Ok state.
         /// </summary>
-        /// <param name="result"></param>
-        /// <param name="error"></param>
-        /// <returns>True if the Result is in the Ok state, false if in the
-        /// Error state</returns>
-        public bool TryGet(out T result, out TError error)
+        /// <param name="value">The value if in Ok state, default otherwise.</param>
+        /// <returns>True if the Result is in Ok state, false otherwise.</returns>
+        public bool TryGet(out T value)
         {
-            bool success;
+            value = IsOk ? _ok : default!;
+            return IsOk;
+        }
 
-            if (IsOk)
-            {
-                success = true;
-                result = _ok;
-                error = default!;
-            }
-            else
-            {
-                result = default!;
-                error = _error;
-                success = false;
-            }
-
-            return success;
+        /// <summary>
+        /// Safely retrieves the error if the Result is in Error state.
+        /// </summary>
+        /// <param name="error">The error if in Error state, default otherwise.</param>
+        /// <returns>True if the Result is in Error state, false otherwise.</returns>
+        public bool TryGetError(out TError error)
+        {
+            error = IsError ? _error : default!;
+            return IsError;
         }
 
         /// <summary>

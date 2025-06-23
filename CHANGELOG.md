@@ -6,11 +6,13 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- `DanomPageModel` base class for Razor Pages to provide a consistent API for handling options and results.
+- **netstandard 2.1** support.
 - `Result<T>.Error` static extensions to mirror `ResultErrors` constructor signatures.
-- `Result<T, TError>.TryGet(out T? ok, out TError? error)` to safely provide the internal value. A return value indicates whether or not the Result was Ok or Error.
+- `Result<T, TError>.TryGet(out T ok)` and `Result<T, TError>.TryGetError(out TError error)` to safely provide the internal value. A return value indicates whether or not the Result was Ok or Error.
 - `Option<T>` implementation for `IComparable<T>`.
 - `ResultErrors` keyed error list constructor (ex: `new ResultErrors("key", ["value1", "value2"])`).
+- `DanomResultExtensions` for minimal API integration.
+- `DanomPageModel` base class for Razor Pages to provide a consistent API for handling options and results.
 
 ### Removed
 
@@ -21,7 +23,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- Option `TryParse` for: `bool`, `byte`, `short`, `int`, `long`, `decimal`, `double`, `float`, `Guid`, `DateTimeOffset`, `DateTime`, `DateOnly`, `TimeOnly`, `TimeSpan`, `Enum` (ex: `intOption.TryParse`).
+- Option `TryParse` for: `bool`, `byte`, `short`, `int`, `long`, `decimal`, `double`, `float`, `Guid`, `DateTimeOffset`, `DateTime`, `TimeSpan`, `Enum` (ex: `intOption.TryParse`, `longOption.TryParse` etc.).
 - `ModelStateDictionary.AddResultErrors()` extension method to add `Result` errors to the `ModelStateDictionary`.
 - `ValidationOption<T>` for scenarios non-message based validation scenarios.
 

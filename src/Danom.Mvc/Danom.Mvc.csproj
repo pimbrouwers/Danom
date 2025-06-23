@@ -5,7 +5,7 @@
     <Version>2.0.0-beta2</Version>
 
     <!-- General info -->
-    <Description>ASP.NET Core MVC and Razor Pages helpers for Danom.</Description>
+    <Description>ASP.NET Core MVC and Razor Pages support for Danom.</Description>
     <Copyright>Copyright 2025 Pim Brouwers</Copyright>
     <Authors>Pim Brouwers</Authors>
     <NeutralLanguage>en-CA</NeutralLanguage>
