@@ -133,26 +133,6 @@ public sealed class OptionParseTests
         // AssertOption.IsSome(DateTimeOffsetOption.TryParseExact("9999-12-31T23:59:59.9999999+00:00", "u", null));
     }
 
-    // [Fact]
-    // public void DateOnlyOptionTryParse()
-    // {
-    //     AssertOption.IsNone(DateOnlyOption.TryParse(null, null));
-    //     AssertOption.IsNone(DateOnlyOption.TryParse("danom", null));
-    //     AssertOption.IsSome(Option.Some("0001-01-01").Bind(DateOnlyOption.TryParse));
-    //     AssertOption.IsSome(DateOnlyOption.TryParse("0001-01-01", null));
-    //     AssertOption.IsSome(DateOnlyOption.TryParse("9999-12-31", null));
-    // }
-
-    // [Fact]
-    // public void TimeOnlyOptionTryParse()
-    // {
-    //     AssertOption.IsNone(TimeOnlyOption.TryParse(null, null));
-    //     AssertOption.IsNone(TimeOnlyOption.TryParse("danom", null));
-    //     AssertOption.IsSome(Option.Some("00:00:00").Bind(TimeOnlyOption.TryParse));
-    //     AssertOption.IsSome(TimeOnlyOption.TryParse("00:00:00", null));
-    //     AssertOption.IsSome(TimeOnlyOption.TryParse("23:59:59", null));
-    // }
-
     [Fact]
     public void TimeSpanOptionTryParse()
     {
