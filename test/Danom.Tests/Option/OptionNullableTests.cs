@@ -31,6 +31,35 @@ public sealed class OptionNullableExtensionsTests
         AssertOption.IsSome(Guid.Empty, guidList.FirstOrDefault(x => x == Guid.Empty).ToOption());
         AssertOption.IsSome(DateTime.MinValue, dateTimeList.FirstOrDefault(x => x == DateTime.MinValue).ToOption());
         AssertOption.IsSome(DateOnly.MinValue, dateOnlyList.FirstOrDefault(x => x == DateOnly.MinValue).ToOption());
+
+    }
+
+    [Fact]
+    public void EmptyValueCollections()
+    {
+        char[] charList = [];
+        byte[] byteList = [];
+        short[] shortList = [];
+        int[] intList = [];
+        long[] longList = [];
+        decimal[] decimalList = [];
+        double[] doubleList = [];
+        float[] floatList = [];
+        Guid[] guidList = [];
+        DateTime[] dateTimeList = [];
+        DateOnly[] dateOnlyList = [];
+
+        AssertOption.IsSome(charList.FirstOrDefault(x => x == 'a').ToOption());
+        AssertOption.IsSome(byteList.FirstOrDefault(x => x == 0).ToOption());
+        AssertOption.IsSome(shortList.FirstOrDefault(x => x == 0).ToOption());
+        AssertOption.IsSome(intList.FirstOrDefault(x => x == 0).ToOption());
+        AssertOption.IsSome(longList.FirstOrDefault(x => x == 0L).ToOption());
+        AssertOption.IsSome(decimalList.FirstOrDefault(x => x == 0m).ToOption());
+        AssertOption.IsSome(doubleList.FirstOrDefault(x => x == 0.0).ToOption());
+        AssertOption.IsSome(floatList.FirstOrDefault(x => x == 0f).ToOption());
+        AssertOption.IsSome(guidList.FirstOrDefault(x => x == Guid.Empty).ToOption());
+        AssertOption.IsSome(dateTimeList.FirstOrDefault(x => x == DateTime.MinValue).ToOption());
+        AssertOption.IsSome(dateOnlyList.FirstOrDefault(x => x == DateOnly.MinValue).ToOption());
     }
 
     [Fact]
@@ -84,6 +113,54 @@ public sealed class OptionNullableExtensionsTests
     [Fact]
     public void ConversionsFromDefault()
     {
+        char? nullableChar = default;
+        bool? nullableBool = default;
+        byte? nullableByte = default;
+        short? nullableShort = default;
+        int? nullableInt = default;
+        long? nullableLong = default;
+        decimal? nullableDecimal = default;
+        double? nullableDouble = default;
+        float? nullableFloat = default;
+        Guid? nullableGuid = default;
+        DateTime? nullableDateTime = default;
+        DateOnly? nullableDateOnly = default;
+        object? nullableObj = default;
+        Func<object?> objFunc = () => default;
+
+        AssertOption.IsNone(nullableChar.ToOption());
+        AssertOption.IsNone(nullableBool.ToOption());
+        AssertOption.IsNone(nullableByte.ToOption());
+        AssertOption.IsNone(nullableShort.ToOption());
+        AssertOption.IsNone(nullableInt.ToOption());
+        AssertOption.IsNone(nullableLong.ToOption());
+        AssertOption.IsNone(nullableDecimal.ToOption());
+        AssertOption.IsNone(nullableDouble.ToOption());
+        AssertOption.IsNone(nullableFloat.ToOption());
+        AssertOption.IsNone(nullableGuid.ToOption());
+        AssertOption.IsNone(nullableDateTime.ToOption());
+        AssertOption.IsNone(nullableDateOnly.ToOption());
+        AssertOption.IsNone(nullableObj.ToOption());
+        AssertOption.IsNone(objFunc().ToOption());
+        Assert.Null(nullableChar.ToOption().ToNullable());
+        Assert.Null(nullableBool.ToOption().ToNullable());
+        Assert.Null(nullableByte.ToOption().ToNullable());
+        Assert.Null(nullableShort.ToOption().ToNullable());
+        Assert.Null(nullableInt.ToOption().ToNullable());
+        Assert.Null(nullableLong.ToOption().ToNullable());
+        Assert.Null(nullableDecimal.ToOption().ToNullable());
+        Assert.Null(nullableDouble.ToOption().ToNullable());
+        Assert.Null(nullableFloat.ToOption().ToNullable());
+        Assert.Null(nullableGuid.ToOption().ToNullable());
+        Assert.Null(nullableDateTime.ToOption().ToNullable());
+        Assert.Null(nullableDateOnly.ToOption().ToNullable());
+        Assert.Null(nullableObj.ToOption().ToNullable());
+        Assert.Null(objFunc().ToOption().ToNullable());
+    }
+
+    [Fact]
+    public void ConversionsFromValue()
+    {
         char? nullableChar = char.MinValue;
         bool? nullableBool = true;
         byte? nullableByte = byte.MinValue;
@@ -98,6 +175,54 @@ public sealed class OptionNullableExtensionsTests
         DateOnly? nullableDateOnly = DateOnly.MinValue;
         object? nullableObj = new object();
         Func<object?> objFunc = () => new object();
+
+        AssertOption.IsSome(nullableChar.ToOption());
+        AssertOption.IsSome(nullableBool.ToOption());
+        AssertOption.IsSome(nullableByte.ToOption());
+        AssertOption.IsSome(nullableShort.ToOption());
+        AssertOption.IsSome(nullableInt.ToOption());
+        AssertOption.IsSome(nullableLong.ToOption());
+        AssertOption.IsSome(nullableDecimal.ToOption());
+        AssertOption.IsSome(nullableDouble.ToOption());
+        AssertOption.IsSome(nullableFloat.ToOption());
+        AssertOption.IsSome(nullableGuid.ToOption());
+        AssertOption.IsSome(nullableDateTime.ToOption());
+        AssertOption.IsSome(nullableDateOnly.ToOption());
+        AssertOption.IsSome(nullableObj.ToOption());
+        AssertOption.IsSome(objFunc.ToOption());
+        Assert.NotNull(nullableChar.ToOption().ToNullable());
+        Assert.NotNull(nullableBool.ToOption().ToNullable());
+        Assert.NotNull(nullableByte.ToOption().ToNullable());
+        Assert.NotNull(nullableShort.ToOption().ToNullable());
+        Assert.NotNull(nullableInt.ToOption().ToNullable());
+        Assert.NotNull(nullableLong.ToOption().ToNullable());
+        Assert.NotNull(nullableDecimal.ToOption().ToNullable());
+        Assert.NotNull(nullableDouble.ToOption().ToNullable());
+        Assert.NotNull(nullableFloat.ToOption().ToNullable());
+        Assert.NotNull(nullableGuid.ToOption().ToNullable());
+        Assert.NotNull(nullableDateTime.ToOption().ToNullable());
+        Assert.NotNull(nullableDateOnly.ToOption().ToNullable());
+        Assert.NotNull(nullableObj.ToOption().ToNullable());
+        Assert.NotNull(objFunc.ToOption().ToNullable());
+    }
+
+    [Fact]
+    public void ConversionsFromNonNullableValue()
+    {
+        char nullableChar = char.MinValue;
+        bool nullableBool = true;
+        byte nullableByte = byte.MinValue;
+        short nullableShort = short.MinValue;
+        int nullableInt = int.MinValue;
+        long nullableLong = long.MinValue;
+        decimal nullableDecimal = decimal.MinValue;
+        double nullableDouble = double.MinValue;
+        float nullableFloat = float.MinValue;
+        Guid nullableGuid = Guid.Empty;
+        DateTime nullableDateTime = DateTime.MinValue;
+        DateOnly nullableDateOnly = DateOnly.MinValue;
+        object nullableObj = new object();
+        Func<object> objFunc = () => new object();
 
         AssertOption.IsSome(nullableChar.ToOption());
         AssertOption.IsSome(nullableBool.ToOption());
