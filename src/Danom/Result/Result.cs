@@ -270,6 +270,14 @@ namespace Danom
         public static Result<T, ResultErrors> Error(ResultErrors errors) =>
             Result<T, ResultErrors>.Error(errors);
 
+    /// <summary>
+    /// Creates a new <see cref="Result{T, ResultErrors}"/> with the specified error.
+    /// </summary>
+    /// <param name="errors"></param>
+    /// <returns></returns>
+    public static Result<T, ResultErrors> Error(params string[] errors) =>
+        Result<T, ResultErrors>.Error(new ResultErrors(errors));
+
         /// <summary>
         /// Creates a new <see cref="Result{T, ResultErrors}"/> with the specified error.
         /// </summary>

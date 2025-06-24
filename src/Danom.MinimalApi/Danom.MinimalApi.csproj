@@ -1,29 +1,29 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <AssemblyName>Danom</AssemblyName>
-    <Version>2.0.0-beta3</Version>
+    <AssemblyName>Danom.MinimalApi</AssemblyName>
+    <Version>1.0.0-beta1</Version>
 
     <!-- General info -->
-    <Description>Monadic structures to simplify functional programming patterns in C#.</Description>
+    <Description>ASP.NET Core Minimal API support for Danom.</Description>
     <Copyright>Copyright 2025 Pim Brouwers</Copyright>
     <Authors>Pim Brouwers</Authors>
     <NeutralLanguage>en-CA</NeutralLanguage>
-
-    <!-- AOT for net8.0 and greater -->
-    <IsAotCompatible Condition="'$(TargetFramework)' == 'net8.0' or '$(TargetFramework)' == 'net9.0'">true</IsAotCompatible>
+    <IsAotCompatible>true</IsAotCompatible>
 
     <!-- Build config -->
-    <TargetFrameworks>netstandard2.1;net8.0;net9.0</TargetFrameworks>
+    <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
+    <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <DebugType>embedded</DebugType>
     <OutputType>Library</OutputType>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
 
+
     <!-- NuGet config -->
-    <PackageId>Danom</PackageId>
-    <PackageTags>monads;error-handling;option-type;option;result;railway-oriented-programming;result-type</PackageTags>
+    <PackageId>Danom.Mvc</PackageId>
+    <PackageTags>aspnetcore;mvc;validation;danom;</PackageTags>
     <PackageProjectUrl>https://github.com/pimbrouwers/Danom</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
@@ -38,7 +38,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="../../README.md" Pack="true" PackagePath="\" />
+    <None Include="./README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Danom" Version="2.0.0-beta2" />
+    <PackageReference Include="Danom.Validation" Version="2.0.0-beta2" />
   </ItemGroup>
 
 </Project>
