@@ -1,23 +1,27 @@
-namespace Danom;
-
-internal static class TaskExtensions
+namespace Danom
 {
-    internal static async Task<T> WaitOrCancel<T>(this Task<T> task, CancellationToken? token = null)
+    using System.Threading;
+    using System.Threading.Tasks;
+
+    internal static class TaskExtensions
     {
-        if (token is CancellationToken t)
+        internal static async Task<T> WaitOrCancel<T>(this Task<T> task, CancellationToken? token = null)
         {
-            t.ThrowIfCancellationRequested();
-            await Task.WhenAny(task, t.WhenCanceled());
-            t.ThrowIfCancellationRequested();
+            if (token is CancellationToken t)
+            {
+                t.ThrowIfCancellationRequested();
+                await Task.WhenAny(task, t.WhenCanceled());
+                t.ThrowIfCancellationRequested();
+            }
+
+            return await task;
         }
 
-        return await task;
-    }
-
-    internal static Task WhenCanceled(this CancellationToken cancellationToken)
-    {
-        var tcs = new TaskCompletionSource<bool>();
-        cancellationToken.Register(s => ((TaskCompletionSource<bool>)s!).SetResult(true), tcs);
-        return tcs.Task;
+        internal static Task WhenCanceled(this CancellationToken cancellationToken)
+        {
+            var tcs = new TaskCompletionSource<bool>();
+            cancellationToken.Register(s => ((TaskCompletionSource<bool>)s!).SetResult(true), tcs);
+            return tcs.Task;
+        }
     }
 }
