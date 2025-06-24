@@ -272,6 +272,14 @@ public static class Result<T>
     /// <summary>
     /// Creates a new <see cref="Result{T, ResultErrors}"/> with the specified error.
     /// </summary>
+    /// <param name="errors"></param>
+    /// <returns></returns>
+    public static Result<T, ResultErrors> Error(params string[] errors) =>
+        Result<T, ResultErrors>.Error(new(errors));
+
+    /// <summary>
+    /// Creates a new <see cref="Result{T, ResultErrors}"/> with the specified error.
+    /// </summary>
     /// <param name="error"></param>
     /// <returns></returns>
     public static Result<T, ResultErrors> Error(string error) =>
