@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 - **netstandard 2.1** support.
+- AOT compatibility flag.
 - `Result<T>.Error` static extensions to mirror `ResultErrors` constructor signatures.
 - `Result<T, TError>.TryGet(out T ok)` and `Result<T, TError>.TryGetError(out TError error)` to safely provide the internal value. A return value indicates whether or not the Result was Ok or Error.
 - `Option<T>` implementation for `IComparable<T>`.
