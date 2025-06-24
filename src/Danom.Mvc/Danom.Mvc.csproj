@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <AssemblyName>Danom.Mvc</AssemblyName>
-    <Version>2.0.0-beta2</Version>
+    <Version>2.0.0-beta4</Version>
 
     <!-- General info -->
     <Description>ASP.NET Core MVC and Razor Pages support for Danom.</Description>
@@ -44,8 +44,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Danom" Version="2.0.0-beta2" />
-    <PackageReference Include="Danom.Validation" Version="2.0.0-beta2" />
+    <PackageReference Include="Danom" Version="2.0.0-beta4" />
+    <PackageReference Include="Danom.Validation" Version="2.0.0-beta4" />
   </ItemGroup>
 
 </Project>
