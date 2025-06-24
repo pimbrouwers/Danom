@@ -55,7 +55,9 @@ var mappedOption = option.Map(x => x + 1);
 
 // Binding the option (i.e., when a nested operation also returns an Option)
 var boundOption = option.Bind(num1 =>
-    Option.Some(num1 + 2));
+    num1 % 2 == 0
+        ? Option.Some(num1 / 2)
+        : Option<int>.NoneValue);
 
 // Defaulting the option
 var defaultOption = option.DefaultValue(99);
@@ -293,20 +295,14 @@ using Danom;
 
 var result = Result<int, string>.Ok(5);
 
-if (result.TryGet(out var value, out var error)) {
+if (result.TryGet(out var value)) {
     Console.WriteLine("Result: {0}", value);
 }
-else {
+else if (result.TryGetError(out var error)) {
     Console.WriteLine("Error: {0}", error);
 }
-
-var result2 = Result<int, string>.Error("An error occurred");
-
-if (result2.TryGet(out var value2, out var error2) && error2 is not null) {
-    Console.WriteLine("Error: {0}", error2);
-}
 else {
-    Console.WriteLine("Result: {0}", value2);
+    Console.WriteLine("No value or error");
 }
 ```
 
