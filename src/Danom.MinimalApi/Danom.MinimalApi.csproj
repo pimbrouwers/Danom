@@ -9,6 +9,7 @@
     <Copyright>Copyright 2025 Pim Brouwers</Copyright>
     <Authors>Pim Brouwers</Authors>
     <NeutralLanguage>en-CA</NeutralLanguage>
+    <IsAotCompatible>true</IsAotCompatible>
 
     <!-- Build config -->
     <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
@@ -18,6 +19,7 @@
     <OutputType>Library</OutputType>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+
 
     <!-- NuGet config -->
     <PackageId>Danom.Mvc</PackageId>
