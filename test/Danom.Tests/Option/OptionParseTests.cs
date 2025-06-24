@@ -6,6 +6,8 @@ using Xunit;
 
 public sealed class OptionParseTests
 {
+    private static readonly IFormatProvider _culture = CultureInfo.CreateSpecificCulture("en-US");
+
     [Fact]
     public void boolOptionTryParse()
     {
@@ -109,6 +111,62 @@ public sealed class OptionParseTests
     }
 
     [Fact]
+    public void DateTimeOptionTryParse()
+    {
+        AssertOption.IsNone(DateTimeOption.TryParse(null));
+        AssertOption.IsNone(DateTimeOption.TryParse("danom"));
+        AssertOption.IsSome(Option.Some("0001-01-01T00:00:00.0000000").Bind(DateTimeOption.TryParse));
+        AssertOption.IsSome(DateTimeOption.TryParse("0001-01-01T00:00:00.0000000"));
+        AssertOption.IsSome(DateTimeOption.TryParse("9999-12-31T23:59:59.9999999"));
+    }
+
+    [Fact]
+    public void DateTimeOptionTryParseExact()
+    {
+        AssertOption.IsNone(DateTimeOption.TryParseExact(null, null, _culture));
+        AssertOption.IsNone(DateTimeOption.TryParseExact("danom", null, _culture));
+        AssertOption.IsSome(DateTimeOption.TryParseExact("0001-01-01T00:00:00.0000000", "O", _culture));
+        AssertOption.IsSome(DateTimeOption.TryParseExact("9999-12-31T23:59:59.9999999", "O", _culture));
+    }
+
+    [Fact]
+    public void DateOnlyTryParse()
+    {
+        AssertOption.IsNone(DateOnlyOption.TryParse(null));
+        AssertOption.IsNone(DateOnlyOption.TryParse("danom"));
+        AssertOption.IsSome(Option.Some("0001-01-01").Bind(DateOnlyOption.TryParse));
+        AssertOption.IsSome(DateOnlyOption.TryParse("0001-01-01"));
+        AssertOption.IsSome(DateOnlyOption.TryParse("9999-12-31"));
+    }
+
+    [Fact]
+    public void DateOnlyTryParseExact()
+    {
+        AssertOption.IsNone(DateOnlyOption.TryParseExact(null, null, _culture));
+        AssertOption.IsNone(DateOnlyOption.TryParseExact("danom", null, _culture));
+        AssertOption.IsSome(DateOnlyOption.TryParseExact("0001-01-01", "O", _culture));
+        AssertOption.IsSome(DateOnlyOption.TryParseExact("9999-12-31", "O", _culture));
+    }
+
+    [Fact]
+    public void TimeOnlyOptionTryParse()
+    {
+        AssertOption.IsNone(TimeOnlyOption.TryParse(null));
+        AssertOption.IsNone(TimeOnlyOption.TryParse("danom"));
+        AssertOption.IsSome(Option.Some("00:00:00").Bind(TimeOnlyOption.TryParse));
+        AssertOption.IsSome(TimeOnlyOption.TryParse("00:00:00"));
+        AssertOption.IsSome(TimeOnlyOption.TryParse("23:59:59.9999999"));
+    }
+
+    [Fact]
+    public void TimeOnlyOptionTryParseExact()
+    {
+        AssertOption.IsNone(TimeOnlyOption.TryParseExact(null, null, _culture));
+        AssertOption.IsNone(TimeOnlyOption.TryParseExact("danom", null, _culture));
+        AssertOption.IsSome(TimeOnlyOption.TryParseExact("23:59:59.9999999", "O", _culture));
+    }
+
+    [Fact]
     public void DateTimeOffsetOptionTryParse()
     {
         AssertOption.IsNone(DateTimeOffsetOption.TryParse(null));
@@ -121,39 +179,40 @@ public sealed class OptionParseTests
     [Fact]
     public void DateTimeOffsetOptionTryParseExact()
     {
-        AssertOption.IsNone(DateTimeOffsetOption.TryParseExact(null, null, null));
-        AssertOption.IsNone(DateTimeOffsetOption.TryParseExact("danom", null, null));
+        AssertOption.IsNone(DateTimeOffsetOption.TryParseExact(null, null, _culture));
+        AssertOption.IsNone(DateTimeOffsetOption.TryParseExact("danom", null, _culture));
 
         // TODO determine how to make these work consistently across operating systems
-        // AssertOption.IsSome(DateTimeOffsetOption.TryParseExact("0001-01-01T00:00:00.0000000+00:00", "O", null));
-        // AssertOption.IsSome(DateTimeOffsetOption.TryParseExact("9999-12-31T23:59:59.9999999+00:00", "O", null));
-        // AssertOption.IsSome(DateTimeOffsetOption.TryParseExact("0001-01-01T00:00:00.0000000+00:00", "s", null));
-        // AssertOption.IsSome(DateTimeOffsetOption.TryParseExact("9999-12-31T23:59:59.9999999+00:00", "s", null));
-        // AssertOption.IsSome(DateTimeOffsetOption.TryParseExact("0001-01-01T00:00:00.0000000+00:00", "u", null));
-        // AssertOption.IsSome(DateTimeOffsetOption.TryParseExact("9999-12-31T23:59:59.9999999+00:00", "u", null));
+        // AssertOption.IsSome(DateTimeOffsetOption.TryParseExact("0001-01-01T00:00:00.0000000+00:00", "O", _culture));
+        // AssertOption.IsSome(DateTimeOffsetOption.TryParseExact("9999-12-31T23:59:59.9999999+00:00", "O", _culture));
+        // AssertOption.IsSome(DateTimeOffsetOption.TryParseExact("0001-01-01T00:00:00.0000000+00:00", "s", _culture));
+        // AssertOption.IsSome(DateTimeOffsetOption.TryParseExact("9999-12-31T23:59:59.9999999+00:00", "s", _culture));
+        // AssertOption.IsSome(DateTimeOffsetOption.TryParseExact("0001-01-01T00:00:00.0000000+00:00", "u", _culture));
+        // AssertOption.IsSome(DateTimeOffsetOption.TryParseExact("9999-12-31T23:59:59.9999999+00:00", "u", _culture));
     }
 
     [Fact]
     public void TimeSpanOptionTryParse()
     {
-        AssertOption.IsNone(TimeSpanOption.TryParse(null, null));
-        AssertOption.IsNone(TimeSpanOption.TryParse("danom", null));
+        AssertOption.IsNone(TimeSpanOption.TryParse(null, _culture));
+        AssertOption.IsNone(TimeSpanOption.TryParse("danom", _culture));
         AssertOption.IsSome(Option.Some("00:00:00").Bind(TimeSpanOption.TryParse));
-        AssertOption.IsSome(TimeSpanOption.TryParse("00:00:00", null));
-        AssertOption.IsSome(TimeSpanOption.TryParse("10675199.02:48:05.4775807", null));
+        AssertOption.IsSome(TimeSpanOption.TryParse("00:00:00", _culture));
+        AssertOption.IsSome(TimeSpanOption.TryParse("10675199.02:48:05.4775807", _culture));
     }
 
     [Fact]
     public void TimeSpanOptionTryParseExact()
     {
-        AssertOption.IsNone(TimeSpanOption.TryParseExact(null, null, null));
-        AssertOption.IsNone(TimeSpanOption.TryParseExact("danom", null, null));
-        AssertOption.IsSome(TimeSpanOption.TryParseExact("10675199.02:48:05.4775807", "c", null));
-        AssertOption.IsSome(TimeSpanOption.TryParseExact("3:17:14:48.153", "g", null));
-        AssertOption.IsSome(TimeSpanOption.TryParseExact("3:17:14:48.153", "G", null));
-        AssertOption.IsSome(TimeSpanOption.TryParseExact("10675199.02:48:05.4775807", "c", CultureInfo.CurrentUICulture));
-        AssertOption.IsSome(TimeSpanOption.TryParseExact("3:17:14:48.153", "g", CultureInfo.CurrentUICulture));
-        AssertOption.IsSome(TimeSpanOption.TryParseExact("3:17:14:48.153", "G", CultureInfo.CurrentUICulture));
+        AssertOption.IsNone(TimeSpanOption.TryParseExact(null, null, _culture));
+        AssertOption.IsNone(TimeSpanOption.TryParseExact("danom", null, _culture));
+        AssertOption.IsSome(TimeSpanOption.TryParseExact("10675199.02:48:05.4775807", "c", _culture));
+        AssertOption.IsSome(TimeSpanOption.TryParseExact("3:17:14:48.153", "g", _culture));
+        AssertOption.IsSome(TimeSpanOption.TryParseExact("3:17:14:48.153", "G", _culture));
+
+        AssertOption.IsSome(TimeSpanOption.TryParseExact("10675199.02:48:05.4775807", "c", _culture));
+        AssertOption.IsSome(TimeSpanOption.TryParseExact("3:17:14:48.153", "g", _culture));
+        AssertOption.IsSome(TimeSpanOption.TryParseExact("3:17:14:48.153", "G", _culture));
     }
 
     enum Borp

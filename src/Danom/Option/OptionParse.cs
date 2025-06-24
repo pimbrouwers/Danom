@@ -197,6 +197,58 @@ namespace Danom
             DateTime.TryParseExact(x, format, provider, dateTimeStyles, out var y) ? Option.Some(y) : Option<DateTime>.NoneValue;
     }
 
+#if NET6_0_OR_GREATER
+    /// <summary>
+    /// DateOnlyOption
+    /// </summary>
+    public static class DateOnlyOption
+    {
+        /// <summary>
+        /// Attempt to parse string as DateOnly, return None if invalid, Some if valid.
+        /// </summary>
+        /// <param name="x"></param>
+        /// <returns></returns>
+        public static Option<DateOnly> TryParse(string? x) =>
+            DateOnly.TryParse(x, out var y) ? Option.Some(y) : Option<DateOnly>.NoneValue;
+
+        /// <summary>
+        /// Attempt to parse string as DateOnly, return None if invalid, Some if valid.
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="format"></param>
+        /// <param name="provider"></param>
+        /// <param name="dateTimeStyles"></param>
+        /// <returns></returns>
+        public static Option<DateOnly> TryParseExact(string? x, string? format, IFormatProvider? provider = null, DateTimeStyles dateTimeStyles = DateTimeStyles.None) =>
+            DateOnly.TryParseExact(x, format, provider, dateTimeStyles, out var y) ? Option.Some(y) : Option<DateOnly>.NoneValue;
+    }
+
+    /// <summary>
+    /// TimeOnlyOption
+    /// </summary>
+    public static class TimeOnlyOption
+    {
+        /// <summary>
+        /// Attempt to parse string as TimeOnly, return None if invalid, Some if valid.
+        /// </summary>
+        /// <param name="x"></param>
+        /// <returns></returns>
+        public static Option<TimeOnly> TryParse(string? x) =>
+            TimeOnly.TryParse(x, out var y) ? Option.Some(y) : Option<TimeOnly>.NoneValue;
+
+        /// <summary>
+        /// Attempt to parse string as TimeOnly, return None if invalid, Some if valid.
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="format"></param>
+        /// <param name="provider"></param>
+        /// <param name="dateTimeStyles"></param>
+        /// <returns></returns>
+        public static Option<TimeOnly> TryParseExact(string? x, string? format, IFormatProvider? provider = null, DateTimeStyles dateTimeStyles = DateTimeStyles.None) =>
+            TimeOnly.TryParseExact(x, format, provider, dateTimeStyles, out var y) ? Option.Some(y) : Option<TimeOnly>.NoneValue;
+    }
+
+#endif
     /// <summary>
     /// TimeSpanOption
     /// </summary>
