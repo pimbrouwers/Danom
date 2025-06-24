@@ -15,11 +15,15 @@ public static class DanomResultExtensions
     /// </summary>
     /// <param name="_"></param>
     /// <param name="option"></param>
+    /// <param name="noneResult"></param>
     /// <returns></returns>
-    public static IResult Option<T>(this IResultExtensions _, Option<T> option) =>
+    public static IResult Option<T>(
+        this IResultExtensions _,
+        Option<T> option,
+        Func<IResult>? noneResult = default) =>
         option.Match(
             some: value => Results.Ok(value),
-            none: () => Results.NotFound());
+            none: () => noneResult?.Invoke() ?? Results.NotFound());
 
     /// <summary>
     /// Converts a Result to an `IResult`. Returns a 200 OK result with the
@@ -30,28 +34,13 @@ public static class DanomResultExtensions
     /// <typeparam name="TError"></typeparam>
     /// <param name="_"></param>
     /// <param name="result"></param>
-    /// <param name="handleError"></param>
+    /// <param name="errorResult"></param>
     /// <returns></returns>
     public static IResult Result<T, TError>(
         this IResultExtensions _,
         Result<T, TError> result,
-        Func<TError, IResult> handleError) =>
+        Func<TError, IResult>? errorResult = default) =>
         result.Match(
             ok: value => Results.Ok(value),
-            error: handleError);
-
-    /// <summary>
-    /// Converts a Result to an `IResult`. Returns a 200 OK result with the
-    /// value if the result is Ok, or a 400 Bad Request result with the
-    /// error if the result is an Error.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <typeparam name="TError"></typeparam>
-    /// <param name="_"></param>
-    /// <param name="result"></param>
-    /// <returns></returns>
-    public static IResult Result<T, TError>(
-        this IResultExtensions _,
-        Result<T, TError> result) =>
-        _.Result(result, error => Results.BadRequest(error));
+            error: error => errorResult?.Invoke(error) ?? Results.BadRequest(error));
 }
