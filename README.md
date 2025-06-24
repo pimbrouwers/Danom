@@ -85,7 +85,7 @@ var option = Option<int>.Some(5);
 var optionInferred = Option.Some(5);
 
 // or, with no value
-var optionNone = Option<int>.None();
+var optionNone = Option<int>.NoneValue;
 
 // also returns none
 var optionNull = Option<object>.Some(default!);
@@ -315,7 +315,7 @@ Most applications will at some point need to parse strings into primitives and v
 using Danom;
 
 // a common pattern
-var x = int.TryParse("123", out var y) ? Option<int>.Some(y) : Option<int>.None();
+var x = int.TryParse("123", out var y) ? Option<int>.Some(y) : Option<int>.NoneValue;
 
 // or, more simply using the TryParse API
 var myInt = intOption.TryParse("123"); // -> Some(123)
