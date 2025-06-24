@@ -125,10 +125,9 @@ public sealed class ResultTests
     public void TryGet()
     {
         var result = Result<int, string>.Ok(1);
-        if (result.TryGet(out var value, out string? error))
+        if (result.TryGet(out var value))
         {
             Assert.Equal(1, value);
-            Assert.Null(error);
         }
         else
         {
@@ -140,9 +139,8 @@ public sealed class ResultTests
     public void TryGetError()
     {
         var resultE = Result<int, string>.Error("Error");
-        if (resultE.TryGet(out var valueE, out var errorE) == false)
+        if (resultE.TryGetError(out var errorE))
         {
-            Assert.Equal(default, valueE);
             Assert.Equal("Error", errorE);
         }
         else
