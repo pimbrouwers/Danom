@@ -2,6 +2,7 @@ namespace Danom
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -138,7 +139,7 @@ namespace Danom
         /// </summary>
         /// <param name="result"></param>
         /// <returns></returns>
-        public bool TryGet(out T result)
+        public bool TryGet([MaybeNullWhen(false)] out T result)
         {
             var success = true;
             result = DefaultWith(() =>
