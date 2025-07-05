@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DanomBenchmark", "benchmark
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Danom.MinimalApi", "src\Danom.MinimalApi\Danom.MinimalApi.csproj", "{94B63411-6576-44D7-B0B3-CFC4D1B6321E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Danom.MinimalApi.Tests", "test\Danom.MinimalApi.Tests\Danom.MinimalApi.Tests.csproj", "{2C83DF78-A003-4FE3-A4B6-16C83D06563A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -143,6 +145,18 @@ Global
 		{94B63411-6576-44D7-B0B3-CFC4D1B6321E}.Release|x64.Build.0 = Release|Any CPU
 		{94B63411-6576-44D7-B0B3-CFC4D1B6321E}.Release|x86.ActiveCfg = Release|Any CPU
 		{94B63411-6576-44D7-B0B3-CFC4D1B6321E}.Release|x86.Build.0 = Release|Any CPU
+		{2C83DF78-A003-4FE3-A4B6-16C83D06563A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C83DF78-A003-4FE3-A4B6-16C83D06563A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C83DF78-A003-4FE3-A4B6-16C83D06563A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{2C83DF78-A003-4FE3-A4B6-16C83D06563A}.Debug|x64.Build.0 = Debug|Any CPU
+		{2C83DF78-A003-4FE3-A4B6-16C83D06563A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{2C83DF78-A003-4FE3-A4B6-16C83D06563A}.Debug|x86.Build.0 = Debug|Any CPU
+		{2C83DF78-A003-4FE3-A4B6-16C83D06563A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C83DF78-A003-4FE3-A4B6-16C83D06563A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C83DF78-A003-4FE3-A4B6-16C83D06563A}.Release|x64.ActiveCfg = Release|Any CPU
+		{2C83DF78-A003-4FE3-A4B6-16C83D06563A}.Release|x64.Build.0 = Release|Any CPU
+		{2C83DF78-A003-4FE3-A4B6-16C83D06563A}.Release|x86.ActiveCfg = Release|Any CPU
+		{2C83DF78-A003-4FE3-A4B6-16C83D06563A}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -156,5 +170,6 @@ Global
 		{EF188F59-5C11-4BAA-A965-56C08C370C84} = {624FD20E-2393-4198-8DC9-AB02DCC12338}
 		{B78AD031-6E72-4006-A007-ABA49570F17E} = {624FD20E-2393-4198-8DC9-AB02DCC12338}
 		{94B63411-6576-44D7-B0B3-CFC4D1B6321E} = {606C9E49-7696-48B1-A799-B456E680C9F0}
+		{2C83DF78-A003-4FE3-A4B6-16C83D06563A} = {624FD20E-2393-4198-8DC9-AB02DCC12338}
 	EndGlobalSection
 EndGlobal
