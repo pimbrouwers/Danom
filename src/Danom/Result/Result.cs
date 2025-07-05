@@ -1,6 +1,7 @@
 namespace Danom
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -128,7 +129,7 @@ namespace Danom
         /// </summary>
         /// <param name="value">The value if in Ok state, default otherwise.</param>
         /// <returns>True if the Result is in Ok state, false otherwise.</returns>
-        public bool TryGet(out T value)
+        public bool TryGet([MaybeNullWhen(false)] out T value)
         {
             value = IsOk ? _ok : default!;
             return IsOk;
@@ -139,7 +140,7 @@ namespace Danom
         /// </summary>
         /// <param name="error">The error if in Error state, default otherwise.</param>
         /// <returns>True if the Result is in Error state, false otherwise.</returns>
-        public bool TryGetError(out TError error)
+        public bool TryGetError([MaybeNullWhen(false)] out TError error)
         {
             error = IsError ? _error : default!;
             return IsError;
