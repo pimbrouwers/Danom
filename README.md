@@ -3,8 +3,8 @@
 [![build](https://github.com/pimbrouwers/Danom/actions/workflows/build.yml/badge.svg)](https://github.com/pimbrouwers/Danom/actions/workflows/build.yml)
 [![license](https://img.shields.io/github/license/pimbrouwers/Danom.svg)](https://github.com/pimbrouwers/Danom/blob/master/LICENSE)
 ![aot](https://img.shields.io/badge/aot-compatible-green.svg)
-![net9.0](https://img.shields.io/badge/net-9.0-blue.svg)
 ![net8.0](https://img.shields.io/badge/net-8.0-blue.svg)
+![net6.0](https://img.shields.io/badge/net-6.0-blue.svg)
 ![netstandard2.1](https://img.shields.io/badge/netstandard-2.1-blue.svg)
 
 Danom is a C# library that provides (monadic) structures to facilitate durable programming patterns in C#, using [Option](#option) and [Result](#result). These discriminated unions are a powerful way to handle nullable values and expected errors in a type-safe manner, while also providing a fluent API for chaining operations.
