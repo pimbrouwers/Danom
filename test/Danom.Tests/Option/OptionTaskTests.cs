@@ -50,7 +50,7 @@ public sealed class OptionAsyncTests
         Assert.Equal(2, await Option<int>.SomeAsync(2).DefaultWithAsync(() => 1));
         Assert.Equal(2, await Option<int>.SomeAsync(2).DefaultWithAsync(() => Task.FromResult(1)));
     }
-
+#pragma warning disable CA1849
     [Fact]
     public async Task OrElse()
     {
@@ -69,3 +69,4 @@ public sealed class OptionAsyncTests
         AssertOption.IsSome(2, await Option<int>.SomeAsync(2).OrElseWithAsync(() => Option<int>.SomeAsync(1)));
     }
 }
+#pragma warning restore CA1849

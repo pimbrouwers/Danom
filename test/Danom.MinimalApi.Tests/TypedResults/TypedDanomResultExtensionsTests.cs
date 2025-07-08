@@ -115,5 +115,5 @@ public static class TypedDanomResultExtensionsTests
     }
 
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)]
-    private record SomeType(int Value);
+    private sealed record SomeType(int Value);
 }
