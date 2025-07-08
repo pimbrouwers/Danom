@@ -5,21 +5,21 @@
     <Version>2.0.0-beta4</Version>
 
     <!-- General info -->
-    <Description>Monadic structures to simplify functional programming patterns in C#.</Description>
+    <Description>Option and Result types for C# to simplify functional programming.</Description>
     <Copyright>Copyright 2025 Pim Brouwers</Copyright>
     <Authors>Pim Brouwers</Authors>
     <NeutralLanguage>en-CA</NeutralLanguage>
 
-    <!-- AOT for net8.0 and greater -->
-    <IsAotCompatible Condition="'$(TargetFramework)' == 'net8.0' or '$(TargetFramework)' == 'net9.0'">true</IsAotCompatible>
-
     <!-- Build config -->
-    <TargetFrameworks>netstandard2.1;net8.0;net9.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.1;net6.0;net8.0</TargetFrameworks>
     <Nullable>enable</Nullable>
     <DebugType>embedded</DebugType>
     <OutputType>Library</OutputType>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+
+    <!-- AOT for net8.0 and greater -->
+    <IsAotCompatible Condition="'$(TargetFramework)' == 'net8.0' or '$(TargetFramework)' == 'net9.0'">true</IsAotCompatible>
 
     <!-- NuGet config -->
     <PackageId>Danom</PackageId>
