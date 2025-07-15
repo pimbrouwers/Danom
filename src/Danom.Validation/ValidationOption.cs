@@ -1,34 +1,27 @@
-namespace Danom.Validation;
-
-using FluentValidation;
-
-/// <summary>
-/// Represents an <see cref="IValidator{T}" /> as a
-/// <see cref="Option{T}" />.
-/// </summary>
-/// <typeparam name="T"></typeparam>
-public static class ValidationOption<T>
+namespace Danom.Validation
 {
     /// <summary>
-    /// Converts an input value to an <see cref="Option{T}" /> based on the
-    /// result of the provided validator. If the input is valid, then Some else
-    /// None.
+    /// Represents an <see cref="IValidator{T}" /> as a
+    /// <see cref="Option{T}" />.
     /// </summary>
-    /// <typeparam name="TValidator"></typeparam>
-    /// <param name="input"></param>
-    /// <returns></returns>
-    public static Option<T> From<TValidator>(T input)
-        where TValidator : IValidator<T>, new()
+    /// <typeparam name="T"></typeparam>
+    public static class ValidationOption<T>
     {
-        var validator = new TValidator();
-        var validationOption = validator.Validate(input);
-        if (validationOption.IsValid)
+        /// <summary>
+        /// Converts an input value to an <see cref="Option{T}" /> based on the
+        /// result of the provided validator. If the input is valid, then Some else
+        /// None.
+        /// </summary>
+        /// <typeparam name="TValidator"></typeparam>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public static Option<T> From<TValidator>(T input)
+            where TValidator : IValidator<T>, new()
         {
-            return Option<T>.Some(input);
-        }
-        else
-        {
-            return Option<T>.NoneValue;
+            var validator = new TValidator();
+            return validator.Validate(input).Match(
+                ok: input => Option.Some(input),
+                error: _ => Option<T>.NoneValue);
         }
     }
 }

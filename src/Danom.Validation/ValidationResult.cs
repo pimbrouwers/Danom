@@ -1,41 +1,24 @@
-namespace Danom.Validation;
-
-using FluentValidation;
-
-/// <summary>
-/// Represents an <see cref="IValidator{T}" /> as a
-/// <see cref="Result{T, ResultErrors}" />.
-/// </summary>
-/// <typeparam name="T"></typeparam>
-public static class ValidationResult<T>
+namespace Danom.Validation
 {
     /// <summary>
-    /// Converts an input value to a <see cref="Result{T, ResultErrors}" />
-    /// using the provided validator.
+    /// Represents an <see cref="IValidator{T}" /> as a
+    /// <see cref="Result{T, ResultErrors}" />.
     /// </summary>
-    /// <typeparam name="TValidator"></typeparam>
-    /// <param name="input"></param>
-    /// <returns></returns>
-    public static Result<T, ResultErrors> From<TValidator>(T input)
-        where TValidator : IValidator<T>, new()
+    /// <typeparam name="T"></typeparam>
+    public static class ValidationResult<T>
     {
-        var validator = new TValidator();
-        var validationResult = validator.Validate(input);
-        if (validationResult.IsValid)
+        /// <summary>
+        /// Converts an input value to a <see cref="Result{T, ResultErrors}" />
+        /// using the provided validator.
+        /// </summary>
+        /// <typeparam name="TValidator"></typeparam>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public static Result<T, ResultErrors> From<TValidator>(T input)
+            where TValidator : IValidator<T>, new()
         {
-            return Result<T, ResultErrors>.Ok(input);
-        }
-        else
-        {
-            var validationErrors =
-                validationResult.Errors
-                    .GroupBy(x => x.PropertyName, x => x.ErrorMessage)
-                    .Select(x =>
-                    {
-                        var errors = x.AsEnumerable().ToArray();
-                        return new ResultError(x.Key, errors);
-                    });
-            return Result<T, ResultErrors>.Error([.. validationErrors]);
+            var validator = new TValidator();
+            return validator.Validate(input);
         }
     }
 }

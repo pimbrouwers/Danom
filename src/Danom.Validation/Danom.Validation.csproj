@@ -1,6 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <NoWarn>CS1591</NoWarn>
+
     <AssemblyName>Danom.Validation</AssemblyName>
     <Version>2.0.0-beta4</Version>
 
@@ -11,8 +13,7 @@
     <NeutralLanguage>en-CA</NeutralLanguage>
 
     <!-- Build config -->
-    <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
-    <ImplicitUsings>enable</ImplicitUsings>
+    <TargetFrameworks>netstandard2.1</TargetFrameworks>
     <Nullable>enable</Nullable>
     <DebugType>embedded</DebugType>
     <OutputType>Library</OutputType>
@@ -40,7 +41,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Danom" Version="2.0.0-beta4" />
-    <PackageReference Include="FluentValidation" Version="11.11.0" />
+    <!-- <PackageReference Include="Danom" Version="2.0.0-beta4" /> -->
+    <ProjectReference Include="..\Danom\Danom.csproj" />
   </ItemGroup>
 </Project>
