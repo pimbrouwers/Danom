@@ -1,346 +1,178 @@
 namespace Danom.Validation
 {
     using System;
+    using System.Text.RegularExpressions;
 
-    public static class ValidatorRules
+    public static class Check
     {
-        public static Result<Unit, ResultErrors> IsValid<T>(this T value, IValidator<T> validator) =>
-            validator.Validate(value).Map(_ => Unit.Value);
+        public static ValidatorRule<T> IsEqualTo<T>(T threshold) where T : IEquatable<T> =>
+            value => value.IsEqualTo(threshold);
+        public static ValidatorRule<T> IsNotEqualTo<T>(T threshold) where T : IEquatable<T> =>
+            value => value.IsNotEqualTo(threshold);
+        public static ValidatorRule<T> IsBetween<T>(T min, T max) where T : IComparable<T> =>
+            value => value.IsBetween(min, max);
+        public static ValidatorRule<T> IsNotBetween<T>(T min, T max) where T : IComparable<T> =>
+            value => value.IsNotBetween(min, max);
+        public static ValidatorRule<T> IsPositive<T>() where T : IComparable<T> =>
+            value => value.IsPositive();
+        public static ValidatorRule<T> IsNegative<T>() where T : IComparable<T> =>
+            value => value.IsNegative();
+        public static ValidatorRule<T> IsZero<T>() where T : IComparable<T> =>
+            value => value.IsZero();
+        public static ValidatorRule<T> IsGreaterThan<T>(T threshold) where T : IComparable<T> =>
+            value => value.IsGreaterThan(threshold);
+        public static ValidatorRule<T> IsGreaterThanOrEqualTo<T>(T threshold) where T : IComparable<T> =>
+            value => value.IsGreaterThanOrEqualTo(threshold);
+        public static ValidatorRule<T> IsLessThan<T>(T threshold) where T : IComparable<T> =>
+            value => value.IsLessThan(threshold);
+        public static ValidatorRule<T> IsLessThanOrEqualTo<T>(T threshold) where T : IComparable<T> =>
+            value => value.IsLessThanOrEqualTo(threshold);
+
+        public static ValidatorRule<string> IsEmpty =>
+            value => value.IsEmpty();
+        public static ValidatorRule<string> IsNotEmpty =>
+            value => value.IsNotEmpty();
+        public static ValidatorRule<string> IsStartingWith(string prefix) =>
+            value => value.IsStartingWith(prefix);
+        public static ValidatorRule<string> IsEndingWith(string suffix) =>
+            value => value.IsEndingWith(suffix);
+        public static ValidatorRule<string> IsContaining(string substring) =>
+            value => value.IsContaining(substring);
+        public static ValidatorRule<string> IsLength(int length) =>
+            value => value.IsLength(length);
+        public static ValidatorRule<string> IsLengthBetween(int min, int max) =>
+            value => value.IsLengthBetween(min, max);
+        public static ValidatorRule<string> IsLengthGreaterThan(int min) =>
+            value => value.IsLengthGreaterThan(min);
+        public static ValidatorRule<string> IsLengthOrGreaterThan(int min) =>
+            value => value.IsLengthOrGreaterThan(min);
+        public static ValidatorRule<string> IsLengthLessThan(int max) =>
+            value => value.IsLengthLessThan(max);
+        public static ValidatorRule<string> IsLengthOrLessThan(int max) =>
+            value => value.IsLengthOrLessThan(max);
+        public static ValidatorRule<string> IsMatch(string pattern) =>
+            value => value.IsMatch(pattern);
+
+        public static ValidatorRule<Guid> IsEmptyGuid =>
+            value => value.IsEmpty();
+        public static ValidatorRule<Guid> IsNotEmptyGuid =>
+            value => value.IsNotEmpty();
     }
 
-    public static class EquatableRules
+    public static class ValidatorRulesExtensions
     {
-        public static Result<Unit, ResultErrors> IsEqualTo<T>(this T value, T threshold, string? field = null, string? message = null)
-        where T : IEquatable<T> =>
-        value.Equals(threshold)
-            ? Result.Ok(Unit.Value)
-            : RuleHelper.ErrorForRule(field, message ?? ValidationMessages.EqualTo(threshold, field));
-
-        public static Result<Unit, ResultErrors> IsNotEqualTo<T>(this T value, T threshold, string? field = null, string? message = null)
-            where T : IEquatable<T> =>
-            !value.Equals(threshold)
-                ? Result.Ok(Unit.Value)
-                : RuleHelper.ErrorForRule(field, message ?? ValidationMessages.NotEqualTo(threshold, field));
+        public static LabeledValidatorRule IsValid<T>(this T value, IValidator<T> validator) =>
+            field => validator.Validate(value).Map(_ => Unit.Value);
     }
 
-    public static class ComparableRules
+    public static class EquatableRulesExtensions
     {
-        public static Result<Unit, ResultErrors> IsBetween<T>(this T value, T min, T max, string? field = null, string? message = null)
-            where T : IComparable<T> =>
-            value.CompareTo(min) >= 0 && value.CompareTo(max) <= 0
-                ? Result.Ok(Unit.Value)
-                : RuleHelper.ErrorForRule(field, message ?? ValidationMessages.Between(min, max, field));
+        public static LabeledValidatorRule IsEqualTo<T>(this T value, T threshold) where T : IEquatable<T> =>
+            field => RuleHelper.Check(value.Equals(threshold), $"'{field}' must be equal to {threshold}");
 
-        public static Result<Unit, ResultErrors> IsNotBetween<T>(this T value, T min, T max, string? field = null, string? message = null)
-            where T : IComparable<T> =>
-            value.CompareTo(min) < 0 || value.CompareTo(max) > 0
-                ? Result.Ok(Unit.Value)
-                : RuleHelper.ErrorForRule(field, message ?? ValidationMessages.NotBetween(min, max, field));
-
-        public static Result<Unit, ResultErrors> IsPositive<T>(this T value, string? field = null, string? message = null)
-            where T : IComparable<T> =>
-            value.CompareTo(default!) > 0
-                ? Result.Ok(Unit.Value)
-                : RuleHelper.ErrorForRule(field, message ?? ValidationMessages.Positive(field));
-
-        public static Result<Unit, ResultErrors> IsNegative<T>(this T value, string? field = null, string? message = null)
-            where T : IComparable<T> =>
-            value.CompareTo(default!) < 0
-                ? Result.Ok(Unit.Value)
-                : RuleHelper.ErrorForRule(field, message ?? ValidationMessages.Negative(field));
-
-        public static Result<Unit, ResultErrors> IsZero<T>(this T value, string? field = null, string? message = null)
-            where T : IComparable<T> =>
-            value.CompareTo(default!) == 0
-                ? Result.Ok(Unit.Value)
-                : RuleHelper.ErrorForRule(field, message ?? ValidationMessages.Zero(field));
-
-        public static Result<Unit, ResultErrors> IsGreaterThan<T>(this T value, T threshold, string? field = null, string? message = null)
-            where T : IComparable<T> =>
-            value.CompareTo(threshold) > 0
-                ? Result.Ok(Unit.Value)
-                : RuleHelper.ErrorForRule(field, message ?? ValidationMessages.GreaterThan(threshold, field));
-
-        public static Result<Unit, ResultErrors> IsGreaterThanOrEqualTo<T>(this T value, T threshold, string? field = null, string? message = null)
-            where T : IComparable<T> =>
-            value.CompareTo(threshold) >= 0
-                ? Result.Ok(Unit.Value)
-                : RuleHelper.ErrorForRule(field, message ?? ValidationMessages.GreaterThanOrEqualTo(threshold, field));
-
-        public static Result<Unit, ResultErrors> IsLessThan<T>(this T value, T threshold, string? field = null, string? message = null)
-            where T : IComparable<T> =>
-            value.CompareTo(threshold) < 0
-                ? Result.Ok(Unit.Value)
-                : RuleHelper.ErrorForRule(field, message ?? ValidationMessages.LessThan(threshold, field));
-
-        public static Result<Unit, ResultErrors> IsLessThanOrEqualTo<T>(this T value, T threshold, string? field = null, string? message = null)
-            where T : IComparable<T> =>
-            value.CompareTo(threshold) <= 0
-                ? Result.Ok(Unit.Value)
-                : RuleHelper.ErrorForRule(field, message ?? ValidationMessages.LessThanOrEqualTo(threshold, field));
+        public static LabeledValidatorRule IsNotEqualTo<T>(this T value, T threshold) where T : IEquatable<T> =>
+            field => RuleHelper.Check(!value.Equals(threshold), $"'{field}' must not equal {threshold}");
     }
 
-    public static class StringRules
+    public static class ComparableRulesExtensions
     {
-        public static Result<Unit, ResultErrors> IsEmpty(this string value, string? field = null, string? message = null) =>
-            string.IsNullOrWhiteSpace(value)
-                ? Result.Ok(Unit.Value)
-                : RuleHelper.ErrorForRule(field, message ?? ValidationMessages.StringEmpty(field));
+        public static LabeledValidatorRule IsBetween<T>(this T value, T min, T max) where T : IComparable<T> =>
+            field => RuleHelper.Check(value.CompareTo(min) >= 0 && value.CompareTo(max) <= 0, $"'{field}' must be between {min} and {max}");
 
-        public static Result<Unit, ResultErrors> IsNotEmpty(this string value, string? field = null, string? message = null) =>
-            string.IsNullOrWhiteSpace(value)
-                ? RuleHelper.ErrorForRule(field, message ?? ValidationMessages.StringNotEmpty(field))
-                : Result.Ok(Unit.Value);
+        public static LabeledValidatorRule IsNotBetween<T>(this T value, T min, T max) where T : IComparable<T> =>
+            field => RuleHelper.Check(value.CompareTo(min) < 0 || value.CompareTo(max) > 0, $"'{field}' must be outside the range {min} to {max}");
 
-        public static Result<Unit, ResultErrors> IsStartingWith(this string value, string prefix, string? field = null, string? message = null) =>
-            value.StartsWith(prefix)
-                ? Result.Ok(Unit.Value)
-                : RuleHelper.ErrorForRule(field, message ?? ValidationMessages.StringStartsWith(prefix, field));
+        public static LabeledValidatorRule IsPositive<T>(this T value) where T : IComparable<T> =>
+            field => RuleHelper.Check(value.CompareTo(default!) > 0, $"'{field}' must be positive");
 
-        public static Result<Unit, ResultErrors> IsEndingWith(this string value, string suffix, string? field = null, string? message = null) =>
-            value.EndsWith(suffix)
-                ? Result.Ok(Unit.Value)
-                : RuleHelper.ErrorForRule(field, message ?? ValidationMessages.StringEndsWith(suffix, field));
+        public static LabeledValidatorRule IsNegative<T>(this T value) where T : IComparable<T> =>
+            field => RuleHelper.Check(value.CompareTo(default!) < 0, $"'{field}' must be negative");
 
-        public static Result<Unit, ResultErrors> IsContaining(this string value, string substring, string? field = null, string? message = null) =>
-            value.Contains(substring)
-                ? Result.Ok(Unit.Value)
-                : RuleHelper.ErrorForRule(field, message ?? ValidationMessages.StringContains(substring, field));
+        public static LabeledValidatorRule IsZero<T>(this T value) where T : IComparable<T> =>
+            field => RuleHelper.Check(value.CompareTo(default!) == 0, $"'{field}' must be zero");
 
-        public static Result<Unit, ResultErrors> IsAlphanumeric(this string value, string? field = null, string? message = null) =>
-            value.IsMatch("^[a-zA-Z0-9]*$", field, message ?? ValidationMessages.StringAlphanumeric(field));
+        public static LabeledValidatorRule IsGreaterThan<T>(this T value, T threshold) where T : IComparable<T> =>
+            field => RuleHelper.Check(value.CompareTo(threshold) > 0, $"'{field}' must be greater than {threshold}");
 
-        public static Result<Unit, ResultErrors> IsLength(this string value, int length, string? field = null, string? message = null) =>
-            value.Length == length
-                ? Result.Ok(Unit.Value)
-                : RuleHelper.ErrorForRule(field, message ?? ValidationMessages.StringEqualsLength(length, field));
+        public static LabeledValidatorRule IsGreaterThanOrEqualTo<T>(this T value, T threshold) where T : IComparable<T> =>
+            field => RuleHelper.Check(value.CompareTo(threshold) >= 0, $"'{field}' must be greater than or equal to {threshold}");
 
-        public static Result<Unit, ResultErrors> IsLengthBetween(this string value, int min, int max, string? field = null, string? message = null) =>
-            value.Length >= min && value.Length <= max
-                ? Result.Ok(Unit.Value)
-                : RuleHelper.ErrorForRule(field, message ?? ValidationMessages.StringBetweenLength(min, max, field));
+        public static LabeledValidatorRule IsLessThan<T>(this T value, T threshold) where T : IComparable<T> =>
+            field => RuleHelper.Check(value.CompareTo(threshold) < 0, $"'{field}' must be less than {threshold}");
 
-        public static Result<Unit, ResultErrors> IsLengthGreaterThan(this string value, int min, string? field = null, string? message = null) =>
-            value.Length > min
-                ? Result.Ok(Unit.Value)
-                : RuleHelper.ErrorForRule(field, message ?? ValidationMessages.StringGreaterThanLength(min, field));
-
-        public static Result<Unit, ResultErrors> IsLengthOrGreaterThan(this string value, int min, string? field = null, string? message = null) =>
-            value.Length >= min
-                ? Result.Ok(Unit.Value)
-                : RuleHelper.ErrorForRule(field, message ?? ValidationMessages.StringGreaterThanOrEqualToLength(min, field));
-
-        public static Result<Unit, ResultErrors> IsLengthLessThan(this string value, int max, string? field = null, string? message = null) =>
-            value.Length < max
-                ? Result.Ok(Unit.Value)
-                : RuleHelper.ErrorForRule(field, message ?? ValidationMessages.StringLessThanLength(max, field));
-
-        public static Result<Unit, ResultErrors> IsLengthOrLessThan(this string value, int max, string? field = null, string? message = null) =>
-            value.Length <= max
-                ? Result.Ok(Unit.Value)
-                : RuleHelper.ErrorForRule(field, message ?? ValidationMessages.StringLessThanOrEqualToLength(max, field));
-
-        public static Result<Unit, ResultErrors> IsMatch(this string value, string pattern, string? field = null, string? message = null) =>
-            System.Text.RegularExpressions.Regex.IsMatch(value, pattern)
-                ? Result.Ok(Unit.Value)
-                : RuleHelper.ErrorForRule(field, message ?? ValidationMessages.StringPattern(pattern, field));
+        public static LabeledValidatorRule IsLessThanOrEqualTo<T>(this T value, T threshold) where T : IComparable<T> =>
+            field => RuleHelper.Check(value.CompareTo(threshold) <= 0, $"'{field}' must be less than or equal to {threshold}");
     }
 
-    public static class GuidRules
+    public static class StringRulesExtensions
     {
-        public static Result<Unit, ResultErrors> IsEmpty(this Guid value, string? field = null, string? message = null) =>
-            value == Guid.Empty
-                ? Result.Ok(Unit.Value)
-                : RuleHelper.ErrorForRule(field, message ?? ValidationMessages.GuidEmpty(field));
+        public static LabeledValidatorRule IsEmpty(this string value) =>
+            field => RuleHelper.Check(string.IsNullOrWhiteSpace(value), $"'{field}' must be empty");
 
-        public static Result<Unit, ResultErrors> IsNotEmpty(this Guid value, string? field = null, string? message = null) =>
-            value != Guid.Empty
-                ? Result.Ok(Unit.Value)
-                : RuleHelper.ErrorForRule(field, message ?? ValidationMessages.GuidNotEmpty(field));
+        public static LabeledValidatorRule IsNotEmpty(this string value) =>
+            field => RuleHelper.Check(!string.IsNullOrWhiteSpace(value), $"'{field}' must not be empty");
+
+        public static LabeledValidatorRule IsStartingWith(this string value, string prefix) =>
+            field => RuleHelper.Check(value.StartsWith(prefix), $"'{field}' must start with '{prefix}'");
+
+        public static LabeledValidatorRule IsEndingWith(this string value, string suffix) =>
+            field => RuleHelper.Check(value.EndsWith(suffix), $"'{field}' must end with '{suffix}'");
+
+        public static LabeledValidatorRule IsContaining(this string value, string substring) =>
+            field => RuleHelper.Check(value.Contains(substring), $"'{field}' must contain '{substring}'");
+
+        public static LabeledValidatorRule IsLength(this string value, int length) =>
+            field => RuleHelper.Check(value.Length == length, $"'{field}' must be {length} characters");
+
+        public static LabeledValidatorRule IsLengthBetween(this string value, int min, int max) =>
+            field => RuleHelper.Check(value.Length >= min && value.Length <= max, $"'{field}' must be between {min} and {max} characters");
+
+        public static LabeledValidatorRule IsLengthGreaterThan(this string value, int min) =>
+            field => RuleHelper.Check(value.Length > min, $"'{field}' must be longer than {min} characters");
+
+        public static LabeledValidatorRule IsLengthOrGreaterThan(this string value, int min) =>
+            field => RuleHelper.Check(value.Length >= min, $"'{field}' must be longer than or equal to {min} characters");
+
+        public static LabeledValidatorRule IsLengthLessThan(this string value, int max) =>
+            field => RuleHelper.Check(value.Length < max, $"'{field}' must be less than {max} characters");
+
+        public static LabeledValidatorRule IsLengthOrLessThan(this string value, int max) =>
+            field => RuleHelper.Check(value.Length <= max, $"'{field}' must be less than or equal to {max} characters");
+
+        public static LabeledValidatorRule IsMatch(this string value, string pattern) =>
+            field => RuleHelper.Check(Regex.IsMatch(value, pattern), $"'{field}' must match pattern {pattern}");
     }
 
-    public static class OptionRules
+    public static class GuidRulesExtensions
     {
-        public static Result<Unit, ResultErrors> Required<T>(this Option<T> option, Func<T, Result<Unit, ResultErrors>> func, string? field = null, string? message = null) =>
+        public static LabeledValidatorRule IsEmpty(this Guid value) =>
+            field => RuleHelper.Check(value == Guid.Empty, $"'{field}' must be empty");
+
+        public static LabeledValidatorRule IsNotEmpty(this Guid value) =>
+            field => RuleHelper.Check(value != Guid.Empty, $"'{field}' must not be empty");
+    }
+
+    public static class OptionRulesExtensions
+    {
+        public static LabeledValidatorRule Required<T>(this Option<T> option, ValidatorRule<T> func) =>
             option.Match(
                 some: value => func(value),
-                none: () => RuleHelper.ErrorForRule(field, message ?? ValidationMessages.OptionIsSome(field)));
+                none: () => field => Result.Error($"'{field}' is required"));
 
-        public static Result<Unit, ResultErrors> Required<T>(this Option<T> option, string? field = null, string? message = null) =>
-            option.Required(x => Result.Ok(Unit.Value), field, message);
+        public static LabeledValidatorRule Required<T>(this Option<T> option) =>
+            option.Required(x => field => Result.Ok());
 
-        public static Result<Unit, ResultErrors> Optional<T>(this Option<T> option, Func<T, Result<Unit, ResultErrors>> func) =>
+        public static LabeledValidatorRule Optional<T>(this Option<T> option, ValidatorRule<T> func) =>
             option.Match(
                 some: value => func(value),
-                none: () => Result.Ok(Unit.Value));
-    }
-
-    internal static class ValidationMessages
-    {
-        // Equatable rules
-        internal static string EqualTo<T>(T value, string? field = null) =>
-            field is string f && !string.IsNullOrWhiteSpace(f)
-                ? $"'{f}' must be equal to {value}"
-                : $"Value must be equal to {value}";
-
-        internal static string NotEqualTo<T>(T value, string? field = null) =>
-            field is string f && !string.IsNullOrWhiteSpace(f)
-                ? $"'{f}' must not equal {value}"
-                : $"Value must not equal {value}";
-
-        // Comparable rules
-        internal static string GreaterThan<T>(T min, string? field = null) where T : IComparable<T> =>
-            field is string f && !string.IsNullOrWhiteSpace(f)
-                ? $"'{f}' must be greater than {min}"
-                : $"Value must be greater than {min}";
-
-        internal static string LessThan<T>(T max, string? field = null) where T : IComparable<T> =>
-            field is string f && !string.IsNullOrWhiteSpace(f)
-                ? $"'{f}' must be less than {max}"
-                : $"Value must be less than {max}";
-
-        internal static string GreaterThanOrEqualTo<T>(T min, string? field = null) =>
-            field is string f && !string.IsNullOrWhiteSpace(f)
-                ? $"'{f}' must be greater than or equal to {min}"
-                : $"Value must be greater than or equal to {min}";
-
-        internal static string LessThanOrEqualTo<T>(T max, string? field = null) =>
-            field is string f && !string.IsNullOrWhiteSpace(f)
-                ? $"'{f}' must be less than or equal to {max}"
-                : $"Value must be less than or equal to {max}";
-
-        internal static string Between<T>(T min, T max, string? field = null) =>
-            field is string f && !string.IsNullOrWhiteSpace(f)
-                ? $"'{f}' must be between {min} and {max}"
-                : $"Value must be between {min} and {max}";
-
-        internal static string NotBetween<T>(T min, T max, string? field = null) =>
-            field is string f && !string.IsNullOrWhiteSpace(f)
-                ? $"'{f}' must be outside the range {min} to {max}"
-                : $"Value must be outside the range {min} to {max}";
-
-        internal static string Positive(string? field = null) =>
-            field is string f && !string.IsNullOrWhiteSpace(f)
-                ? $"'{f}' must be positive"
-                : "Value must be positive";
-
-        internal static string Negative(string? field = null) =>
-            field is string f && !string.IsNullOrWhiteSpace(f)
-                ? $"'{f}' must be negative"
-                : "Value must be negative";
-
-        internal static string Zero(string? field = null) =>
-            field is string f && !string.IsNullOrWhiteSpace(f)
-                ? $"'{f}' must be zero"
-                : "Value must be zero";
-
-        // String rules
-        internal static string StringEmpty(string? field = null) =>
-            field is string f && !string.IsNullOrWhiteSpace(f)
-                ? $"'{f}' must be empty"
-                : "Value must be empty";
-
-        internal static string StringNotEmpty(string? field = null) =>
-            field is string f && !string.IsNullOrWhiteSpace(f)
-                ? $"'{f}' must not be empty"
-                : "Value must not be empty";
-
-        internal static string StringStartsWith(string prefix, string? field = null) =>
-            field is string f && !string.IsNullOrWhiteSpace(f)
-                ? $"'{f}' must start with '{prefix}'"
-                : $"Value must start with '{prefix}'";
-
-        internal static string StringEndsWith(string suffix, string? field = null) =>
-            field is string f && !string.IsNullOrWhiteSpace(f)
-                ? $"'{f}' must end with '{suffix}'"
-                : $"Value must end with '{suffix}'";
-
-        internal static string StringContains(string substring, string? field = null) =>
-            field is string f && !string.IsNullOrWhiteSpace(f)
-                ? $"'{f}' must contain '{substring}'"
-                : $"Value must contain '{substring}'";
-
-        internal static string StringAlphanumeric(string? field = null) =>
-            field is string f && !string.IsNullOrWhiteSpace(f)
-                ? $"'{f}' must be alphanumeric"
-                : "Value must be alphanumeric";
-
-        internal static string StringEqualsLength(int length, string? field = null) =>
-            field is string f && !string.IsNullOrWhiteSpace(f)
-                ? $"'{f}' must be {length} characters"
-                : $"Value must be {length} characters";
-
-        internal static string StringBetweenLength(int min, int max, string? field = null) =>
-            field is string f && !string.IsNullOrWhiteSpace(f)
-                ? $"'{f}' must be between {min} and {max} characters"
-                : $"Value must be between {min} and {max} characters";
-
-        internal static string StringGreaterThanLength(int min, string? field = null) =>
-            field is string f && !string.IsNullOrWhiteSpace(f)
-                ? $"'{f}' must be greater than {min} characters"
-                : $"Value must be greater than {min} characters";
-
-        internal static string StringGreaterThanOrEqualToLength(int min, string? field = null) =>
-            field is string f && !string.IsNullOrWhiteSpace(f)
-                ? $"'{f}' must be greater than or equal to {min} characters"
-                : $"Value must be greater than or equal to {min} characters";
-
-        internal static string StringLessThanLength(int max, string? field = null) =>
-            field is string f && !string.IsNullOrWhiteSpace(f)
-                ? $"'{f}' must be less than {max} characters"
-                : $"Value must be less than {max} characters";
-
-        internal static string StringLessThanOrEqualToLength(int max, string? field = null) =>
-            field is string f && !string.IsNullOrWhiteSpace(f)
-                ? $"'{f}' must be less than or equal to {max} characters"
-                : $"Value must be less than or equal to {max} characters";
-
-        internal static string StringPattern(string pattern, string? field = null) =>
-            field is string f && !string.IsNullOrWhiteSpace(f)
-                ? $"'{f}' must match pattern {pattern}"
-                : $"Value must match pattern {pattern}";
-
-        // Option rules
-        internal static string OptionIsSome(string? field = null) =>
-            field is string f && !string.IsNullOrWhiteSpace(f)
-                ? $"'{f}' is required"
-                : "Value is required";
-
-        // Guid rules
-        internal static string GuidEmpty(string? field = null) =>
-            field is string f && !string.IsNullOrWhiteSpace(f)
-                ? $"'{f}' must be empty"
-                : "Value must be empty";
-
-        internal static string GuidNotEmpty(string? field = null) =>
-            field is string f && !string.IsNullOrWhiteSpace(f)
-                ? $"'{f}' must not be empty"
-                : "Value must not be empty";
-
-        // private static SeqBetweenLen() field min max = sprintf "'%s' must be between %i and %i items" field min max
-        // private static SeqEmpty(string field) => $"'{field}' must be empty";
-        // private static SeqEqualsLen() field len = sprintf "'%s' must be %i items" field len
-        // private static SeqExists(string field) => $"'{field}' must contain the specified item";
-        // private static SeqForAll(string field) => $"'{field}' must only contain items that satisfy the predicate";
-        // private static SeqGreaterThanLen() field min = sprintf "'%s' must be greater than %i items" field min
-        // private static SeqGreaterThanOrEqualToLen() field min = sprintf "'%s' must be greater than or equal to %i items" field min
-        // private static SeqLessThanLen() field max = sprintf "'%s' must be less than %i items" field max
-        // private static SeqLessThanOrEqualToLen() field max = sprintf "'%s' must be less than or equal to %i items" field max
-        // private static SeqNotEmpty(string field) => $"'{field}' must not be empty";
+                none: () => field => Result<Unit, ResultErrors>.Ok(Unit.Value));
     }
 
     internal static class RuleHelper
     {
-        internal static Result<Unit, ResultErrors> ErrorForRule(string? field, string message)
-        {
-            if (field is string f && !string.IsNullOrWhiteSpace(f))
-            {
-                return Result.Error(new ResultErrors(f, message));
-            }
-            else
-            {
-                return Result.Error(new ResultErrors(message));
-            }
-        }
+        public static Result<Unit, ResultErrors> Check(bool isValid, string errorMessage) =>
+            isValid
+                ? Result.Ok()
+                : Result.Error(new[] { errorMessage });
     }
 }

@@ -23,6 +23,6 @@ public static class AssertResult
             error: errors =>
             {
                 Assert.Single(errors);
-                Assert.True(errorFun(errors.First().Errors.First()));
+                Assert.True(errorFun(errors.First().Errors[0]));
             });
 }

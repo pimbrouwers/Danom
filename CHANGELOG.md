@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 
 - **netstandard 2.1** support.
 - AOT compatibility flag.
+- `Result<T, TError>.ToOption()` method to convert a Result to an Option.
 - `Result<T>.Error` static extensions to mirror `ResultErrors` constructor signatures.
 - `Result<T, TError>.TryGet(out T ok)` and `Result<T, TError>.TryGetError(out TError error)` to safely provide the internal value. A return value indicates whether or not the Result was Ok or Error.
 - `Option<T>` implementation for `IComparable<T>`.
@@ -18,6 +19,7 @@ All notable changes to this project will be documented in this file.
 
 ### Removed
 
+- FluentValidation dependency from `Danom.Validation` package.
 - `ResultOption<T>` and `ResultOption<T, TError>` types. Use `Option<T>` and `Result<T, TError>` instead.
 - Async wrapper methods for `Option<T>` and `Result<T, TError>` to support mixed operation chaining.
 
