@@ -65,7 +65,7 @@ public static class TypedDanomResultExtensionsTests
         public static async Task Ok_NoConversion_200WithJson()
         {
             var value = new SomeType(123);
-            var result = Result.Ok(new SomeType(123));
+            var result = Result<SomeType>.Ok(new SomeType(123));
 
             var httpResult = Results.Extensions.Result(result);
 
@@ -78,7 +78,7 @@ public static class TypedDanomResultExtensionsTests
         public static async Task Ok_Conversion_200WithJson()
         {
             var value = new SomeType(123);
-            var result = Result.Ok(new SomeType(123));
+            var result = Result<SomeType>.Ok(new SomeType(123));
 
             var httpResult = Results.Extensions.Result(result, IResult (_) => throw new UnreachableException());
 
