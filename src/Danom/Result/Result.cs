@@ -221,6 +221,16 @@ namespace Danom
                         error: e2 => e2 != null && e2.Equals(e1)));
 
         /// <summary>
+        /// Converts the <see cref="Result{T, TError}"/> to an <see cref="Option{T}"/>.
+        /// If the Result is Ok, it returns Some with the value, otherwise None.
+        /// </summary>
+        /// <returns></returns>
+        public Option<T> ToOption() =>
+            Match(
+                ok: x => Option.Some(x),
+                error: _ => Option<T>.NoneValue);
+
+        /// <summary>
         /// Returns the hash code for the <see cref="Result{T, TError}"/>.
         /// </summary>
         /// <returns></returns>
@@ -271,21 +281,14 @@ namespace Danom
         public static Result<T, ResultErrors> Error(ResultErrors errors) =>
             Result<T, ResultErrors>.Error(errors);
 
-    /// <summary>
-    /// Creates a new <see cref="Result{T, ResultErrors}"/> with the specified error.
-    /// </summary>
-    /// <param name="errors"></param>
-    /// <returns></returns>
-    public static Result<T, ResultErrors> Error(params string[] errors) =>
-        Result<T, ResultErrors>.Error(new ResultErrors(errors));
-
         /// <summary>
-        /// Creates a new <see cref="Result{T, ResultErrors}"/> with the specified error.
+        /// Create <see cref="Result{T, ResultErrors}"/> with the specified error.
         /// </summary>
-        /// <param name="error"></param>
+        /// <param name="key"></param>
+        /// <param name="errors"></param>
         /// <returns></returns>
-        public static Result<T, ResultErrors> Error(string error) =>
-            Result<T, ResultErrors>.Error(new ResultErrors(error));
+        public static Result<T, ResultErrors> Error(string key, params string[] errors) =>
+            Error(new ResultErrors(key, errors));
 
         /// <summary>
         /// Creates a new <see cref="Result{T, ResultErrors}"/> with the specified error.
@@ -294,16 +297,23 @@ namespace Danom
         /// <param name="error"></param>
         /// <returns></returns>
         public static Result<T, ResultErrors> Error(string key, string error) =>
-            Result<T, ResultErrors>.Error(new ResultErrors(key, error));
+            Error(new ResultErrors(key, error));
 
         /// <summary>
-        /// Creates a new <see cref="Result{T, ResultErrors}"/> with the specified error.
+        /// Create <see cref="Result{T, ResultErrors}"/> with the specified error.
         /// </summary>
-        /// <param name="key"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public static Result<T, ResultErrors> Error(string error) =>
+            Error(new ResultErrors(error));
+
+        /// <summary>
+        /// Create <see cref="Result{T, ResultErrors}"/> with the specified error.
+        /// </summary>
         /// <param name="errors"></param>
         /// <returns></returns>
-        public static Result<T, ResultErrors> Error(string key, params string[] errors) =>
-            Result<T, ResultErrors>.Error(new ResultErrors(key, errors));
+        public static Result<T, ResultErrors> Error(params string[] errors) =>
+            Error(new ResultErrors(errors));
     }
 
     /// <summary>
@@ -328,27 +338,37 @@ namespace Danom
             Result<Unit, ResultErrors>.Error(errors);
 
         /// <summary>
+        /// Create <see cref="Result{Unit, ResultErrors}"/> with the specified error.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="errors"></param>
+        /// <returns></returns>
+        public static Result<Unit, ResultErrors> Error(string key, params string[] errors) =>
+            Error(new ResultErrors(key, errors));
+
+        /// <summary>
         /// Creates a new <see cref="Result{Unit, ResultErrors}"/> with the specified error.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public static Result<Unit, ResultErrors> Error(string key, string error) =>
+            Error(new ResultErrors(key, error));
+
+        /// <summary>
+        /// Create <see cref="Result{Unit, ResultErrors}"/> with the specified error.
         /// </summary>
         /// <param name="error"></param>
         /// <returns></returns>
         public static Result<Unit, ResultErrors> Error(string error) =>
-            Result<Unit, ResultErrors>.Error(new ResultErrors(error));
+            Error(new ResultErrors(error));
 
         /// <summary>
-        /// Creates a new <see cref="Result{T, ResultErrors}"/> with the specified value.
+        /// Create <see cref="Result{Unit, ResultErrors}"/> with the specified error.
         /// </summary>
-        /// <param name="value"></param>
+        /// <param name="errors"></param>
         /// <returns></returns>
-        public static Result<T, ResultErrors> Ok<T>(T value) =>
-            Result<T, ResultErrors>.Ok(value);
-
-        /// <summary>
-        /// Creates <see cref="Result{T, ResultErrors}"/> with the value of the awaited Task.
-        /// </summary>
-        /// <param name="valueTask"></param>
-        /// <returns></returns>
-        public static Task<Result<T, ResultErrors>> OkAsync<T>(Task<T> valueTask) =>
-            Result<T, ResultErrors>.OkAsync(valueTask);
+        public static Result<Unit, ResultErrors> Error(params string[] errors) =>
+            Error(new ResultErrors(errors));
     }
 }
