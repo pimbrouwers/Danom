@@ -33,24 +33,35 @@ public sealed class ResultErrorTests
 public sealed class ResultErrorsTests
 {
     [Fact]
-    public void CanCreateAndEnumerate()
+    public void CanEnumerate()
     {
-        var resultErrors = new ResultErrors([
-            new ResultError("Error1"),
-            new ResultError("Error2")]);
-
-        Assert.NotEmpty(resultErrors);
-        Assert.Equal(2, resultErrors.Count());
+        var resultErrors = new ResultErrors(["Error1", "Error2"]);
+        Assert.Single(resultErrors);
         Assert.Equal($"[ Error1, Error2 ]", resultErrors.ToString());
     }
 
     [Fact]
-    public void CanAdd()
+    public void CanCreateFromStringsWithKey()
     {
-        var resultErrors = new ResultErrors();
-        resultErrors.Add(new("Error"));
+        var resultErrors = new ResultErrors("Key", ["Error1", "Error2"]);
         Assert.Single(resultErrors);
-        Assert.Equal($"[ Error ]", resultErrors.ToString());
+        Assert.Equal("[ Key - Error1, Error2 ]", resultErrors.ToString());
+    }
+
+    [Fact]
+    public void CanCreateFromStringWithKey()
+    {
+        var resultErrors = new ResultErrors("Key", "Error1");
+        Assert.Single(resultErrors);
+        Assert.Equal("[ Key - Error1 ]", resultErrors.ToString());
+    }
+
+    [Fact]
+    public void CanCreateFromStrings()
+    {
+        var resultErrors = new ResultErrors(["Error1", "Error2"]);
+        Assert.Single(resultErrors);
+        Assert.Equal($"[ Error1, Error2 ]", resultErrors.ToString());
     }
 
     [Fact]
@@ -59,5 +70,35 @@ public sealed class ResultErrorsTests
         var resultErrors = new ResultErrors("Error");
         Assert.Single(resultErrors);
         Assert.Equal($"[ Error ]", resultErrors.ToString());
+    }
+
+    [Fact]
+    public void CanAddErrorsWithKey()
+    {
+        var resultErrors = new ResultErrors();
+        resultErrors.Add("Key", "Error1");
+        resultErrors.Add("Key", "Error2");
+        Assert.Single(resultErrors);
+        Assert.Equal("[ Key - Error1, Error2 ]", resultErrors.ToString());
+    }
+
+    [Fact]
+    public void CanAddErrorsWithoutKey()
+    {
+        var resultErrors = new ResultErrors();
+        resultErrors.Add("Error1");
+        resultErrors.Add("Error2");
+        Assert.Single(resultErrors);
+        Assert.Equal("[ Error1, Error2 ]", resultErrors.ToString());
+    }
+
+    [Fact]
+    public void CanAddErrorsWithEmptyKey()
+    {
+        var resultErrors = new ResultErrors();
+        resultErrors.Add(string.Empty, "Error1");
+        resultErrors.Add(string.Empty, "Error2");
+        Assert.Single(resultErrors);
+        Assert.Equal("[ Error1, Error2 ]", resultErrors.ToString());
     }
 }
