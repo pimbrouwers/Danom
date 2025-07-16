@@ -8,23 +8,19 @@ public sealed class ValidatorTests
     [Fact]
     public void ReturnsOk_WhenValidationSucceeds()
     {
-        var validator = new TestInputValidator();
-        AssertResult.IsOk(validator.Validate(TestInput.ValidInput));
+        Assert.True(ValidationOption<TestInput>.From<TestInputValidator>(TestInput.ValidInput).IsSome);
     }
 
     [Fact]
     public void ReturnsError_WhenValidationFails()
     {
-        var validator = new TestInputValidator();
-        var result = validator.Validate(TestInput.InvalidInput);
-        Assert.True(result.IsError);
+        Assert.True(ValidationOption<TestInput>.From<TestInputValidator>(TestInput.InvalidInput).IsNone);
     }
 
     [Fact]
     public void VerifyResultErrors()
     {
-        var validator = new TestInputValidator();
-        var result = validator.Validate(TestInput.InvalidInput);
+        var result = ValidationResult<TestInput>.From<TestInputValidator>(TestInput.InvalidInput);
         if (result.TryGetError(out var errors))
         {
             Assert.NotEmpty(errors);
@@ -52,12 +48,12 @@ public sealed class TestInputValidator : BaseValidator<TestInput>
 {
     public TestInputValidator()
     {
-        Rule("Id", x => x.Id.IsValid(new TestInputIdValidator()));
-        Rule("Label", x => x.Label, [Check.IsNotEmpty, Check.IsLengthGreaterThan(3)]);
+        Rule("Id", x => x.Id, Check.IsValid(new TestInputIdValidator()));
+        Rule("Label", x => x.Label, [Check.String.IsNotEmpty, Check.String.IsLengthGreaterThan(3)]);
         Rule("IntValue", x => x.IntValue, [Check.IsGreaterThan(0), Check.IsPositive<int>()]);
         Rule("IntValue", x => x.IntValue, x => field => x == -1 ? Result.Error($"This is not an acceptable response for '{field}'") : Result.Ok());
-        Rule(x => x.OptionalIntValue.Optional(x => x.IsGreaterThanOrEqualTo(1)));
-        Rule(x => x.StringOption.Required(x => x.IsLengthBetween(3, 100)));
+        Rule(x => x.OptionalIntValue, Check.Optional(Check.IsGreaterThanOrEqualTo(1)));
+        Rule(x => x.StringOption, Check.Required(Check.String.IsLengthBetween(3, 100)));
     }
 }
 
@@ -91,6 +87,63 @@ public sealed class TestInputIdValidator : BaseValidator<TestInputId>
 {
     public TestInputIdValidator()
     {
-        Rule(x => x.Id, Check.IsNotEmptyGuid);
+        Rule(x => x.Id, Check.Guid.IsNotEmpty);
     }
+}
+
+public sealed class ReadmeExampleTest
+{
+    [Fact]
+    public void DoTheTest()
+    {
+        var validator = new AttendeeValidator();
+
+        ValidationResult<Attendee>
+            .From<AttendeeValidator>(new(
+                Name: "John Doe",
+                Age: 30,
+                Email: Option<string>.Some("john@doe.com"),
+                AlternateEmail: Option<string>.None()))
+            .Match(
+                x => Assert.Equal("John Doe", x.Name),
+                e => Assert.Fail("Input is valid, but validation failed"));
+
+        ValidationOption<Attendee>
+            .From<AttendeeValidator>(new(
+                Name: "John Doe",
+                Age: 30,
+                Email: Option<string>.Some("john@doe.com"),
+                AlternateEmail: Option<string>.None()))
+            .Match(
+                some: x => Console.WriteLine("Input is valid: {0}", x),
+                none: () => Console.WriteLine("Input is invalid"));
+
+        ValidationResult<Attendee>
+            .From<AttendeeValidator>(new(
+                Name: "",
+                Age: -1,
+                Email: Option<string>.NoneValue,
+                AlternateEmail: Option<string>.Some("invalid_email")))
+            .Match(
+                x => Assert.Fail("Input is invalid, but validation succeeded"),
+                e => Assert.True(e.Any()));
+    }
+
+    public record Attendee(
+        string Name,
+        int Age,
+        Option<string> Email,
+        Option<string> AlternateEmail);
+
+    public sealed class AttendeeValidator : BaseValidator<Attendee>
+    {
+        public AttendeeValidator()
+        {
+            Rule("Name", x => x.Name, Check.String.IsNotEmpty);
+            Rule("Age", x => x.Age, Check.IsGreaterThan(0));
+            Rule("Email", x => x.Email, Check.Required(Check.String.IsEmailAddress));
+            Rule("AlternateEmail", x => x.AlternateEmail, Check.Optional(Check.String.IsEmailAddress));
+        }
+    }
+
 }

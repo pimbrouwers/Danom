@@ -26,8 +26,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\TestHelpers\TestHelpers.csproj" />
-    <ProjectReference Include="..\..\src\Danom\Danom.csproj" />
+    <ProjectReference Include="..\src\Danom.Mvc.csproj" />
+    <ProjectReference Include="..\..\TestHelpers\TestHelpers.csproj" />
   </ItemGroup>
 
 </Project>

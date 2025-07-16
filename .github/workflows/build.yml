@@ -20,22 +20,28 @@ jobs:
           dotnet-version: ${{ matrix.dotnet-version }}
 
       - name: Install solution dependencies
-        run: dotnet restore src/Danom.Mvc --force-evaluate --no-http-cache --force
-
-      - name: Build Core
-        run: dotnet build src/Danom -c Release
+        run: |
+          dotnet restore src/Danom --force-evaluate --no-http-cache --force
+          dotnet restore src/Danom.Validation --force-evaluate --no-http-cache --force
+          dotnet restore src/Danom.Mvc --force-evaluate --no-http-cache --force
+          dotnet restore src/Danom.MinimalApi --force-evaluate --no-http-cache --force
 
       - name: Test Core
-        run: dotnet test test/Danom.Tests -c Release
-
-      - name: Build Validation
-        run: dotnet build src/Danom.Validation -c Release
+        run: |
+          dotnet build src/Danom -c Release
+          dotnet test src/Danom -c Release
 
       - name: Test Validation
-        run: dotnet test test/Danom.Validation.Tests -c Release
-
-      - name: Build Mvc
-        run: dotnet build src/Danom.Mvc -c Release
+        run: |
+          dotnet build src/Danom.Validation -c Release
+          dotnet test src/Danom.Validation -c Release
 
       - name: Test Mvc
-        run: dotnet test test/Danom.Mvc.Tests -c Release
+        run: |
+          dotnet build src/Danom.Mvc -c Release
+          dotnet test src/Danom.Mvc -c Release
+
+      - name: Test MinimalApi
+        run: |
+          dotnet build src/Danom.MinimalApi -c Release
+          dotnet test src/Danom.MinimalApi -c Release

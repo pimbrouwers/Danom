@@ -65,6 +65,25 @@ namespace Danom
             : this(string.Empty, errors) { }
 
         /// <summary>
+        /// Creates a new instance of <see cref="ResultErrors"/> from the specified
+        /// collection of <see cref="ResultError"/> instances.
+        /// </summary>
+        /// <param name="errors"></param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public ResultErrors(IEnumerable<ResultError> errors)
+        {
+            if (errors == null)
+            {
+                throw new ArgumentNullException(nameof(errors), "Errors cannot be null.");
+            }
+
+            foreach (var error in errors)
+            {
+                Add(error.Key, error.Errors);
+            }
+        }
+
+        /// <summary>
         /// Adds a new error to the collection with the specified key and errors.
         /// </summary>
         /// <param name="key"></param>

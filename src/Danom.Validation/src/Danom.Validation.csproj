@@ -42,6 +42,6 @@
 
   <ItemGroup>
     <!-- <PackageReference Include="Danom" Version="2.0.0-beta4" /> -->
-    <ProjectReference Include="..\Danom\Danom.csproj" />
+    <ProjectReference Include="..\..\Danom\src\Danom.csproj" />
   </ItemGroup>
 </Project>

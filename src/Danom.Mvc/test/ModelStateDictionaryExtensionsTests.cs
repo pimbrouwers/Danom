@@ -36,9 +36,9 @@ public sealed class ModelStateDictionaryExtensionsTests
     public void AddResultErrorsShouldWorkWithMultipleErrors()
     {
         var modelState = new ModelStateDictionary();
-        var errors = new ResultErrors([
-            new ResultError("Key1", "Error1"),
-            new ResultError("Key2", "Error2")]);
+        var errors = new ResultErrors();
+        errors.Add("Key1", "Error1");
+        errors.Add("Key2", "Error2");
         modelState.AddResultErrors(errors);
         Assert.Equal(2, modelState.ErrorCount);
         Assert.True(modelState.ContainsKey("Key1"));
