@@ -402,37 +402,40 @@ public static class EnumOption {
 
 ## Input Validation
 
-[Fluent Validation](https://fluentvalidation.net/) is an excellent library for building validation rules for your models. A first-class integration is available via [Danom.Validation](src/Danom.Validation/README.md) to provide a seamless way to validate your models and return a `Result` with the validation errors.
+One of the places the `Result` type really shines is input validation. It's a natural step in most workflows to validate input data before processing it, and the Result type is a great way to handle this.
 
 A quick example:
 
 ```csharp
 using Danom;
 using Danom.Validation;
-using FluentValidation;
 
-public record Person(
+public record Attendee(
     string Name,
-    Option<string> Email);
+    int Age,
+    Option<string> Email,
+    Option<string> AlternateEmail);
 
-public class PersonValidator
-    : AbstractValidator<Person> {
-    public PersonValidator()
+public sealed class AttendeeValidator : BaseValidator<Attendee>
+{
+    public AttendeeValidator()
     {
-        RuleFor(x => x.Name).NotEmpty();
-        RuleFor(x => x.Email).Optional(x => x.EmailAddress());
+        Rule("Name", x => x.Name, Check.String.IsNotEmpty);
+        Rule("Age", x => x.Age, Check.IsGreaterThan(0));
+        Rule("Email", x => x.Email, Check.Required(Check.String.IsEmailAddress));
+        Rule("AlternateEmail", x => x.AlternateEmail, Check.Optional(Check.String.IsEmailAddress));
     }
 }
 
-var result =
-    ValidationResult<Person>
-        .From<PersonValidator>(new(
-            Name: "John Doe",
-            Email: Option.Some("john@doe.com")));
-
-result.Match(
-    x => Console.WriteLine("Input is valid: {0}", x),
-    e => Console.WriteLine("Input is invalid: {0}", e));
+ValidationResult<Attendee>
+    .From<AttendeeValidator>(new(
+        Name: "John Doe",
+        Age: 30,
+        Email: Option<string>.Some("john@doe.com"),
+        AlternateEmail: Option<string>.None()))
+    .Match(
+        ok: x => Console.WriteLine("Input is valid: {0}", x),
+        error: e => Console.WriteLine("Input is invalid: {0}", e));
 ```
 
 Documentation can be found [here](src/Danom.Validation/README.md).
