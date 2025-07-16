@@ -400,13 +400,7 @@ public static class EnumOption {
     public static Option<TEnum> TryParse<TEnum>(string? x) where TEnum : struct; }
 ```
 
-## Integrations
-
-Since Danom introduces types that are most commonly found in your model and business logic layers, external integrations are not only inevitable but required to provide a seamless experience when building applications.
-
-These are completely optional, but provide a great way to integrate Danom with your codebase.
-
-### Fluent Validation Integration
+## Input Validation
 
 [Fluent Validation](https://fluentvalidation.net/) is an excellent library for building validation rules for your models. A first-class integration is available via [Danom.Validation](src/Danom.Validation/README.md) to provide a seamless way to validate your models and return a `Result` with the validation errors.
 
@@ -443,13 +437,19 @@ result.Match(
 
 Documentation can be found [here](src/Danom.Validation/README.md).
 
+## Integrations
+
+Since Danom introduces types that are most commonly found in your model and business logic layers, external integrations are not only inevitable but required to provide a seamless experience when building applications.
+
+These are completely optional, but provide a great way to integrate Danom with your codebase.
+
 ### ASP.NET Core MVC & Razor Pages Integration
 
-Danom is integrated with ASP.NET Core MVC via [Danom.Mvc](src/Danom.Mvc/README.md). This library provides a set of utilities to help integrate the core types with common tasks in ASP.NET Core MVC applications.
+Danom is integrated with ASP.NET Core MVC (and Razor Pages) via [Danom.Mvc](src/Danom.Mvc/README.md). This library provides a set of utilities to help integrate the core types with common tasks in ASP.NET Core MVC applications.
 
 ### ASP.NET Core Minimal API Integration
 
-> Coming soon
+Danom is integrated with ASP.NET Core Minimal API via [Danom.MinimalApi](src/Danom.MinimalApi/README.md). This library provides a set of utilities to help integrate the core types with common tasks in ASP.NET Core Minimal API applications.
 
 ## Contribute
 

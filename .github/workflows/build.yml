@@ -3,6 +3,9 @@ name: build
 on:
   push:
     branches: [master]
+    exclude:
+      # ignore all readme files, including nested
+      - '**/README.md'
   pull_request:
 
 jobs:
