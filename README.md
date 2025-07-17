@@ -15,7 +15,8 @@ Danom is a C# library that provides (monadic) structures to facilitate durable p
 - Implementation of common monads: [Option](#option) and [Result](#result).
 - Exhaustive matching to prevent null reference exceptions.
 - Fluent API for chaining operations, including async support.
-- Integrated with [ASP.NET Core](#aspnet-core-mvc-integration) and [Fluent Validation](#fluent-validation-integration).
+- Built-in error handling with [ResultErrors](#built-in-error-type).
+- Integrated with [ASP.NET Core](#aspnet-core-mvc-integration).
 - API for [parsing strings](#string-parsing) into .NET primitives and value types.
 
 ## Design Goals
@@ -29,14 +30,19 @@ Danom is a C# library that provides (monadic) structures to facilitate durable p
 
 Install the [Danom](https://www.nuget.org/packages/Danom/) NuGet package:
 
-```
+```cmd
+dotnet add package Danom
+
+OR
+
 PM>  Install-Package Danom
 ```
 
-Or using the dotnet CLI
-```cmd
-dotnet add package Danom
-```
+### Looking for [Danom.Validation](https://www.nuget.org/packages/Danom.Validation/), [Danom.MinimalApi](https://www.nuget.org/packages/Danom.MinimalApi/) or [Danom.Mvc](https://www.nuget.org/packages/Danom.Mvc/)?
+
+- Get started with [Danom.Validation](src/Danom.Validation/README.md#getting-started).
+- Get started with [Danom.MinimalApi](src/Danom.MinimalApi/README.md#getting-started).
+- Get started with [Danom.Mvc](src/Danom.Mvc/README.md#getting-started).
 
 ### Quick Start
 
@@ -168,29 +174,6 @@ var result = Result<int, string>.Ok(5);
 var resultError = Result<int, string>.Error("An error occurred");
 ```
 
-### Built-in Error Type
-
-Danom provides a built-in error type, `ResultErrors`, to simplify the creation of results with multiple errors. This type can be initialized with a single string, a collection of strings, or a key-value pair. It can be thought of as a domain-specific dictionary of string keys and N string values.
-
-```csharp
-using Danom;
-
-var resultErrors = Result<int>.Ok(5);
-
-var resultErrorsError =
-    Result<int>.Error(new("An error occurred"));
-
-var resultErrorsMultiError =
-    Result<int>.Error(new(["An error occurred", "Another error occurred"]));
-
-var resultErrorsTyped =
-    Result<int>.Error(new("error-key", "An error occurred"));
-
-var resultErrorsTyped =
-    Result<int>.Error(new("error-key", ["An error occurred", "Another error occurred"]));
-
-```
-
 ### Using Results
 
 Results are commonly used when an operation might not succeed, and you want to manage or report back the _expected_ errors. For example:
@@ -251,29 +234,31 @@ Result<int, string> resultOrElseWith =
 
 ### Result Errors
 
-Since error messages are frequently represented as keyed string collections, the `ResultErrors` type is provided to simplify Result creation. The flexible constructor allows errors to be initialized with a single string, a collection of strings, or a key-value pair.
+Danom provides a built-in error type, `ResultErrors`, to simplify the creation of results with multiple errors. This type can be initialized with a single string, a collection of strings, or a key-value pair. It can be thought of as a domain-specific dictionary of string keys and N string values.
 
 ```csharp
 using Danom;
 
-var resultErrors =
-    Result<int>.Ok(5);
+var resultOk = Result.Ok(5); // or, Result<int>.Ok(5);
 
-var resultErrorsError =
-    Result<int>.Error(new("An error occurred"));
+var resultErrors =
+    Result<int>.Error("An error occurred");
 
 var resultErrorsMultiError =
-    Result<int>.Error(new(["An error occurred", "Another error occurred"]));
+    Result<int>.Error(["An error occurred", "Another error occurred"]);
 
-var resultErrorsTyped =
-    Result<int>.Error(new ResultErrors("error-key", "An error occurred"));
+var resultErrorsKeyed =
+    Result<int>.Error("error-key", "An error occurred");
+
+var resultErrorsKeyedMulti =
+    Result<int>.Error("error-key", ["An error occurred", "Another error occurred"]);
 ```
 
 ## Procedural Programming
 
 Inevitably you'll need to interact with these functional types in a procedural way. Both [Option](#option-tryget) and [Result](#result) provide a `TryGet` method to retrieve the underlying value. This method will return a `bool` indicating whether the value was successfully retrieved and the value itself as an output parameter.
 
-### Option TryGet
+### Option `TryGet`
 
 ```csharp
 using Danom;
@@ -289,7 +274,7 @@ else {
 ```
 
 
-### Result TryGet
+### Result `TryGet` and `TryGetError`
 
 ```csharp
 using Danom;
@@ -402,41 +387,7 @@ public static class EnumOption {
 
 ## Input Validation
 
-One of the places the `Result` type really shines is input validation. It's a natural step in most workflows to validate input data before processing it, and the Result type is a great way to handle this.
-
-A quick example:
-
-```csharp
-using Danom;
-using Danom.Validation;
-
-public record Attendee(
-    string Name,
-    int Age,
-    Option<string> Email,
-    Option<string> AlternateEmail);
-
-public sealed class AttendeeValidator : BaseValidator<Attendee>
-{
-    public AttendeeValidator()
-    {
-        Rule("Name", x => x.Name, Check.String.IsNotEmpty);
-        Rule("Age", x => x.Age, Check.IsGreaterThan(0));
-        Rule("Email", x => x.Email, Check.Required(Check.String.IsEmailAddress));
-        Rule("AlternateEmail", x => x.AlternateEmail, Check.Optional(Check.String.IsEmailAddress));
-    }
-}
-
-ValidationResult<Attendee>
-    .From<AttendeeValidator>(new(
-        Name: "John Doe",
-        Age: 30,
-        Email: Option<string>.Some("john@doe.com"),
-        AlternateEmail: Option<string>.None()))
-    .Match(
-        ok: x => Console.WriteLine("Input is valid: {0}", x),
-        error: e => Console.WriteLine("Input is invalid: {0}", e));
-```
+One of the places the `Result` type really shines is input validation. It's a natural step in most workflows to validate input data before processing it, and the `Result` type is a great way to handle this. The [Danom.Validation](https://www.nuget.org/packages/Danom.Validation/) library provides an API for defining validation rules and checking input data against those rules, returning a `Result<T, ResultErrors>` that contains either the validated data or an error message.
 
 Documentation can be found [here](src/Danom.Validation/README.md).
 
@@ -465,7 +416,6 @@ If functionality is added to the API, or changed, please kindly update the relev
 Only pull requests which pass all build checks and comply with the general coding guidelines can be approved.
 
 If you have any further questions, submit an [issue](https://github.com/pimbrouwers/Danom/issues) or open a [discussion](https://github.com/pimbrouwers/Danom/discussions).
-
 
 ## Find a bug?
 
