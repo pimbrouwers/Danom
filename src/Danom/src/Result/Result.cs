@@ -330,6 +330,14 @@ namespace Danom
             Result<Unit, ResultErrors>.Ok(Unit.Value);
 
         /// <summary>
+        /// Creates a new <see cref="Result{T, ResultErrors}"/> with the specified value.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static Result<T, ResultErrors> Ok<T>(T value) =>
+            Result<T, ResultErrors>.Ok(value);
+
+        /// <summary>
         /// Creates a new <see cref="Result{Unit, ResultErrors}"/> with the specified error.
         /// </summary>
         /// <param name="errors"></param>

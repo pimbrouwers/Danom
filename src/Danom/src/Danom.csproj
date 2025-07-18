@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <AssemblyName>Danom</AssemblyName>
-    <Version>2.0.0-beta4</Version>
+    <Version>2.0.0-beta5</Version>
 
     <!-- General info -->
     <Description>Option and Result types for C# to simplify functional programming.</Description>
@@ -38,7 +38,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="../../README.md" Pack="true" PackagePath="\" />
+    <None Include="../../../README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
 </Project>

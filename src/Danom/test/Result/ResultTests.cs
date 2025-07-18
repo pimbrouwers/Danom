@@ -3,6 +3,16 @@ namespace Danom.Tests;
 using Danom.TestHelpers;
 using Xunit;
 
+public sealed class Abc
+{
+    public Abc(string a)
+    {
+        A = a;
+    }
+
+    public string A { get; }
+}
+
 public sealed class ResultTests
 {
     [Fact]
@@ -12,6 +22,7 @@ public sealed class ResultTests
         AssertResult.IsOk(result);
         Assert.False(result.IsError);
         Assert.Equal("Ok(1)", result.ToString());
+
     }
 
     [Fact]
