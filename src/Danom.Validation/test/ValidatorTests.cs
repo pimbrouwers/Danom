@@ -115,8 +115,8 @@ public sealed class ReadmeExampleTest
                 Email: Option<string>.Some("john@doe.com"),
                 AlternateEmail: Option<string>.None()))
             .Match(
-                some: x => Console.WriteLine("Input is valid: {0}", x),
-                none: () => Console.WriteLine("Input is invalid"));
+                x => Assert.Equal("John Doe", x.Name),
+                () => Assert.Fail("Input is valid, but validation failed"));
 
         ValidationResult<Attendee>
             .From<AttendeeValidator>(new(

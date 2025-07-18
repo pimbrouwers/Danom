@@ -6,91 +6,246 @@ namespace Danom.Validation
     using System.Net.Mail;
     using System.Text.RegularExpressions;
 
+    /// <summary>
+    /// Provides a set of validation checks that can be used in validators.
+    /// </summary>
     public static class Check
     {
-        public static ValidatorRule<T> IsEqualTo<T>(T threshold) where T : IEquatable<T> =>
-            value => value.IsEqualTo(threshold);
+        /// <summary>
+        /// Checks if the value is equal to a specified value.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public static ValidatorRule<T> IsEqualTo<T>(T input) where T : IEquatable<T> =>
+            value => value.IsEqualTo(input);
 
-        public static ValidatorRule<T> IsNotEqualTo<T>(T threshold) where T : IEquatable<T> =>
-            value => value.IsNotEqualTo(threshold);
+        /// <summary>
+        /// Checks if the value is not equal to a specified value.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public static ValidatorRule<T> IsNotEqualTo<T>(T input) where T : IEquatable<T> =>
+            value => value.IsNotEqualTo(input);
 
+        /// <summary>
+        /// Checks if the value is between two specified values.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="min"></param>
+        /// <param name="max"></param>
+        /// <returns></returns>
         public static ValidatorRule<T> IsBetween<T>(T min, T max) where T : IComparable<T> =>
             value => value.IsBetween(min, max);
 
+        /// <summary>
+        /// Checks if the value is not between two specified values.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="min"></param>
+        /// <param name="max"></param>
+        /// <returns></returns>
         public static ValidatorRule<T> IsNotBetween<T>(T min, T max) where T : IComparable<T> =>
             value => value.IsNotBetween(min, max);
 
+        /// <summary>
+        /// Checks if the value is positive.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         public static ValidatorRule<T> IsPositive<T>() where T : IComparable<T> =>
             value => value.IsPositive();
 
+        /// <summary>
+        /// Checks if the value is negative.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         public static ValidatorRule<T> IsNegative<T>() where T : IComparable<T> =>
             value => value.IsNegative();
 
+        /// <summary>
+        /// Checks if the value is zero.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         public static ValidatorRule<T> IsZero<T>() where T : IComparable<T> =>
             value => value.IsZero();
 
+        /// <summary>
+        /// Checks if the value is greater than a specified threshold.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="threshold"></param>
+        /// <returns></returns>
         public static ValidatorRule<T> IsGreaterThan<T>(T threshold) where T : IComparable<T> =>
             value => value.IsGreaterThan(threshold);
 
+        /// <summary>
+        /// Checks if the value is greater than or equal to a specified threshold.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="threshold"></param>
+        /// <returns></returns>
         public static ValidatorRule<T> IsGreaterThanOrEqualTo<T>(T threshold) where T : IComparable<T> =>
             value => value.IsGreaterThanOrEqualTo(threshold);
 
+        /// <summary>
+        /// Checks if the value is less than a specified threshold.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="threshold"></param>
+        /// <returns></returns>
         public static ValidatorRule<T> IsLessThan<T>(T threshold) where T : IComparable<T> =>
             value => value.IsLessThan(threshold);
 
+        /// <summary>
+        /// Checks if the value is less than or equal to a specified threshold.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="threshold"></param>
+        /// <returns></returns>
         public static ValidatorRule<T> IsLessThanOrEqualTo<T>(T threshold) where T : IComparable<T> =>
             value => value.IsLessThanOrEqualTo(threshold);
 
+        /// <summary>
+        /// Checks if the value is required (i.e., not null or empty).
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="func"></param>
+        /// <returns></returns>
         public static ValidatorRule<Option<T>> Required<T>(ValidatorRule<T> func) =>
             option => option.Required(func);
 
+        /// <summary>
+        /// Checks if the value is required (i.e., not null or empty).
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         public static ValidatorRule<Option<T>> Required<T>() =>
             option => option.Required(x => field => Result.Ok());
 
+        /// <summary>
+        /// Checks if the value is optional (i.e., can be null or empty).
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="func"></param>
+        /// <returns></returns>
         public static ValidatorRule<Option<T>> Optional<T>(ValidatorRule<T> func) =>
             option => option.Optional(func);
 
+        /// <summary>
+        /// Checks if the value is valid according to a specified validator.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="validator"></param>
+        /// <returns></returns>
         public static ValidatorRule<T> IsValid<T>(IValidator<T> validator) =>
             value => field => validator.Validate(value).Map(_ => Unit.Value);
 
+        /// <summary>
+        /// Provides a set of validation checks for string values.
+        /// </summary>
         public static class String
         {
+            /// <summary>
+            /// Checks if the string is empty.
+            /// </summary>
             public static ValidatorRule<string> IsEmpty =>
                 value => value.IsEmpty();
 
+            /// <summary>
+            /// Checks if the string is not empty.
+            /// </summary>
             public static ValidatorRule<string> IsNotEmpty =>
                 value => value.IsNotEmpty();
 
+            /// <summary>
+            /// Checks if the string starts with a specified prefix.
+            /// </summary>
+            /// <param name="prefix"></param>
+            /// <returns></returns>
             public static ValidatorRule<string> IsStartingWith(string prefix) =>
                 value => value.IsStartingWith(prefix);
 
+            /// <summary>
+            /// Checks if the string ends with a specified suffix.
+            /// </summary>
+            /// <param name="suffix"></param>
+            /// <returns></returns>
             public static ValidatorRule<string> IsEndingWith(string suffix) =>
                 value => value.IsEndingWith(suffix);
 
+            /// <summary>
+            /// Checks if the string contains a specified substring.
+            /// </summary>
+            /// <param name="substring"></param>
+            /// <returns></returns>
             public static ValidatorRule<string> IsContaining(string substring) =>
                 value => value.IsContaining(substring);
 
+            /// <summary>
+            /// Checks if the string has a specific length.
+            /// </summary>
+            /// <param name="length"></param>
+            /// <returns></returns>
             public static ValidatorRule<string> IsLength(int length) =>
                 value => value.IsLength(length);
 
+            /// <summary>
+            /// Checks if the string length is between two specified values.
+            /// </summary>
+            /// <param name="min"></param>
+            /// <param name="max"></param>
+            /// <returns></returns>
             public static ValidatorRule<string> IsLengthBetween(int min, int max) =>
                 value => value.IsLengthBetween(min, max);
 
+            /// <summary>
+            /// Checks if the string length is greater than a specified value.
+            /// </summary>
+            /// <param name="min"></param>
+            /// <returns></returns>
             public static ValidatorRule<string> IsLengthGreaterThan(int min) =>
                 value => value.IsLengthGreaterThan(min);
 
+            /// <summary>
+            /// Checks if the string length is greater than or equal to a specified value.
+            /// </summary>
+            /// <param name="min"></param>
+            /// <returns></returns>
             public static ValidatorRule<string> IsLengthOrGreaterThan(int min) =>
                 value => value.IsLengthOrGreaterThan(min);
 
+            /// <summary>
+            /// Checks if the string length is less than a specified value.
+            /// </summary>
+            /// <param name="max"></param>
+            /// <returns></returns>
             public static ValidatorRule<string> IsLengthLessThan(int max) =>
                 value => value.IsLengthLessThan(max);
 
+            /// <summary>
+            /// Checks if the string length is less than or equal to a specified value.
+            /// </summary>
+            /// <param name="max"></param>
+            /// <returns></returns>
             public static ValidatorRule<string> IsLengthOrLessThan(int max) =>
                 value => value.IsLengthOrLessThan(max);
 
-            public static ValidatorRule<string> IsMatch(string pattern) =>
-                value => value.IsMatch(pattern);
+            /// <summary>
+            /// Checks if the string matches a specified regular expression pattern.
+            /// </summary>
+            /// <param name="pattern"></param>
+            /// <param name="message"></param>
+            /// <returns></returns>
+            public static ValidatorRule<string> IsMatch(string pattern, Func<string, string>? message = null) =>
+                value => value.IsMatch(pattern, message);
 
+            /// <summary>
+            /// Checks if the string is a valid email address.
+            /// </summary>
             public static ValidatorRule<string> IsEmailAddress =>
                 value => field =>
                     Regex.IsMatch(
@@ -100,22 +255,59 @@ namespace Danom.Validation
                         && RuleHelper.CheckEmail(value)
                         ? Result.Ok()
                         : Result.Error($"'{field}' is not a valid email address");
+
+            /// <summary>
+            /// /// Checks if the string is a valid URL.
+            /// </summary>
+            public static ValidatorRule<string> IsUrl =>
+                value => field =>
+                    Uri.TryCreate(value, UriKind.Absolute, out var uri)
+                        ? Result.Ok()
+                        : Result.Error($"'{field}' is not a valid URL");
+
+            /// <summary>
+            /// /// Checks if the string is a valid E.164 phone number.
+            /// </summary>
+            public static ValidatorRule<string> IsE164 =>
+                IsMatch(
+                    pattern: @"^\+[1-9]\d{1,14}$",
+                    message: field => $"'{field}' is not a valid E.164 phone number");
         }
 
+        /// <summary>
+        /// Provides a set of validation checks for GUID values.
+        /// </summary>
         public static class Guid
         {
+            /// <summary>
+            /// Checks if the GUID is empty (i.e., 000-0000-0000-0000-0000).
+            /// </summary>
             public static ValidatorRule<System.Guid> IsEmpty =>
                 value => value.IsEmpty();
 
+            /// <summary>
+            /// Checks if the GUID is not empty (i.e., 000-0000-0000-0000-0000).
+            /// </summary>
             public static ValidatorRule<System.Guid> IsNotEmpty =>
                 value => value.IsNotEmpty();
         }
 
-        public static class Collection
+        /// <summary>
+        /// Provides a set of validation checks for collection types.
+        /// </summary>
+        public static class Enumerable
         {
+            /// <summary>
+            /// Checks if the collection is empty.
+            /// </summary>
             public static ValidatorRule<T> IsEmpty<T>() where T : IEnumerable<T> =>
                 value => field => RuleHelper.Check(!value.Any(), $"'{field}' must be empty");
 
+            /// <summary>
+            /// Checks if the collection is not empty.
+            /// </summary>
+            /// <typeparam name="T"></typeparam>
+            /// <returns></returns>
             public static ValidatorRule<T> IsNotEmpty<T>() where T : IEnumerable<T> =>
                 value => field => RuleHelper.Check(value.Any(), $"'{field}' must be empty");
         }
@@ -195,8 +387,12 @@ namespace Danom.Validation
         internal static LabeledValidatorRule IsLengthOrLessThan(this string value, int max) =>
             field => RuleHelper.Check(value.Length <= max, $"'{field}' must be less than or equal to {max} characters");
 
-        internal static LabeledValidatorRule IsMatch(this string value, string pattern) =>
-            field => RuleHelper.Check(Regex.IsMatch(value, pattern), $"'{field}' must match pattern {pattern}");
+        internal static LabeledValidatorRule IsMatch(this string value, string pattern, Func<string, string>? fieldMessage = null) =>
+            field => RuleHelper.Check(
+                Regex.IsMatch(value, pattern),
+                fieldMessage is Func<string, string> fn
+                    ? fn(field)
+                    : $"'{field}' must match the pattern '{pattern}'");
     }
 
     internal static class GuidRulesExtensions

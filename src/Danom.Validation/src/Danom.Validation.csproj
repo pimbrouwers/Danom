@@ -1,10 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <NoWarn>CS1591</NoWarn>
-
     <AssemblyName>Danom.Validation</AssemblyName>
-    <Version>2.0.0-beta4</Version>
+    <Version>2.0.0-beta5</Version>
 
     <!-- General info -->
     <Description>Validators and validation helpers for Danom based on FluentValidation.</Description>
@@ -17,7 +15,7 @@
     <Nullable>enable</Nullable>
     <DebugType>embedded</DebugType>
     <OutputType>Library</OutputType>
-    <!-- <TreatWarningsAsErrors>true</TreatWarningsAsErrors> -->
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
 
     <!-- NuGet config -->
@@ -41,7 +39,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- <PackageReference Include="Danom" Version="2.0.0-beta4" /> -->
-    <ProjectReference Include="..\..\Danom\src\Danom.csproj" />
+    <PackageReference Include="Danom" Version="2.0.0-beta5" />
   </ItemGroup>
 </Project>

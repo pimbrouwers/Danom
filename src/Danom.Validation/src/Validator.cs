@@ -52,10 +52,7 @@ namespace Danom.Validation
     /// <typeparam name="T"></typeparam>
     public abstract class BaseValidator<T> : IValidator<T>
     {
-        private const string DefaultField = "Value";
-        private const string DefaultKey = ""; // Default key for rules without a specific field
-
-        private readonly Dictionary<string, List<FieldRule>> _rules = new Dictionary<string, List<FieldRule>>();
+        private readonly ValidationContext<T> _validationContext = new ValidationContext<T>();
 
         /// <summary>
         /// Validates the input value against the defined rules.
@@ -67,14 +64,12 @@ namespace Danom.Validation
             var isValid = true;
             var resultErrors = new ResultErrors();
 
-            foreach (var rule in _rules)
+            foreach (var rule in _validationContext.Rules)
             {
-                var field = rule.Key == DefaultKey ? DefaultField : rule.Key;
-
                 foreach (var fieldRule in rule.Value)
                 {
                     var labelledRuleFunc = fieldRule.ValidatorRule(value);
-                    if (labelledRuleFunc(field).TryGetError(out var errors))
+                    if (labelledRuleFunc(fieldRule.Field).TryGetError(out var errors))
                     {
                         if (isValid)
                         {
@@ -97,13 +92,29 @@ namespace Danom.Validation
                 : Result<T>.Error(resultErrors);
         }
 
-        public void Rule<U>(string field, Func<T, U> selector, ValidatorRule<U> rule, string? message = null) =>
-            AddRule(
+        /// <summary>
+        /// Adds a validation rule for a specific field in the input value.
+        /// </summary>
+        /// <typeparam name="U"></typeparam>
+        /// <param name="field"></param>
+        /// <param name="selector"></param>
+        /// <param name="rule"></param>
+        /// <param name="message"></param>
+        public void Rule<U>(string? field, Func<T, U> selector, ValidatorRule<U> rule, string? message = null) =>
+            _validationContext.AddRule(
                 field: field,
                 rule: value => rule(selector(value)),
                 message: message);
 
-        public void Rule<U>(string field, Func<T, U> selector, IEnumerable<ValidatorRule<U>> rules, string? message = null)
+        /// <summary>
+        /// Adds a validation rule for a specific field in the input values.
+        /// </summary>
+        /// <typeparam name="U"></typeparam>
+        /// <param name="field"></param>
+        /// <param name="selector"></param>
+        /// <param name="rules"></param>
+        /// <param name="message"></param>
+        public void Rule<U>(string? field, Func<T, U> selector, IEnumerable<ValidatorRule<U>> rules, string? message = null)
         {
             foreach (var rule in rules)
             {
@@ -111,42 +122,76 @@ namespace Danom.Validation
             }
         }
 
+        /// <summary>
+        /// Adds a validation rule for a specific field in the input value.
+        /// </summary>
+        /// <typeparam name="U"></typeparam>
+        /// <param name="selector"></param>
+        /// <param name="rule"></param>
+        /// <param name="message"></param>
         public void Rule<U>(Func<T, U> selector, ValidatorRule<U> rule, string? message = null) =>
-            Rule(DefaultKey, selector, rule, message);
+            Rule(null, selector, rule, message);
 
+        /// <summary>
+        /// Adds a validation rule for a specific field in the input values.
+        /// </summary>
+        /// <typeparam name="U"></typeparam>
+        /// <param name="selector"></param>
+        /// <param name="rules"></param>
+        /// <param name="message"></param>
         public void Rule<U>(Func<T, U> selector, IEnumerable<ValidatorRule<U>> rules, string? message = null) =>
-            Rule(DefaultKey, selector, rules, message);
+            Rule(null, selector, rules, message);
+    }
 
-        private void AddRule(string? field, ValidatorRule<T> rule, string? message)
+    internal sealed class ValidationContext<T>
+    {
+        private const string DefaultField = "Value";
+        private const string DefaultKey = "";
+
+        public ValidationContext()
         {
-            var key = field ?? DefaultKey;
-
-            if (!_rules.TryGetValue(key, out var rules))
-            {
-                _rules[key] = new List<FieldRule>();
-            }
-            _rules[key].Add(new FieldRule(rule, message));
+             Rules = new Dictionary<string, List<FieldRule>>();
         }
 
-        private sealed class FieldRule
+        public Dictionary<string, List<FieldRule>> Rules { get; }
+
+        public sealed class FieldRule
         {
-            public FieldRule(ValidatorRule<T> validatorRule, string? message = null)
+            public FieldRule(string field, ValidatorRule<T> validatorRule, string? message = null)
             {
+                Field = field;
                 ValidatorRule = validatorRule;
                 Message = message;
             }
 
+            public string Field { get; }
             public ValidatorRule<T> ValidatorRule { get; }
             public string? Message { get; }
         }
-    }
 
+        public void AddRule(string? field, ValidatorRule<T> rule, string? message)
+        {
+            var key = field ?? DefaultKey;
+            var fieldname = field ?? DefaultField;
+
+            if (!Rules.TryGetValue(key, out var rules))
+            {
+                Rules[key] = new List<FieldRule>();
+            }
+            Rules[key].Add(new FieldRule(fieldname, rule, message));
+        }
+    }
     /// <summary>
     /// Represents a validator interface for validating input values.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public interface IValidator<T>
     {
+        /// <summary>
+        /// Validates the input value.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         Result<T, ResultErrors> Validate(T value);
     }
 
@@ -164,4 +209,5 @@ namespace Danom.Validation
     /// <param name="field"></param>
     /// <returns></returns>
     public delegate Result<Unit, ResultErrors> LabeledValidatorRule(string field);
+
 }

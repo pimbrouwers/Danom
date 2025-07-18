@@ -10,16 +10,27 @@ public sealed class RulesTests
             ? Result.Error(errors)
             : Result.Ok();
 
-    // private static Result<Unit, ResultErrors> RunRule(LabeledValidatorRule rule) => rule("field");
-
     public sealed class EquatableRulesTests
     {
         [Fact]
         public void EqualTo_ReturnsOk()
         {
-            Assert.True(RunRule("test", Check.IsEqualTo("test")).IsOk);
-            Assert.True(RunRule("test", Check.IsEqualTo("test")).IsOk);
             Assert.True(RunRule('c', Check.IsEqualTo('c')).IsOk);
+            Assert.True(RunRule('c', Check.IsNotEqualTo('d')).IsOk);
+
+            Assert.True(RunRule("test", Check.IsEqualTo("test")).IsOk);
+            Assert.True(RunRule("test", Check.IsNotEqualTo("test")).IsError);
+            Assert.True(RunRule("test", Check.IsNotEqualTo("best")).IsOk);
+            Assert.True(RunRule("test", Check.IsEqualTo("best")).IsError);
+
+            Assert.True(RunRule("jim@bob.com", Check.String.IsEmailAddress).IsOk);
+            Assert.True(RunRule("invalid-email", Check.String.IsEmailAddress).IsError);
+            Assert.True(RunRule("http://example.com", Check.String.IsUrl).IsOk);
+            Assert.True(RunRule("https://example.com", Check.String.IsUrl).IsOk);
+            Assert.True(RunRule("ftp://example.com", Check.String.IsUrl).IsOk);
+            Assert.True(RunRule("invalid-url", Check.String.IsUrl).IsError);
+            Assert.True(RunRule("+1234567890", Check.String.IsE164).IsOk);
+            Assert.True(RunRule("1", Check.String.IsE164).IsError);
 
             Assert.True(RunRule(byte.MaxValue, Check.IsEqualTo(byte.MaxValue)).IsOk);
             Assert.True(RunRule(short.MaxValue, Check.IsEqualTo(short.MaxValue)).IsOk);
