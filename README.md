@@ -8,7 +8,7 @@
 ![net6.0](https://img.shields.io/badge/net-6.0-blue.svg)
 ![netstandard2.1](https://img.shields.io/badge/netstandard-2.1-blue.svg)
 
-Danom is a C# library that provides (monadic) structures to facilitate durable programming patterns in C#, using [Option](#option) and [Result](#result). These discriminated unions are a powerful way to handle nullable values and expected errors in a type-safe manner, while also providing a fluent API for chaining operations.
+Danom is a C# library that provides (monadic) structures to facilitate functional programming patterns in C#, using [Option](#option) and [Result](#result). These discriminated unions are a powerful way to handle nullable values and expected errors in a type-safe manner, while also providing a fluent API for chaining operations.
 
 ## Key Features
 
