@@ -28,6 +28,47 @@ public sealed class ResultErrorTests
     {
         Assert.Equal("Key - Error1, Error2", new ResultError("Key", ["Error1", "Error2"]).ToString());
     }
+
+    [Fact]
+    public void CanAddResultError()
+    {
+        var error = new ResultError("Error");
+        error.Add(new ResultError("Error2"));
+        Assert.Equal("Error, Error2", error.ToString());
+    }
+
+    [Fact]
+    public void CanAddString()
+    {
+        var error = new ResultError("Error");
+        error.Add("Error2");
+        Assert.Equal("Error, Error2", error.ToString());
+    }
+
+    [Fact]
+    public void CanAddStringWithKey()
+    {
+        var error = new ResultError("Key", "Error");
+        error.Add("Key", "Error2");
+        Assert.Equal("Key - Error, Error2", error.ToString());
+    }
+
+    [Fact]
+    public void CanAddStrings()
+    {
+        var error = new ResultError(["Error1"]);
+        error.Add(["Error2"]);
+        Assert.Equal("Error1, Error2", error.ToString());
+    }
+
+    [Fact]
+    public void CanAddStringsWithKey()
+    {
+        var error = new ResultError("Key", ["Error1"]);
+        error.Add("Key", ["Error2"]);
+        Assert.Equal("Key - Error1, Error2", error.ToString());
+    }
+
 }
 
 public sealed class ResultErrorsTests
