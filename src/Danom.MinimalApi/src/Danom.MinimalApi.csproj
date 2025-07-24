@@ -46,8 +46,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Danom" Version="2.0.0-beta4" />
-    <PackageReference Include="Danom.Validation" Version="2.0.0-beta4" />
+    <PackageReference Include="Danom" Version="2.0.0-beta5" />
   </ItemGroup>
 
 </Project>
