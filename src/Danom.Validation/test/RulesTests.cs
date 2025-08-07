@@ -277,4 +277,42 @@ public sealed class RulesTests
             Assert.True(RunRule(Option.Some(""), Check.Optional(Check.String.IsNotEmpty)).IsError);
         }
     }
+
+    public sealed class EnumerableRulesTests
+    {
+        [Fact]
+        public void EnumerableEmpty_ReturnsOk_WhenEnumerableIsEmpty()
+        {
+            Assert.True(RunRule([], Check.Enumerable.IsEmpty<int>()).IsOk);
+            Assert.True(RunRule(new List<string>(), Check.Enumerable.IsEmpty<string>()).IsOk);
+        }
+
+        [Fact]
+        public void EnumerableNotEmpty_ReturnsOk_WhenEnumerableIsNotEmpty()
+        {
+            Assert.True(RunRule([1, 2, 3], Check.Enumerable.IsNotEmpty<int>()).IsOk);
+            Assert.True(RunRule(new List<string> { "a", "b" }, Check.Enumerable.IsNotEmpty<string>()).IsOk);
+        }
+
+        [Fact]
+        public void EnumerableNotEmpty_ReturnsError_WhenEnumerableIsEmpty()
+        {
+            Assert.True(RunRule([], Check.Enumerable.IsNotEmpty<int>()).IsError);
+            Assert.True(RunRule(new List<string>(), Check.Enumerable.IsNotEmpty<string>()).IsError);
+        }
+
+        [Fact]
+        public void EnumerableForEach_ReturnsOk_WhenAllElementsMatchCondition()
+        {
+            Assert.True(RunRule([1, 2, 3], Check.Enumerable.ForEach(Check.IsGreaterThan(0))).IsOk);
+            Assert.True(RunRule(new List<string> { "a", "b" }, Check.Enumerable.ForEach(Check.String.IsNotEmpty)).IsOk);
+        }
+
+        [Fact]
+        public void EnumerableForEach_ReturnsError_WhenAnyElementDoesNotMatchCondition()
+        {
+            Assert.True(RunRule([1, -2, 3], Check.Enumerable.ForEach(Check.IsGreaterThan(0))).IsError);
+            Assert.True(RunRule(new List<string> { "a", "", "c" }, Check.Enumerable.ForEach(Check.String.IsNotEmpty)).IsError);
+        }
+    }
 }
