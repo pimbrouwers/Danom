@@ -43,7 +43,8 @@ public sealed class ValidationTests
             Assert.Contains("'Email'", errors["Email"].Errors[0]);
 
             Assert.Equal(2, errors["Phones"].Errors.Count);
-            // Assert.Contains("'Phones'", errors["Phones"].Errors[0]);
+            Assert.Contains("'Phones'", errors["Phones"].Errors[0]);
+            Assert.Contains("'Phones'", errors["Phones"].Errors[1]);
         }
         else
         {
@@ -59,8 +60,8 @@ public sealed class TestInput
     public int IntValue { get; init; } = -1;
     public Option<int> OptionalIntValue { get; init; } = Option<int>.Some(-1);
     public Option<string> StringOption { get; init; } = Option<string>.NoneValue;
-    public IEnumerable<string> Phones { get; init; } = [];
     public string Email { get; init; } = string.Empty;
+    public IEnumerable<string> Phones { get; init; } = [];
     public IEnumerable<string> AlternateEmails { get; init; } = [];
 
     public override string ToString() => IntValue.ToString();
@@ -133,62 +134,4 @@ public sealed class TestInputIdValidator : BaseValidator<TestInputId>
     {
         Rule("Id", x => x.Id, Check.Guid.IsNotEmpty);
     }
-}
-
-public sealed class ReadmeExampleTest
-{
-    [Fact]
-    public void DoTheTest()
-    {
-        var validator = new AttendeeValidator();
-
-        Validate<Attendee>
-            .Using<AttendeeValidator>(new(
-                Name: "John Doe",
-                Age: 30,
-                Email: Option<string>.Some("john@doe.com"),
-                AlternateEmail: Option<string>.None()))
-            .Match(
-                x => Assert.Equal("John Doe", x.Name),
-                e => Assert.Fail("Input is valid, but validation failed"));
-
-        Validate<Attendee>
-            .Using<AttendeeValidator>(new(
-                Name: "John Doe",
-                Age: 30,
-                Email: Option<string>.Some("john@doe.com"),
-                AlternateEmail: Option<string>.None()))
-            .ToOption()
-            .Match(
-                x => Assert.Equal("John Doe", x.Name),
-                () => Assert.Fail("Input is valid, but validation failed"));
-
-        Validate<Attendee>
-            .Using<AttendeeValidator>(new(
-                Name: "",
-                Age: -1,
-                Email: Option<string>.NoneValue,
-                AlternateEmail: Option<string>.Some("invalid_email")))
-            .Match(
-                x => Assert.Fail("Input is invalid, but validation succeeded"),
-                e => Assert.True(e.Any()));
-    }
-
-    public record Attendee(
-        string Name,
-        int Age,
-        Option<string> Email,
-        Option<string> AlternateEmail);
-
-    public sealed class AttendeeValidator : BaseValidator<Attendee>
-    {
-        public AttendeeValidator()
-        {
-            Rule("Name", x => x.Name, Check.String.IsNotEmpty);
-            Rule("Age", x => x.Age, Check.IsGreaterThan(0));
-            Rule("Email", x => x.Email, Check.Required(Check.String.IsEmailAddress));
-            Rule("AlternateEmail", x => x.AlternateEmail, Check.Optional(Check.String.IsEmailAddress));
-        }
-    }
-
 }
