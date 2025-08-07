@@ -122,7 +122,7 @@ namespace Danom
         /// </summary>
         /// <param name="errors"></param>
         /// <exception cref="ArgumentNullException"></exception>
-        public ResultErrors(IEnumerable<ResultError> errors)
+        public void Add(ResultErrors errors)
         {
             foreach (var error in errors)
             {

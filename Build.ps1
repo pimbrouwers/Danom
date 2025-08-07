@@ -1,5 +1,8 @@
 [CmdletBinding()]
 param (
+  [Parameter(HelpMessage = "The project to reference.")]
+  [string] $Project,
+
   [Parameter(HelpMessage = "The action to execute.")]
   [ValidateSet("Build", "Test", "Pack")]
   [string] $Action = "Build",
@@ -8,8 +11,6 @@ param (
   [ValidateSet("Debug", "Release")]
   [string] $Configuration = "Debug",
 
-  [Parameter(HelpMessage = "The project to reference.")]
-  [string] $Project,
 
   [switch] $NoRestore,
 

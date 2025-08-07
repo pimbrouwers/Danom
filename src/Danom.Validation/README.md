@@ -42,8 +42,8 @@ public sealed class AttendeeValidator : BaseValidator<Attendee>
     }
 }
 
-ValidationResult<Attendee>
-    .From<AttendeeValidator>(new(
+Validate<Attendee>
+    .Using<AttendeeValidator>(new(
         Name: "John Doe",
         Age: 30,
         Email: Option<string>.Some("john@doe.com"),
@@ -53,12 +53,13 @@ ValidationResult<Attendee>
         error: e => Console.WriteLine("Input is invalid: {0}", e));
 
 // or, if you don't care about the error messages
-ValidationOption<Attendee>
-    .From<AttendeeValidator>(new(
+Validate<Attendee>
+    .Using<AttendeeValidator>(new(
         Name: "John Doe",
         Age: 30,
         Email: Option<string>.Some("john@doe.com"),
         AlternateEmail: Option<string>.None()))
+    .ToOption()
     .Match(
         some: x => Console.WriteLine("Input is valid: {0}", x),
         none: () => Console.WriteLine("Input is invalid"));

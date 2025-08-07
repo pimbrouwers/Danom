@@ -13,6 +13,7 @@ All notable changes to this project will be documented in this file.
 - `Result<T, TError>.TryGet(out T ok)` and `Result<T, TError>.TryGetError(out TError error)` to safely provide the internal value. A return value indicates whether or not the Result was Ok or Error.
 - `Option<T>` implementation for `IComparable<T>`.
 - `ResultErrors` keyed error list constructor (ex: `new ResultErrors("key", ["value1", "value2"])`).
+- `ResultError.Add` methods to support in-place error addition (ex: `resultError.Add("key", "value")`).
 - Minimal API integration via `DanomResultExtensions` and `TypedDanomResultExtensions`.
 - `DanomPageModel` base class for Razor Pages to provide a consistent API for handling options and results.
 - Nullablility annotations for better type safety.

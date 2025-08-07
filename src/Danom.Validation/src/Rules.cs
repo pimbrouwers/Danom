@@ -15,10 +15,10 @@ namespace Danom.Validation
         /// Checks if the value is equal to a specified value.
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="input"></param>
+        /// <param name="threshold"></param>
         /// <returns></returns>
-        public static ValidatorRule<T> IsEqualTo<T>(T input) where T : IEquatable<T> =>
-            value => value.IsEqualTo(input);
+        public static ValidatorRule<T> IsEqualTo<T>(T threshold) where T : IEquatable<T> =>
+            value => field => RuleHelper.Check(value.Equals(threshold), $"'{field}' must be equal to {threshold}");
 
         /// <summary>
         /// Checks if the value is not equal to a specified value.
@@ -27,7 +27,7 @@ namespace Danom.Validation
         /// <param name="input"></param>
         /// <returns></returns>
         public static ValidatorRule<T> IsNotEqualTo<T>(T input) where T : IEquatable<T> =>
-            value => value.IsNotEqualTo(input);
+            value => field => RuleHelper.Check(!value.Equals(input), $"'{field}' must not equal {input}");
 
         /// <summary>
         /// Checks if the value is between two specified values.
@@ -37,7 +37,7 @@ namespace Danom.Validation
         /// <param name="max"></param>
         /// <returns></returns>
         public static ValidatorRule<T> IsBetween<T>(T min, T max) where T : IComparable<T> =>
-            value => value.IsBetween(min, max);
+            value => field => RuleHelper.Check(value.CompareTo(min) >= 0 && value.CompareTo(max) <= 0, $"'{field}' must be between {min} and {max}");
 
         /// <summary>
         /// Checks if the value is not between two specified values.
@@ -47,7 +47,7 @@ namespace Danom.Validation
         /// <param name="max"></param>
         /// <returns></returns>
         public static ValidatorRule<T> IsNotBetween<T>(T min, T max) where T : IComparable<T> =>
-            value => value.IsNotBetween(min, max);
+            value => field => RuleHelper.Check(value.CompareTo(min) < 0 || value.CompareTo(max) > 0, $"'{field}' must be outside the range {min} to {max}");
 
         /// <summary>
         /// Checks if the value is positive.
@@ -55,7 +55,7 @@ namespace Danom.Validation
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         public static ValidatorRule<T> IsPositive<T>() where T : IComparable<T> =>
-            value => value.IsPositive();
+            value => field => RuleHelper.Check(value.CompareTo(default!) > 0, $"'{field}' must be positive");
 
         /// <summary>
         /// Checks if the value is negative.
@@ -63,7 +63,7 @@ namespace Danom.Validation
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         public static ValidatorRule<T> IsNegative<T>() where T : IComparable<T> =>
-            value => value.IsNegative();
+            value => field => RuleHelper.Check(value.CompareTo(default!) < 0, $"'{field}' must be negative");
 
         /// <summary>
         /// Checks if the value is zero.
@@ -71,7 +71,7 @@ namespace Danom.Validation
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         public static ValidatorRule<T> IsZero<T>() where T : IComparable<T> =>
-            value => value.IsZero();
+            value => field => RuleHelper.Check(value.CompareTo(default!) == 0, $"'{field}' must be zero");
 
         /// <summary>
         /// Checks if the value is greater than a specified threshold.
@@ -80,7 +80,7 @@ namespace Danom.Validation
         /// <param name="threshold"></param>
         /// <returns></returns>
         public static ValidatorRule<T> IsGreaterThan<T>(T threshold) where T : IComparable<T> =>
-            value => value.IsGreaterThan(threshold);
+            value => field => RuleHelper.Check(value.CompareTo(threshold) > 0, $"'{field}' must be greater than {threshold}");
 
         /// <summary>
         /// Checks if the value is greater than or equal to a specified threshold.
@@ -89,7 +89,7 @@ namespace Danom.Validation
         /// <param name="threshold"></param>
         /// <returns></returns>
         public static ValidatorRule<T> IsGreaterThanOrEqualTo<T>(T threshold) where T : IComparable<T> =>
-            value => value.IsGreaterThanOrEqualTo(threshold);
+            value => field => RuleHelper.Check(value.CompareTo(threshold) >= 0, $"'{field}' must be greater than or equal to {threshold}");
 
         /// <summary>
         /// Checks if the value is less than a specified threshold.
@@ -98,7 +98,7 @@ namespace Danom.Validation
         /// <param name="threshold"></param>
         /// <returns></returns>
         public static ValidatorRule<T> IsLessThan<T>(T threshold) where T : IComparable<T> =>
-            value => value.IsLessThan(threshold);
+            value => field => RuleHelper.Check(value.CompareTo(threshold) < 0, $"'{field}' must be less than {threshold}");
 
         /// <summary>
         /// Checks if the value is less than or equal to a specified threshold.
@@ -107,7 +107,7 @@ namespace Danom.Validation
         /// <param name="threshold"></param>
         /// <returns></returns>
         public static ValidatorRule<T> IsLessThanOrEqualTo<T>(T threshold) where T : IComparable<T> =>
-            value => value.IsLessThanOrEqualTo(threshold);
+            value => field => RuleHelper.Check(value.CompareTo(threshold) <= 0, $"'{field}' must be less than or equal to {threshold}");
 
         /// <summary>
         /// Checks if the value is required (i.e., not null or empty).
@@ -116,7 +116,9 @@ namespace Danom.Validation
         /// <param name="func"></param>
         /// <returns></returns>
         public static ValidatorRule<Option<T>> Required<T>(ValidatorRule<T> func) =>
-            option => option.Required(func);
+            optionValue => optionValue.Match(
+                some: value => func(value),
+                none: () => field => Result.Error($"'{field}' is required"));
 
         /// <summary>
         /// Checks if the value is required (i.e., not null or empty).
@@ -124,7 +126,7 @@ namespace Danom.Validation
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         public static ValidatorRule<Option<T>> Required<T>() =>
-            option => option.Required(x => field => Result.Ok());
+            Required<T>(x => field => Result.Ok());
 
         /// <summary>
         /// Checks if the value is optional (i.e., can be null or empty).
@@ -133,7 +135,9 @@ namespace Danom.Validation
         /// <param name="func"></param>
         /// <returns></returns>
         public static ValidatorRule<Option<T>> Optional<T>(ValidatorRule<T> func) =>
-            option => option.Optional(func);
+            optionValue => optionValue.Match(
+                some: value => func(value),
+                none: () => field => Result<Unit, ResultErrors>.Ok(Unit.Value));
 
         /// <summary>
         /// Checks if the value is valid according to a specified validator.
@@ -153,13 +157,13 @@ namespace Danom.Validation
             /// Checks if the string is empty.
             /// </summary>
             public static ValidatorRule<string> IsEmpty =>
-                value => value.IsEmpty();
+                value => field => RuleHelper.Check(string.IsNullOrWhiteSpace(value), $"'{field}' must be empty");
 
             /// <summary>
             /// Checks if the string is not empty.
             /// </summary>
             public static ValidatorRule<string> IsNotEmpty =>
-                value => value.IsNotEmpty();
+                value => field => RuleHelper.Check(!string.IsNullOrWhiteSpace(value), $"'{field}' must not be empty");
 
             /// <summary>
             /// Checks if the string starts with a specified prefix.
@@ -167,7 +171,7 @@ namespace Danom.Validation
             /// <param name="prefix"></param>
             /// <returns></returns>
             public static ValidatorRule<string> IsStartingWith(string prefix) =>
-                value => value.IsStartingWith(prefix);
+                value => field => RuleHelper.Check(value.StartsWith(prefix), $"'{field}' must start with '{prefix}'");
 
             /// <summary>
             /// Checks if the string ends with a specified suffix.
@@ -175,7 +179,7 @@ namespace Danom.Validation
             /// <param name="suffix"></param>
             /// <returns></returns>
             public static ValidatorRule<string> IsEndingWith(string suffix) =>
-                value => value.IsEndingWith(suffix);
+                value => field => RuleHelper.Check(value.EndsWith(suffix), $"'{field}' must end with '{suffix}'");
 
             /// <summary>
             /// Checks if the string contains a specified substring.
@@ -183,7 +187,7 @@ namespace Danom.Validation
             /// <param name="substring"></param>
             /// <returns></returns>
             public static ValidatorRule<string> IsContaining(string substring) =>
-                value => value.IsContaining(substring);
+                value => field => RuleHelper.Check(value.Contains(substring), $"'{field}' must contain '{substring}'");
 
             /// <summary>
             /// Checks if the string has a specific length.
@@ -191,7 +195,7 @@ namespace Danom.Validation
             /// <param name="length"></param>
             /// <returns></returns>
             public static ValidatorRule<string> IsLength(int length) =>
-                value => value.IsLength(length);
+                value => field => RuleHelper.Check(value.Length == length, $"'{field}' must be {length} characters");
 
             /// <summary>
             /// Checks if the string length is between two specified values.
@@ -200,7 +204,7 @@ namespace Danom.Validation
             /// <param name="max"></param>
             /// <returns></returns>
             public static ValidatorRule<string> IsLengthBetween(int min, int max) =>
-                value => value.IsLengthBetween(min, max);
+                value => field => RuleHelper.Check(value.Length >= min && value.Length <= max, $"'{field}' must be between {min} and {max} characters");
 
             /// <summary>
             /// Checks if the string length is greater than a specified value.
@@ -208,7 +212,7 @@ namespace Danom.Validation
             /// <param name="min"></param>
             /// <returns></returns>
             public static ValidatorRule<string> IsLengthGreaterThan(int min) =>
-                value => value.IsLengthGreaterThan(min);
+                value => field => RuleHelper.Check(value.Length > min, $"'{field}' must be longer than {min} characters");
 
             /// <summary>
             /// Checks if the string length is greater than or equal to a specified value.
@@ -216,7 +220,7 @@ namespace Danom.Validation
             /// <param name="min"></param>
             /// <returns></returns>
             public static ValidatorRule<string> IsLengthOrGreaterThan(int min) =>
-                value => value.IsLengthOrGreaterThan(min);
+                value => field => RuleHelper.Check(value.Length >= min, $"'{field}' must be longer than or equal to {min} characters");
 
             /// <summary>
             /// Checks if the string length is less than a specified value.
@@ -224,7 +228,7 @@ namespace Danom.Validation
             /// <param name="max"></param>
             /// <returns></returns>
             public static ValidatorRule<string> IsLengthLessThan(int max) =>
-                value => value.IsLengthLessThan(max);
+                value => field => RuleHelper.Check(value.Length < max, $"'{field}' must be less than {max} characters");
 
             /// <summary>
             /// Checks if the string length is less than or equal to a specified value.
@@ -232,7 +236,7 @@ namespace Danom.Validation
             /// <param name="max"></param>
             /// <returns></returns>
             public static ValidatorRule<string> IsLengthOrLessThan(int max) =>
-                value => value.IsLengthOrLessThan(max);
+                value => field => RuleHelper.Check(value.Length <= max, $"'{field}' must be less than or equal to {max} characters");
 
             /// <summary>
             /// Checks if the string matches a specified regular expression pattern.
@@ -241,20 +245,11 @@ namespace Danom.Validation
             /// <param name="message"></param>
             /// <returns></returns>
             public static ValidatorRule<string> IsMatch(string pattern, Func<string, string>? message = null) =>
-                value => value.IsMatch(pattern, message);
-
-            /// <summary>
-            /// Checks if the string is a valid email address.
-            /// </summary>
-            public static ValidatorRule<string> IsEmailAddress =>
-                value => field =>
-                    Regex.IsMatch(
-                        input: value,
-                        pattern: @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$",
-                        options: RegexOptions.Compiled | RegexOptions.IgnoreCase)
-                        && RuleHelper.CheckEmail(value)
-                        ? Result.Ok()
-                        : Result.Error($"'{field}' is not a valid email address");
+                value => field => RuleHelper.Check(
+                    Regex.IsMatch(value, pattern),
+                    message is Func<string, string> fn
+                        ? fn(field)
+                        : $"'{field}' must match the pattern '{pattern}'");
 
             /// <summary>
             /// /// Checks if the string is a valid URL.
@@ -272,6 +267,37 @@ namespace Danom.Validation
                 IsMatch(
                     pattern: @"^\+[1-9]\d{1,14}$",
                     message: field => $"'{field}' is not a valid E.164 phone number");
+
+            /// <summary>
+            /// Checks if the string is a valid email address.
+            /// </summary>
+            public static ValidatorRule<string> IsEmailAddress =>
+                value => field =>
+                    Regex.IsMatch(
+                        input: value,
+                        pattern: @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$",
+                        options: RegexOptions.Compiled | RegexOptions.IgnoreCase)
+                        && CheckEmail(value)
+                        ? Result.Ok()
+                        : Result.Error($"'{field}' is not a valid email address");
+
+            private static bool CheckEmail(string email)
+            {
+                if (string.IsNullOrWhiteSpace(email))
+                {
+                    return false;
+                }
+
+                try
+                {
+                    var mailAddress = new MailAddress(email);
+                    return true;
+                }
+                catch (FormatException)
+                {
+                    return false;
+                }
+            }
         }
 
         /// <summary>
@@ -283,13 +309,13 @@ namespace Danom.Validation
             /// Checks if the GUID is empty (i.e., 000-0000-0000-0000-0000).
             /// </summary>
             public static ValidatorRule<System.Guid> IsEmpty =>
-                value => value.IsEmpty();
+                value => field => RuleHelper.Check(value == System.Guid.Empty, $"'{field}' must be empty");
 
             /// <summary>
             /// Checks if the GUID is not empty (i.e., 000-0000-0000-0000-0000).
             /// </summary>
             public static ValidatorRule<System.Guid> IsNotEmpty =>
-                value => value.IsNotEmpty();
+                value => field => RuleHelper.Check(value != System.Guid.Empty, $"'{field}' must not be empty");
         }
 
         /// <summary>
@@ -300,7 +326,7 @@ namespace Danom.Validation
             /// <summary>
             /// Checks if the collection is empty.
             /// </summary>
-            public static ValidatorRule<T> IsEmpty<T>() where T : IEnumerable<T> =>
+            public static ValidatorRule<IEnumerable<T>> IsEmpty<T>() =>
                 value => field => RuleHelper.Check(!value.Any(), $"'{field}' must be empty");
 
             /// <summary>
@@ -308,124 +334,75 @@ namespace Danom.Validation
             /// </summary>
             /// <typeparam name="T"></typeparam>
             /// <returns></returns>
-            public static ValidatorRule<T> IsNotEmpty<T>() where T : IEnumerable<T> =>
-                value => field => RuleHelper.Check(value.Any(), $"'{field}' must be empty");
+            public static ValidatorRule<IEnumerable<T>> IsNotEmpty<T>() =>
+                value => field => RuleHelper.Check(value.Any(), $"'{field}' must not be empty");
+
+            /// <summary>
+            /// Checks if each element in the collection satisfies a specified
+            /// </summary>
+            /// <typeparam name="T"></typeparam>
+            /// <param name="rule"></param>
+            /// <returns></returns>
+            public static ValidatorRule<IEnumerable<T>> ForEach<T>(ValidatorRule<T> rule) =>
+                values => field =>
+                {
+                    var resultErrors = new ResultErrors();
+                    var isValid = true;
+
+                    foreach (var item in values)
+                    {
+                        var itemRule = rule(item);
+                        var result = itemRule(field);
+
+                        if (result.TryGetError(out var errors))
+                        {
+                            if(isValid)
+                            {
+                                isValid = false;
+                            }
+
+                            resultErrors.Add(errors);
+                        }
+                    }
+
+                    return isValid
+                        ? Result.Ok()
+                        : Result.Error(resultErrors);
+                };
+
+            /// <summary>
+            /// Checks if each element in the collection satisfies a specified
+            /// validator.
+            /// </summary>
+            /// <typeparam name="T"></typeparam>
+            /// <param name="validator"></param>
+            /// <returns></returns>
+            public static ValidatorRule<IEnumerable<T>> ForEach<T>(IValidator<T> validator) =>
+                values => field =>
+                {
+                    var resultErrors = new ResultErrors();
+                    var isValid = true;
+
+                    foreach (var item in values)
+                    {
+                        var result = validator.Validate(item);
+
+                        if (result.TryGetError(out var errors))
+                        {
+                            if (isValid)
+                            {
+                                isValid = false;
+                            }
+
+                            resultErrors.Add(errors);
+                        }
+                    }
+
+                    return isValid
+                        ? Result.Ok()
+                        : Result.Error(resultErrors);
+                };
         }
-    }
-
-    internal static class EquatableRulesExtensions
-    {
-        internal static LabeledValidatorRule IsEqualTo<T>(this T value, T threshold) where T : IEquatable<T> =>
-            field => RuleHelper.Check(value.Equals(threshold), $"'{field}' must be equal to {threshold}");
-
-        internal static LabeledValidatorRule IsNotEqualTo<T>(this T value, T threshold) where T : IEquatable<T> =>
-            field => RuleHelper.Check(!value.Equals(threshold), $"'{field}' must not equal {threshold}");
-    }
-
-    internal static class ComparableRulesExtensions
-    {
-        internal static LabeledValidatorRule IsBetween<T>(this T value, T min, T max) where T : IComparable<T> =>
-            field => RuleHelper.Check(value.CompareTo(min) >= 0 && value.CompareTo(max) <= 0, $"'{field}' must be between {min} and {max}");
-
-        internal static LabeledValidatorRule IsNotBetween<T>(this T value, T min, T max) where T : IComparable<T> =>
-            field => RuleHelper.Check(value.CompareTo(min) < 0 || value.CompareTo(max) > 0, $"'{field}' must be outside the range {min} to {max}");
-
-        internal static LabeledValidatorRule IsPositive<T>(this T value) where T : IComparable<T> =>
-            field => RuleHelper.Check(value.CompareTo(default!) > 0, $"'{field}' must be positive");
-
-        internal static LabeledValidatorRule IsNegative<T>(this T value) where T : IComparable<T> =>
-            field => RuleHelper.Check(value.CompareTo(default!) < 0, $"'{field}' must be negative");
-
-        internal static LabeledValidatorRule IsZero<T>(this T value) where T : IComparable<T> =>
-            field => RuleHelper.Check(value.CompareTo(default!) == 0, $"'{field}' must be zero");
-
-        internal static LabeledValidatorRule IsGreaterThan<T>(this T value, T threshold) where T : IComparable<T> =>
-            field => RuleHelper.Check(value.CompareTo(threshold) > 0, $"'{field}' must be greater than {threshold}");
-
-        internal static LabeledValidatorRule IsGreaterThanOrEqualTo<T>(this T value, T threshold) where T : IComparable<T> =>
-            field => RuleHelper.Check(value.CompareTo(threshold) >= 0, $"'{field}' must be greater than or equal to {threshold}");
-
-        internal static LabeledValidatorRule IsLessThan<T>(this T value, T threshold) where T : IComparable<T> =>
-            field => RuleHelper.Check(value.CompareTo(threshold) < 0, $"'{field}' must be less than {threshold}");
-
-        internal static LabeledValidatorRule IsLessThanOrEqualTo<T>(this T value, T threshold) where T : IComparable<T> =>
-            field => RuleHelper.Check(value.CompareTo(threshold) <= 0, $"'{field}' must be less than or equal to {threshold}");
-    }
-
-    internal static class StringRulesExtensions
-    {
-        internal static LabeledValidatorRule IsEmpty(this string value) =>
-            field => RuleHelper.Check(string.IsNullOrWhiteSpace(value), $"'{field}' must be empty");
-
-        internal static LabeledValidatorRule IsNotEmpty(this string value) =>
-            field => RuleHelper.Check(!string.IsNullOrWhiteSpace(value), $"'{field}' must not be empty");
-
-        internal static LabeledValidatorRule IsStartingWith(this string value, string prefix) =>
-            field => RuleHelper.Check(value.StartsWith(prefix), $"'{field}' must start with '{prefix}'");
-
-        internal static LabeledValidatorRule IsEndingWith(this string value, string suffix) =>
-            field => RuleHelper.Check(value.EndsWith(suffix), $"'{field}' must end with '{suffix}'");
-
-        internal static LabeledValidatorRule IsContaining(this string value, string substring) =>
-            field => RuleHelper.Check(value.Contains(substring), $"'{field}' must contain '{substring}'");
-
-        internal static LabeledValidatorRule IsLength(this string value, int length) =>
-            field => RuleHelper.Check(value.Length == length, $"'{field}' must be {length} characters");
-
-        internal static LabeledValidatorRule IsLengthBetween(this string value, int min, int max) =>
-            field => RuleHelper.Check(value.Length >= min && value.Length <= max, $"'{field}' must be between {min} and {max} characters");
-
-        internal static LabeledValidatorRule IsLengthGreaterThan(this string value, int min) =>
-            field => RuleHelper.Check(value.Length > min, $"'{field}' must be longer than {min} characters");
-
-        internal static LabeledValidatorRule IsLengthOrGreaterThan(this string value, int min) =>
-            field => RuleHelper.Check(value.Length >= min, $"'{field}' must be longer than or equal to {min} characters");
-
-        internal static LabeledValidatorRule IsLengthLessThan(this string value, int max) =>
-            field => RuleHelper.Check(value.Length < max, $"'{field}' must be less than {max} characters");
-
-        internal static LabeledValidatorRule IsLengthOrLessThan(this string value, int max) =>
-            field => RuleHelper.Check(value.Length <= max, $"'{field}' must be less than or equal to {max} characters");
-
-        internal static LabeledValidatorRule IsMatch(this string value, string pattern, Func<string, string>? fieldMessage = null) =>
-            field => RuleHelper.Check(
-                Regex.IsMatch(value, pattern),
-                fieldMessage is Func<string, string> fn
-                    ? fn(field)
-                    : $"'{field}' must match the pattern '{pattern}'");
-    }
-
-    internal static class GuidRulesExtensions
-    {
-        internal static LabeledValidatorRule IsEmpty(this Guid value) =>
-            field => RuleHelper.Check(value == Guid.Empty, $"'{field}' must be empty");
-
-        internal static LabeledValidatorRule IsNotEmpty(this Guid value) =>
-            field => RuleHelper.Check(value != Guid.Empty, $"'{field}' must not be empty");
-    }
-
-    internal static class OptionRulesExtensions
-    {
-        internal static LabeledValidatorRule Required<T>(this Option<T> option, ValidatorRule<T> func) =>
-            option.Match(
-                some: value => func(value),
-
-                none: () => field => Result.Error($"'{field}' is required"));
-
-        internal static LabeledValidatorRule Required<T>(this Option<T> option) =>
-            option.Required(x => field => Result.Ok());
-
-        internal static LabeledValidatorRule Optional<T>(this Option<T> option, ValidatorRule<T> func) =>
-            option.Match(
-                some: value => func(value),
-
-                none: () => field => Result<Unit, ResultErrors>.Ok(Unit.Value));
-    }
-
-    internal static class ValidatorRulesExtensions
-    {
-        internal static LabeledValidatorRule IsValid<T>(this T value, IValidator<T> validator) =>
-            field => validator.Validate(value).Map(_ => Unit.Value);
     }
 
     internal static class RuleHelper
@@ -434,21 +411,5 @@ namespace Danom.Validation
             isValid
                 ? Result.Ok()
                 : Result.Error(new[] { errorMessage });
-
-        internal static bool CheckEmail(string email)
-        {
-            if (string.IsNullOrWhiteSpace(email))
-                return false;
-
-            try
-            {
-                var mailAddress = new MailAddress(email);
-                return true;
-            }
-            catch (FormatException)
-            {
-                return false;
-            }
-        }
     }
 }

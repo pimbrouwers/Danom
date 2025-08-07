@@ -6,9 +6,9 @@ namespace Danom.Validation
     /// <summary>
     /// Represents an <see cref="IValidator{T}" /> as a
     /// <see cref="Result{T, ResultErrors}" />.
-    /// </summary>
     /// <typeparam name="T"></typeparam>
-    public static class ValidationResult<T>
+    /// </summary>
+    public static class Validate<T>
     {
         /// <summary>
         /// Converts an input value to a <see cref="Result{T, ResultErrors}" />
@@ -17,32 +17,19 @@ namespace Danom.Validation
         /// <typeparam name="TValidator"></typeparam>
         /// <param name="input"></param>
         /// <returns></returns>
-        public static Result<T, ResultErrors> From<TValidator>(T input)
-            where TValidator : IValidator<T>, new()
-        {
-            var validator = new TValidator();
-            return validator.Validate(input);
-        }
-    }
-
-    /// <summary>
-    /// Represents an <see cref="IValidator{T}" /> as a
-    /// <see cref="Option{T}" />.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public static class ValidationOption<T>
-    {
-        /// <summary>
-        /// Converts an input value to an <see cref="Option{T}" /> based on the
-        /// result of the provided validator. If the input is valid, then Some else
-        /// None.
-        /// </summary>
-        /// <typeparam name="TValidator"></typeparam>
-        /// <param name="input"></param>
-        /// <returns></returns>
-        public static Option<T> From<TValidator>(T input)
+        public static Result<T, ResultErrors> Using<TValidator>(T input)
             where TValidator : IValidator<T>, new() =>
-            ValidationResult<T>.From<TValidator>(input).ToOption();
+            Using(input, () => new TValidator());
+
+        /// <summary>
+        /// Converts an input value to a <see cref="Result{T, ResultErrors}" />
+        /// using the provided validator factory function.
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="validatorFactory"></param>
+        /// <returns></returns>
+        public static Result<T, ResultErrors> Using(T input, Func<IValidator<T>> validatorFactory) =>
+            validatorFactory().Validate(input);
     }
 
     /// <summary>
@@ -143,6 +130,35 @@ namespace Danom.Validation
             Rule(null, selector, rules, message);
     }
 
+    /// <summary>
+    /// Represents a validator interface for validating input values.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public interface IValidator<T>
+    {
+        /// <summary>
+        /// Validates the input value.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        Result<T, ResultErrors> Validate(T value);
+    }
+
+    /// <summary>
+    /// Represents a rule for validating a field in the input value.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public delegate LabeledValidatorRule ValidatorRule<T>(T value);
+
+    /// <summary>
+    /// Represents a rule that validates a field with a label.
+    /// </summary>
+    /// <param name="field"></param>
+    /// <returns></returns>
+    public delegate Result<Unit, ResultErrors> LabeledValidatorRule(string field);
+
     internal sealed class ValidationContext<T>
     {
         private const string DefaultField = "Value";
@@ -150,7 +166,7 @@ namespace Danom.Validation
 
         public ValidationContext()
         {
-             Rules = new Dictionary<string, List<FieldRule>>();
+            Rules = new Dictionary<string, List<FieldRule>>();
         }
 
         public Dictionary<string, List<FieldRule>> Rules { get; }
@@ -181,33 +197,4 @@ namespace Danom.Validation
             Rules[key].Add(new FieldRule(fieldname, rule, message));
         }
     }
-    /// <summary>
-    /// Represents a validator interface for validating input values.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public interface IValidator<T>
-    {
-        /// <summary>
-        /// Validates the input value.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        Result<T, ResultErrors> Validate(T value);
-    }
-
-    /// <summary>
-    /// Represents a rule for validating a field in the input value.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="value"></param>
-    /// <returns></returns>
-    public delegate LabeledValidatorRule ValidatorRule<T>(T value);
-
-    /// <summary>
-    /// Represents a rule that validates a field with a label.
-    /// </summary>
-    /// <param name="field"></param>
-    /// <returns></returns>
-    public delegate Result<Unit, ResultErrors> LabeledValidatorRule(string field);
-
 }

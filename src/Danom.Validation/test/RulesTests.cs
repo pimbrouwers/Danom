@@ -23,15 +23,6 @@ public sealed class RulesTests
             Assert.True(RunRule("test", Check.IsNotEqualTo("best")).IsOk);
             Assert.True(RunRule("test", Check.IsEqualTo("best")).IsError);
 
-            Assert.True(RunRule("jim@bob.com", Check.String.IsEmailAddress).IsOk);
-            Assert.True(RunRule("invalid-email", Check.String.IsEmailAddress).IsError);
-            Assert.True(RunRule("http://example.com", Check.String.IsUrl).IsOk);
-            Assert.True(RunRule("https://example.com", Check.String.IsUrl).IsOk);
-            Assert.True(RunRule("ftp://example.com", Check.String.IsUrl).IsOk);
-            Assert.True(RunRule("invalid-url", Check.String.IsUrl).IsError);
-            Assert.True(RunRule("+1234567890", Check.String.IsE164).IsOk);
-            Assert.True(RunRule("1", Check.String.IsE164).IsError);
-
             Assert.True(RunRule(byte.MaxValue, Check.IsEqualTo(byte.MaxValue)).IsOk);
             Assert.True(RunRule(short.MaxValue, Check.IsEqualTo(short.MaxValue)).IsOk);
             Assert.True(RunRule(int.MaxValue, Check.IsEqualTo(int.MaxValue)).IsOk);
@@ -208,6 +199,24 @@ public sealed class RulesTests
             Assert.True(RunRule(string.Empty, Check.String.IsNotEmpty).IsError);
             Assert.True(RunRule("", Check.String.IsNotEmpty).IsError);
             Assert.True(RunRule(" ", Check.String.IsNotEmpty).IsError);
+        }
+
+        [Fact]
+        public void TypedString_ReturnsOk()
+        {
+            Assert.True(RunRule("jim@bob.com", Check.String.IsEmailAddress).IsOk);
+            Assert.True(RunRule("http://example.com", Check.String.IsUrl).IsOk);
+            Assert.True(RunRule("https://example.com", Check.String.IsUrl).IsOk);
+            Assert.True(RunRule("ftp://example.com", Check.String.IsUrl).IsOk);
+            Assert.True(RunRule("+1234567890", Check.String.IsE164).IsOk);
+        }
+
+        [Fact]
+        public void TypedString_ReturnsError()
+        {
+            Assert.True(RunRule("invalid-email", Check.String.IsEmailAddress).IsError);
+            Assert.True(RunRule("invalid-url", Check.String.IsUrl).IsError);
+            Assert.True(RunRule("1", Check.String.IsE164).IsError);
         }
     }
 
