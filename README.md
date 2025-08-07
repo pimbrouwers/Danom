@@ -8,7 +8,7 @@
 ![net6.0](https://img.shields.io/badge/net-6.0-blue.svg)
 ![netstandard2.1](https://img.shields.io/badge/netstandard-2.1-blue.svg)
 
-Danom is a C# library that provides (monadic) structures to facilitate functional programming patterns in C#, using [Option](#option) and [Result](#result). These discriminated unions are a powerful way to handle nullable values and expected errors in a type-safe manner, while also providing a fluent API for chaining operations.
+Danom is a well-supported library that provides a set of functional programming tools for C#. It is designed to be easy to use, efficient, and compatible with existing C# codebases. The library is inspired by F#'s Option and Result types, providing a familiar API for those who have used F# before. These discriminated unions are a powerful way to handle nullable values and expected errors in a type-safe manner, while also providing a fluent API for chaining operations within workflows and value transformations.
 
 ## Key Features
 
@@ -16,15 +16,20 @@ Danom is a C# library that provides (monadic) structures to facilitate functiona
 - Exhaustive matching to prevent null reference exceptions.
 - Fluent API for chaining operations, including async support.
 - Built-in error handling with [ResultErrors](#built-in-error-type).
-- Integrated with [ASP.NET Core](#aspnet-core-mvc-integration).
-- API for [parsing strings](#string-parsing) into .NET primitives and value types.
+- Includes:
+    - An API for [parsing strings](#string-parsing) into .NET primitives and value types.
+    - Input validation via [Danom.Validation](src/Danom.Validation/README.md).
+    - Integration with [ASP.NET MVC](#aspnet-core-mvc-integration) and [ASP.NET Minimal API](src/Danom.MinimalApi/README.md#getting-started).
 
 ## Design Goals
 
 - Provide a safe and expressive way to handle nullable values.
-- Prevent direct use of internal value, enforcing exhaustive matching.
 - Efficient implementation to minimize overhead.
+- Enforce exhaustive matching.
+- Enhance functional programming in C#.
 - Opionated monads to encourage consistent use.
+- Support for both synchronous and asynchronous operations.
+- `netstandard2.1` compatible.
 
 ## Getting Started
 
