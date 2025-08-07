@@ -49,38 +49,29 @@ PM>  Install-Package Danom
 ```csharp
 using Danom;
 
-//
-// Working with Option type
-var option = Option.Some(5);
+// Options
+Option.Some(5)
+    .Map(x => x * 2)
+    // ^--- transform the value
+    .Bind(x => x > 5 ? Option.Some(x) : Option<int>.None())
+    // ^--- chain another operation that returns an Option
+    .Match(
+        some: x => Console.WriteLine("Value: {0}", x),
+        none: () => Console.WriteLine("No value"));
 
-option.Match(
-    some: x => Console.WriteLine("Value: {0}", x),
-    none: () => Console.WriteLine("No value"));
-
-// Mapping the value
-var mappedOption = option.Map(x => x + 1);
-
-// Binding the option (i.e., when a nested operation also returns an Option)
-var boundOption = option.Bind(num1 =>
-    num1 % 2 == 0
-        ? Option.Some(num1 / 2)
-        : Option<int>.NoneValue);
-
-// Defaulting the option
-var defaultOption = option.DefaultValue(99);
-var defaultOptionWith = option.DefaultWith(() => 99);
-// ^-- useful if creating the value is costly
-
-//
-// Working with Result type
-public Result<int, string> TryDivide(
-    int numerator,
-    int denominator) =>
+// Results
+public Result<int, string> TryDivide(int numerator, int denominator) =>
     denominator == 0
         ? Result<int, string>.Error("Cannot divide by zero")
         : Result<int, string>.Ok(numerator / denominator);
 
 TryDivide(10, 2)
+    .Map(x => x + 1)
+    // ^--- transform the value
+    .Bind(x => TryDivide(x, 0))
+    // ^--- chain another operation that returns a Result
+    .MapError(e => $"Error occurred: {e}")
+    // ^--- transform the error
     .Match(
         ok: x => Console.WriteLine("Result: {0}", x),
         error: e => Console.WriteLine("Error: {0}", e));
