@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <AssemblyName>Danom.Validation</AssemblyName>
-    <Version>2.0.0-beta5</Version>
+    <Version>2.0.0-beta6</Version>
 
     <!-- General info -->
     <Description>Validators and validation helpers for Danom.</Description>
@@ -35,11 +35,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="./README.md" Pack="true" PackagePath="\" />
+    <None Include="../README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <ItemGroup>
-    <!-- <PackageReference Include="Danom" Version="2.0.0-beta5" /> -->
-    <ProjectReference Include="../../Danom/src/Danom.csproj" />
+    <PackageReference Include="Danom" Version="2.0.0-beta6" />
   </ItemGroup>
 </Project>
