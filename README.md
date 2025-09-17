@@ -16,7 +16,7 @@ Option and Result types for C# to simplify functional programming.
 
 ---
 
-Danom is a well-supported library that provides a set of functional programming tools for C#. It is designed to be easy to use, efficient, and compatible with existing C# codebases. The library is inspired by F#'s Option and Result types, providing a familiar API for those who have used F# before. These discriminated unions are a powerful way to handle nullable values and expected errors in a type-safe manner, while also providing a fluent API for chaining operations within workflows and value transformations.
+Danom provides Option and Result types for C#, inspired by F#. It’s designed to be easy to use, efficient, and compatible with existing C# codebases. These types offer a type-safe way to represent nullable values and expected errors, while also supporting a fluent API (e.g., map, bind) for chaining operations and value transformations.
 
 ---
 
