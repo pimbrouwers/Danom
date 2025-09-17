@@ -1,4 +1,6 @@
-# Danom
+<div align="center">
+
+![Danom](https://github.com/pimbrouwers/Danom/blob/master/assets/banner.png?raw=true)
 
 [![NuGet Version](https://img.shields.io/nuget/v/Danom.svg)](https://www.nuget.org/packages/Danom)
 [![build](https://github.com/pimbrouwers/Danom/actions/workflows/build.yml/badge.svg)](https://github.com/pimbrouwers/Danom/actions/workflows/build.yml)
@@ -8,7 +10,15 @@
 ![net6.0](https://img.shields.io/badge/net-6.0-blue.svg)
 ![netstandard2.1](https://img.shields.io/badge/netstandard-2.1-blue.svg)
 
+Option and Result types for C# to simplify functional programming.
+
+</div>
+
+---
+
 Danom is a well-supported library that provides a set of functional programming tools for C#. It is designed to be easy to use, efficient, and compatible with existing C# codebases. The library is inspired by F#'s Option and Result types, providing a familiar API for those who have used F# before. These discriminated unions are a powerful way to handle nullable values and expected errors in a type-safe manner, while also providing a fluent API for chaining operations within workflows and value transformations.
+
+---
 
 ## Key Features
 

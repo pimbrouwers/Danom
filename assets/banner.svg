@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="1280"
+   height="640"
+   viewBox="0 0 338.66665 169.33334"
+   version="1.1"
+   id="svg1"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1">
+    <rect
+       x="41.720963"
+       y="415.12357"
+       width="1222.4242"
+       height="202.34666"
+       id="rect3" />
+  </defs>
+  <g
+     id="layer1">
+    <rect
+       style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:7.1842;stroke-linejoin:round;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal"
+       id="rect2"
+       width="338.66666"
+       height="169.33333"
+       x="-3.376465e-06"
+       y="-3.376465e-06" />
+    <g
+       id="g3"
+       transform="translate(-3.421713,-0.58081398)">
+      <g
+         id="g2"
+         transform="matrix(0.92783226,0,0,1.0111709,111.49167,1.7437082)">
+        <path
+           style="fill:#fafafa;fill-opacity:1;stroke:#fafafa;stroke-width:4.25297;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+           id="path1"
+           d="m 112.91808,-57.800041 a 50.274078,50.274078 0 0 1 -25.13704,43.538629 50.274078,50.274078 0 0 1 -50.27408,-10e-7 50.274078,50.274078 0 0 1 -25.137037,-43.538628 h 50.274078 z"
+           transform="rotate(90)" />
+        <path
+           style="fill:none;stroke:#fafafa;stroke-width:4.25297;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:normal"
+           id="path1-4"
+           d="m -12.369923,66.881248 a 50.274078,50.274078 0 0 1 -25.137039,43.538632 50.274078,50.274078 0 0 1 -50.27408,0 50.274078,50.274078 0 0 1 -25.137038,-43.538632 h 50.274079 z"
+           transform="rotate(-90)" />
+      </g>
+      <text
+         xml:space="preserve"
+         transform="matrix(0.26458333,0,0,0.26458333,-7.5352476e-7,14.054304)"
+         id="text2"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:150px;line-height:1.15;font-family:Rubik;-inkscape-font-specification:'Rubik, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;letter-spacing:0px;word-spacing:0px;white-space:pre;shape-inside:url(#rect3)"
+         x="297.24771"
+         y="0"><tspan
+           x="388.33248"
+           y="541.75766"
+           id="tspan2"><tspan
+             style="text-align:center;text-anchor:middle;fill:#ffffff"
+             id="tspan1">DANOM</tspan></tspan></text>
+    </g>
+  </g>
+</svg>
