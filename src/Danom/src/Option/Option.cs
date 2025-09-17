@@ -1,5 +1,4 @@
-namespace Danom
-{
+namespace Danom {
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
@@ -12,19 +11,15 @@ namespace Danom
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public readonly struct Option<T>
-        : IEquatable<Option<T>>, IComparable<Option<T>>
-    {
+        : IEquatable<Option<T>>, IComparable<Option<T>> {
         private readonly T _some;
 
-        internal Option(T t)
-        {
-            if (t is null)
-            {
+        internal Option(T t) {
+            if (t is null) {
                 _some = default!;
                 IsSome = false;
             }
-            else
-            {
+            else {
                 _some = t;
                 IsSome = true;
             }
@@ -59,13 +54,11 @@ namespace Danom
         /// <param name="none"></param>
         public void Match(Action<T> some, Action none) =>
             Match(
-                some: x =>
-                {
+                some: x => {
                     some(x);
                     return Unit.Value;
                 },
-                none: () =>
-                {
+                none: () => {
                     none();
                     return Unit.Value;
                 });
@@ -139,11 +132,9 @@ namespace Danom
         /// </summary>
         /// <param name="result"></param>
         /// <returns></returns>
-        public bool TryGet([MaybeNullWhen(false)] out T result)
-        {
+        public bool TryGet([MaybeNullWhen(false)] out T result) {
             var success = true;
-            result = DefaultWith(() =>
-            {
+            result = DefaultWith(() => {
                 success = false;
                 // we return this only to satisfy the compiler
                 return default!;
@@ -175,8 +166,7 @@ namespace Danom
         /// <returns></returns>
         public static async Task<Option<T>> SomeAsync(
             Task<T> value,
-            CancellationToken? cancellationToken = null)
-        {
+            CancellationToken? cancellationToken = null) {
             var result = await value.WaitOrCancel(cancellationToken);
             return Some(result);
         }
@@ -335,8 +325,7 @@ namespace Danom
     /// <summary>
     /// Provides static methods for creating <see cref="Option{T}"/>s.
     /// </summary>
-    public static class Option
-    {
+    public static class Option {
         /// <summary>
         /// Creates a new <see cref="Option{T}"/> with <see cref="Unit"/> value.
         /// </summary>
@@ -368,8 +357,7 @@ namespace Danom
         /// <returns></returns>
         public static async Task<Option<T>> SomeAsync<T>(
             Task<T> value,
-            CancellationToken? cancellationToken = null)
-        {
+            CancellationToken? cancellationToken = null) {
             var result = await value.WaitOrCancel(cancellationToken);
             return Option<T>.Some(result);
         }

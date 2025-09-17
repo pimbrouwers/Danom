@@ -4,8 +4,7 @@ using System.Data;
 using Danom;
 using Leger;
 
-public static class TodoReader
-{
+public static class TodoReader {
     public static Todo Map(IDataReader rd) =>
         new(TodoId: new(rd.ReadInt("todo_id")),
                 Title: rd.ReadString("title"),
@@ -13,8 +12,7 @@ public static class TodoReader
                 CompletedDate: rd.ReadNullableDateTime("completed_date").ToOption());
 }
 public sealed class TodoStore(
-    IDbConnectionFactory db)
-{
+    IDbConnectionFactory db) {
     public IEnumerable<Todo> GetAll() =>
         db.Query("""
             SELECT    todo_id
@@ -39,8 +37,7 @@ public sealed class TodoStore(
             TodoReader.Map)
             .ToOption();
 
-    public Unit Create(CreateTodo input)
-    {
+    public Unit Create(CreateTodo input) {
         db.Execute("""
             INSERT INTO todo (title, due_date)
             VALUES (@title, @due_date);
@@ -54,8 +51,7 @@ public sealed class TodoStore(
         return Unit.Value;
     }
 
-    public Unit Complete(CompleteTodo input)
-    {
+    public Unit Complete(CompleteTodo input) {
         db.Execute("""
             UPDATE    todo
             SET       completed_date = @completed_date
@@ -70,8 +66,7 @@ public sealed class TodoStore(
         return Unit.Value;
     }
 
-    public Unit Delete(DeleteTodo input)
-    {
+    public Unit Delete(DeleteTodo input) {
         db.Execute("""
             UPDATE    todo
             SET       deleted_date = @deleted_date

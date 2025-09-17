@@ -7,8 +7,7 @@ public sealed record CompleteTodoCommand(
     int TodoId);
 
 public sealed class CompleteTodoCommandHandler(
-    Func<CompleteTodo, Unit> completeTodo)
-{
+    Func<CompleteTodo, Unit> completeTodo) {
     public Result<Unit, ResultErrors> Handle(CompleteTodoCommand command) =>
         ValidationResult<CompleteTodo>
             .From<CompleteTodoValidator>(

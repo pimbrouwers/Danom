@@ -8,8 +8,7 @@ public sealed record CreateTodoCommand(
     DateOnly? DueDate);
 
 public sealed class CreateTodoCommandHandler(
-    Func<CreateTodo, Unit> createTodo)
-{
+    Func<CreateTodo, Unit> createTodo) {
     public Result<Unit, ResultErrors> Handle(CreateTodoCommand command) =>
         ValidationResult<CreateTodo>
             .From<CreateTodoValidator>(

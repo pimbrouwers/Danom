@@ -3,8 +3,7 @@ namespace Danom.TestHelpers;
 using Danom;
 using Xunit;
 
-public static class AssertResult
-{
+public static class AssertResult {
     public static void IsOk<T, TError>(Func<T, bool> predicate, Result<T, TError> result) =>
         Assert.True(result.Match(predicate, _ => false));
 
@@ -20,8 +19,7 @@ public static class AssertResult
     public static void IsErrorSingle<T>(Result<T, ResultErrors> result, Func<string, bool> errorFun) =>
         result.Match(
             ok: _ => Assert.Fail("Expected error, but got OK"),
-            error: errors =>
-            {
+            error: errors => {
                 Assert.Single(errors);
                 Assert.True(errorFun(errors.First().Errors[0]));
             });

@@ -4,8 +4,7 @@ using Danom.Mvc;
 using Microsoft.AspNetCore.Mvc;
 
 public sealed class OptionController
-    : DanomController
-{
+    : DanomController {
     private readonly Option<string> _someOption = Option.Some("Hello world");
     private readonly Option<string> _noneOption = Option<string>.None();
 

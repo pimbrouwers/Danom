@@ -3,8 +3,7 @@ namespace Danom.TestHelpers;
 using Danom;
 using Xunit;
 
-public static class AssertOption
-{
+public static class AssertOption {
     public static void IsSome<T>(Func<T, bool> predicate, Option<T> option) =>
         Assert.True(option.Match(predicate, () => false));
 

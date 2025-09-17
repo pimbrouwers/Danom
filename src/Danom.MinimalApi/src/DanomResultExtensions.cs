@@ -6,8 +6,7 @@ using Microsoft.AspNetCore.Http;
 /// Extensions for handling Danom results in minimal APIs.
 /// Provides methods to convert Danom types to ASP.NET Core's `IResult`.
 /// </summary>
-public static class DanomResultExtensions
-{
+public static class DanomResultExtensions {
     /// <summary>
     /// Converts an Option to an `IResult`. Returns a 200 OK result with the
     /// value if the option is Some, or a 404 Not Found result if the option is

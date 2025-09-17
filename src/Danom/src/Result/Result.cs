@@ -1,5 +1,4 @@
-namespace Danom
-{
+namespace Danom {
     using System;
     using System.Diagnostics.CodeAnalysis;
     using System.Threading.Tasks;
@@ -11,20 +10,17 @@ namespace Danom
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TError"></typeparam>
     public readonly struct Result<T, TError>
-        : IEquatable<Result<T, TError>>
-    {
+        : IEquatable<Result<T, TError>> {
         private readonly T _ok;
         private readonly TError _error;
 
-        private Result(T t)
-        {
+        private Result(T t) {
             _ok = t;
             IsOk = true;
             _error = default!;
         }
 
-        private Result(TError tError)
-        {
+        private Result(TError tError) {
             _ok = default!;
             IsOk = false;
             _error = tError;
@@ -60,16 +56,13 @@ namespace Danom
         /// otherwise evaluates
         /// the none delegate.
         /// </summary>
-        public void Match(Action<T> ok, Action<TError> error)
-        {
+        public void Match(Action<T> ok, Action<TError> error) {
             Match(
-                ok: x =>
-                {
+                ok: x => {
                     ok(x);
                     return Unit.Value;
                 },
-                error: e =>
-                {
+                error: e => {
                     error(e);
                     return Unit.Value;
                 });
@@ -129,8 +122,7 @@ namespace Danom
         /// </summary>
         /// <param name="value">The value if in Ok state, default otherwise.</param>
         /// <returns>True if the Result is in Ok state, false otherwise.</returns>
-        public bool TryGet([MaybeNullWhen(false)] out T value)
-        {
+        public bool TryGet([MaybeNullWhen(false)] out T value) {
             value = IsOk ? _ok : default!;
             return IsOk;
         }
@@ -140,8 +132,7 @@ namespace Danom
         /// </summary>
         /// <param name="error">The error if in Error state, default otherwise.</param>
         /// <returns>True if the Result is in Error state, false otherwise.</returns>
-        public bool TryGetError([MaybeNullWhen(false)] out TError error)
-        {
+        public bool TryGetError([MaybeNullWhen(false)] out TError error) {
             error = IsError ? _error : default!;
             return IsError;
         }
@@ -255,8 +246,7 @@ namespace Danom
     /// as the predefined error type.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public static class Result<T>
-    {
+    public static class Result<T> {
         /// <summary>
         /// Creates a new <see cref="Result{T, ResultErrors}"/> with the specified value.
         /// </summary>
@@ -320,8 +310,7 @@ namespace Danom
     /// The <see cref="Result{T, ResultErrors}"/> with <see cref="ResultErrors"/>
     /// as the predefined error type.
     /// </summary>
-    public static class Result
-    {
+    public static class Result {
         /// <summary>
         /// Creates a new <see cref="Result{Unit, ResultErrors}"/> with <see cref="Unit"/> value.
         /// </summary>

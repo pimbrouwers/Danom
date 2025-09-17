@@ -1,4 +1,4 @@
-﻿namespace Danom.MinimalApi.TypedResults;
+namespace Danom.MinimalApi.TypedResults;
 
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Http;
@@ -9,8 +9,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 /// <see cref="TypedResults"/>. Provides methods to convert Danom types to
 /// ASP.NET Core's <see cref="Results{TResult1,TResult2}"/>.
 /// </summary>
-public static class TypedDanomResultExtensions
-{
+public static class TypedDanomResultExtensions {
     private const DynamicallyAccessedMemberTypes Methods =
         DynamicallyAccessedMemberTypes.PublicMethods |
         DynamicallyAccessedMemberTypes.NonPublicMethods;

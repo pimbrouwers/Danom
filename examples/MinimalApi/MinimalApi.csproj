@@ -8,9 +8,7 @@
 
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Danom\Danom.csproj" />
-    <ProjectReference Include="..\..\src\Danom.Validation\Danom.Validation.csproj" />
-    <ProjectReference Include="..\..\src\Danom.MinimalApi\Danom.MinimalApi.csproj" />
+    <ProjectReference Include="..\..\src\Danom.MinimalApi\src\Danom.MinimalApi.csproj" />
   </ItemGroup>
 
 </Project>

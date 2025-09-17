@@ -1,5 +1,4 @@
-namespace Danom
-{
+namespace Danom {
 
 #if NET6_0_OR_GREATER
     /// <summary>
@@ -32,8 +31,7 @@ namespace Danom
     /// Contains extension methods for <see cref="Option{T}"/> that allow for
     /// converting between nullable types and options.
     /// </summary>
-    public static class OptionNullableExtensions
-    {
+    public static class OptionNullableExtensions {
         /// <summary>
         /// Converts a nullable value to an option.
         /// </summary>
@@ -57,8 +55,7 @@ namespace Danom
     /// Contains extension methods for <see cref="Option{T}"/> that allow for
     /// converting between nullable struct types and options.
     /// </summary>
-    public static class OptionNullableStructExtensions
-    {
+    public static class OptionNullableStructExtensions {
         /// <summary>
         /// Converts a nullable strict to an option.
         /// </summary>
@@ -81,8 +78,7 @@ namespace Danom
     /// Contains extension methods for <see cref="Option{T}"/> that allow for
     /// converting between nullable string types and options.
     /// </summary>
-    public static class OptionNullableStringExtensions
-    {
+    public static class OptionNullableStringExtensions {
         /// <summary>
         /// Converts a nullable string to an option.
         /// </summary>

@@ -7,8 +7,7 @@ public sealed record DeleteTodoCommand(
     int TodoId);
 
 public sealed class DeleteTodoCommandHandler(
-    Func<DeleteTodo, Unit> deleteTodo)
-{
+    Func<DeleteTodo, Unit> deleteTodo) {
     public Result<Unit, ResultErrors> Handle(DeleteTodoCommand command) =>
         ValidationResult<DeleteTodo>
             .From<DeleteTodoValidator>(

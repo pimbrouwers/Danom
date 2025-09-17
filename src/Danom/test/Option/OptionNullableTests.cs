@@ -3,11 +3,9 @@ namespace Danom.Tests;
 using Danom.TestHelpers;
 using Xunit;
 
-public sealed class OptionNullableExtensionsTests
-{
+public sealed class OptionNullableExtensionsTests {
     [Fact]
-    public void ValueCollections()
-    {
+    public void ValueCollections() {
         char[] charList = ['a', 'b', 'c', 'd'];
         byte[] byteList = [0, 1, 2, 3];
         short[] shortList = [0, 1, 2, 3];
@@ -33,8 +31,7 @@ public sealed class OptionNullableExtensionsTests
     }
 
     [Fact]
-    public void EmptyValueCollections()
-    {
+    public void EmptyValueCollections() {
         char[] charList = [];
         byte[] byteList = [];
         short[] shortList = [];
@@ -59,8 +56,7 @@ public sealed class OptionNullableExtensionsTests
     }
 
     [Fact]
-    public void ConversionsFromNull()
-    {
+    public void ConversionsFromNull() {
         char? nullableChar = null;
         bool? nullableBool = null;
         byte? nullableByte = null;
@@ -104,8 +100,7 @@ public sealed class OptionNullableExtensionsTests
     }
 
     [Fact]
-    public void ConversionsFromDefault()
-    {
+    public void ConversionsFromDefault() {
         char? nullableChar = default;
         bool? nullableBool = default;
         byte? nullableByte = default;
@@ -149,8 +144,7 @@ public sealed class OptionNullableExtensionsTests
     }
 
     [Fact]
-    public void ConversionsFromValue()
-    {
+    public void ConversionsFromValue() {
         char? nullableChar = char.MinValue;
         bool? nullableBool = true;
         byte? nullableByte = byte.MinValue;
@@ -194,8 +188,7 @@ public sealed class OptionNullableExtensionsTests
     }
 
     [Fact]
-    public void ConversionsFromNonNullableValue()
-    {
+    public void ConversionsFromNonNullableValue() {
         char nullableChar = char.MinValue;
         bool nullableBool = true;
         byte nullableByte = byte.MinValue;

@@ -1,5 +1,4 @@
-namespace Danom
-{
+namespace Danom {
     using System;
     using System.Collections;
     using System.Collections.Generic;
@@ -8,8 +7,7 @@ namespace Danom
     /// <summary>
     /// Represents a collection of <see cref="ResultError"/> instances.
     /// </summary>
-    public sealed class ResultErrors : IEnumerable<ResultError>
-    {
+    public sealed class ResultErrors : IEnumerable<ResultError> {
         private readonly Dictionary<string, ResultError> _resultErrors =
             new Dictionary<string, ResultError>(StringComparer.OrdinalIgnoreCase);
 
@@ -98,19 +96,15 @@ namespace Danom
         /// Adds a new error to the collection with the specified key and errors.
         /// </summary>
         /// <param name="error"></param>
-        public void Add(ResultError error)
-        {
-            if (error == null)
-            {
+        public void Add(ResultError error) {
+            if (error == null) {
                 throw new ArgumentNullException(nameof(error), "Error cannot be null.");
             }
 
-            if (_resultErrors.TryGetValue(error.Key, out var existingErrors))
-            {
+            if (_resultErrors.TryGetValue(error.Key, out var existingErrors)) {
                 existingErrors.Add(error);
             }
-            else
-            {
+            else {
                 _resultErrors.Add(error.Key, error);
 
             }
@@ -122,10 +116,8 @@ namespace Danom
         /// </summary>
         /// <param name="errors"></param>
         /// <exception cref="ArgumentNullException"></exception>
-        public void Add(ResultErrors errors)
-        {
-            foreach (var error in errors)
-            {
+        public void Add(ResultErrors errors) {
+            foreach (var error in errors) {
                 Add(error);
             }
         }
@@ -148,10 +140,8 @@ namespace Danom
         /// Returns a string representation of the <see cref="ResultErrors"/>.
         /// </summary>
         /// <returns></returns>
-        public override string ToString()
-        {
-            if (_resultErrors.Count == 0)
-            {
+        public override string ToString() {
+            if (_resultErrors.Count == 0) {
                 return "[]";
             }
 
@@ -167,8 +157,7 @@ namespace Danom
     /// <summary>
     /// Represents a collection of optionally keyed errors.
     /// </summary>
-    public sealed class ResultError
-    {
+    public sealed class ResultError {
         private readonly List<string> _errors;
 
         /// <summary>
@@ -177,8 +166,7 @@ namespace Danom
         /// </summary>
         /// <param name="key"></param>
         /// <param name="errors"></param>
-        public ResultError(string key, IEnumerable<string> errors)
-        {
+        public ResultError(string key, IEnumerable<string> errors) {
             if (key == null) // we allow empty key (i.e.. "")
             {
                 throw new ArgumentException("Key cannot be null.", nameof(key));
@@ -260,15 +248,12 @@ namespace Danom
         /// <param name="next"></param>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="InvalidOperationException"></exception>
-        public void Add(ResultError next)
-        {
-            if (next == null)
-            {
+        public void Add(ResultError next) {
+            if (next == null) {
                 throw new ArgumentNullException(nameof(next), "Next error cannot be null.");
             }
 
-            if (!string.Equals(next.Key, Key, StringComparison.OrdinalIgnoreCase))
-            {
+            if (!string.Equals(next.Key, Key, StringComparison.OrdinalIgnoreCase)) {
                 throw new InvalidOperationException("Cannot append errors with different keys.");
             }
 
@@ -279,8 +264,7 @@ namespace Danom
         /// Returns a string representation of the <see cref="ResultError"/>.
         /// </summary>
         /// <returns></returns>
-        public override string ToString()
-        {
+        public override string ToString() {
             var errors = string.Join(", ", Errors);
             return string.IsNullOrWhiteSpace(Key) ?
                 errors :

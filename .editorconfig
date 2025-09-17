@@ -126,7 +126,7 @@ csharp_style_namespace_declarations = file_scoped:suggestion
 # C# Formatting Rules         #
 ###############################
 # New line preferences
-csharp_new_line_before_open_brace = all
+csharp_new_line_before_open_brace = none
 csharp_new_line_before_else = true
 csharp_new_line_before_catch = true
 csharp_new_line_before_finally = true

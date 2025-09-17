@@ -3,26 +3,21 @@ namespace Danom.Validation.Tests;
 using Danom.TestHelpers;
 using Xunit;
 
-public sealed class ValidationTests
-{
+public sealed class ValidationTests {
     [Fact]
-    public void ReturnsOk_WhenValidationSucceeds()
-    {
-        Assert.True(Validate<TestInput>.Using<TestInput.Validator>(TestInput.ValidInput).ToOption().IsSome);
+    public void ReturnsOk_WhenValidationSucceeds() {
+        Assert.True(Validate<TestInput>.Using<TestInputValidator>(TestInput.ValidInput).ToOption().IsSome);
     }
 
     [Fact]
-    public void ReturnsError_WhenValidationFails()
-    {
-        Assert.True(Validate<TestInput>.Using<TestInput.Validator>(TestInput.InvalidInput).ToOption().IsNone);
+    public void ReturnsError_WhenValidationFails() {
+        Assert.True(Validate<TestInput>.Using<TestInputValidator>(TestInput.InvalidInput).ToOption().IsNone);
     }
 
     [Fact]
-    public void VerifyResultErrors()
-    {
-        var result = Validate<TestInput>.Using<TestInput.Validator>(TestInput.InvalidInput);
-        if (result.TryGetError(out var errors))
-        {
+    public void VerifyResultErrors() {
+        var result = Validate<TestInput>.Using<TestInputValidator>(TestInput.InvalidInput);
+        if (result.TryGetError(out var errors)) {
             Assert.NotEmpty(errors);
             Assert.Single(errors["TestInputId"].Errors);
 
@@ -46,15 +41,13 @@ public sealed class ValidationTests
             Assert.Contains("'Phones'", errors["Phones"].Errors[0]);
             Assert.Contains("'Phones'", errors["Phones"].Errors[1]);
         }
-        else
-        {
+        else {
             Assert.Fail("Expected validation to fail, but it succeeded.");
         }
     }
 }
 
-public sealed class TestInput
-{
+public sealed class TestInput {
     public TestInputId Id { get; init; } = new(Guid.Empty);
     public string Label { get; init; } = string.Empty;
     public int IntValue { get; init; } = -1;
@@ -66,8 +59,7 @@ public sealed class TestInput
 
     public override string ToString() => IntValue.ToString();
 
-    public static TestInput ValidInput => new()
-    {
+    public static TestInput ValidInput => new() {
         Id = new(Guid.NewGuid()),
         Label = "Valid Label",
         IntValue = 50,
@@ -78,8 +70,7 @@ public sealed class TestInput
         AlternateEmails = ["rob@bob.com", "robert@bob.com"]
     };
 
-    public static TestInput InvalidInput => new()
-    {
+    public static TestInput InvalidInput => new() {
         Id = new(Guid.Empty),
         Label = string.Empty,
         IntValue = -1,
@@ -89,49 +80,64 @@ public sealed class TestInput
         Email = "a",
         AlternateEmails = ["a", "b"]
     };
+}
 
-    public sealed class Validator : BaseValidator<TestInput>
-    {
-        public Validator()
-        {
-            Rule("TestInputId", x => x.Id,
-                Check.IsValid(new TestInputIdValidator()));
+public sealed class TestInputValidator : BaseValidator<TestInput> {
+    public TestInputValidator() {
+        // nested validator
+        Rule("TestInputId", x => x.Id,
+            Check.IsValid(new TestInputIdValidator()));
 
-            Rule("Label", x => x.Label, [
-                Check.String.IsNotEmpty, Check.String.IsLengthGreaterThan(3)]);
+        // multiple rules with label
+        Rule("Label", x => x.Label, [
+            Check.String.IsNotEmpty, Check.String.IsLengthGreaterThan(3)]);
 
-            Rule("IntValue", x => x.IntValue, [
-                Check.IsGreaterThan(0),
-                Check.IsPositive<int>()]);
+        // numeric rules
+        Rule("IntValue", x => x.IntValue, [
+            Check.IsGreaterThan(0),
+            Check.IsPositive<int>()]);
 
-            Rule("IntValue", x => x.IntValue,
-                x => field => x == -1 ? Result.Error($"This is not an acceptable response for '{field}'") : Result.Ok());
+        // inline custom rule
+        Rule("IntValue", x => x.IntValue,
+            x => field => x == -1 ? Result.Error($"This is not an acceptable response for '{field}'") : Result.Ok());
 
-            Rule(x => x.OptionalIntValue,
-                Check.Optional(Check.IsGreaterThanOrEqualTo(1)));
+        // optional, single rule
+        Rule(x => x.OptionalIntValue,
+            Check.Optional(Check.IsGreaterThanOrEqualTo(1)));
 
-            Rule(x => x.StringOption,
-                Check.Required(Check.String.IsLengthBetween(3, 100)));
+        // optional, multiple rules
+        Rule("OptionalIntValue", x => x.OptionalIntValue, Check.Optional([
+            Check.IsGreaterThanOrEqualTo(1),
+            Check.IsLessThanOrEqualTo(100)]));
 
-            Rule("Phones", x => x.Phones, [
-                Check.Enumerable.IsNotEmpty<string>(),
-                Check.Enumerable.ForEach(Check.String.IsE164) ]);
+        // required, single rule
+        Rule(x => x.StringOption,
+            Check.Required(Check.String.IsLengthBetween(3, 100)));
 
-            Rule("Email", x => x.Email,
-                Check.String.IsEmailAddress);
+        // required, multiple rules
+        Rule("StringOption", x => x.StringOption, Check.Required([
+            Check.String.IsNotEmpty,
+            Check.String.IsLengthBetween(3, 100) ]));
 
-            Rule("AlternateEmails", x => x.AlternateEmails,
-                Check.Enumerable.ForEach(Check.String.IsEmailAddress));
-        }
+        // collection rules
+        Rule("Phones", x => x.Phones, [
+            Check.Enumerable.IsNotEmpty<string>(),
+            Check.Enumerable.ForEach(Check.String.IsE164) ]);
+
+        // email rule
+        Rule("Email", x => x.Email,
+            Check.String.IsEmailAddress);
+
+        // collection single rule
+        Rule("AlternateEmails", x => x.AlternateEmails,
+            Check.Enumerable.ForEach(Check.String.IsEmailAddress));
     }
 }
 
 public readonly record struct TestInputId(Guid Id);
 
-public sealed class TestInputIdValidator : BaseValidator<TestInputId>
-{
-    public TestInputIdValidator()
-    {
+public sealed class TestInputIdValidator : BaseValidator<TestInputId> {
+    public TestInputIdValidator() {
         Rule("Id", x => x.Id, Check.Guid.IsNotEmpty);
     }
 }

@@ -2,11 +2,9 @@ namespace Danom.Validation.Tests;
 
 using Xunit;
 
-public sealed class ReadmeExampleTest
-{
+public sealed class ReadmeExampleTest {
     [Fact]
-    public void DoTheTest()
-    {
+    public void DoTheTest() {
         var validator = new AttendeeValidator();
 
         Validate<Attendee>
@@ -55,10 +53,8 @@ public sealed class ReadmeExampleTest
     Option<string> AlternateEmail,
     IEnumerable<string> Interests);
 
-    public sealed class AttendeeValidator : BaseValidator<Attendee>
-    {
-        public AttendeeValidator()
-        {
+    public sealed class AttendeeValidator : BaseValidator<Attendee> {
+        public AttendeeValidator() {
             Rule("Name", x => x.Name,
                 Check.String.IsNotEmpty);
 

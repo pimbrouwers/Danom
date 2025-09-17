@@ -1,13 +1,11 @@
-namespace Danom
-{
+namespace Danom {
     using System;
     using System.Globalization;
 
     /// <summary>
     /// boolOption
     /// </summary>
-    public static class boolOption
-    {
+    public static class boolOption {
         /// <summary>
         /// Attempt to parse string as bool, return None if invalid, Some if valid.
         /// </summary>
@@ -20,8 +18,7 @@ namespace Danom
     /// <summary>
     /// byteOption
     /// </summary>
-    public static class byteOption
-    {
+    public static class byteOption {
         /// <summary>
         /// Attempt to parse string as byte, return None if invalid, Some if valid.
         /// </summary>
@@ -34,8 +31,7 @@ namespace Danom
     /// <summary>
     /// shortOption
     /// </summary>
-    public static class shortOption
-    {
+    public static class shortOption {
         /// <summary>
         /// Attempt to parse string as short, return None if invalid, Some if valid.
         /// </summary>
@@ -57,8 +53,7 @@ namespace Danom
     /// <summary>
     /// intOption
     /// </summary>
-    public static class intOption
-    {
+    public static class intOption {
         /// <summary>
         /// Attempt to parse string as int, return None if invalid, Some if valid.
         /// </summary>
@@ -71,8 +66,7 @@ namespace Danom
     /// <summary>
     /// longOption
     /// </summary>
-    public static class longOption
-    {
+    public static class longOption {
         /// <summary>
         /// Attempt to parse string as long, return None if invalid, Some if valid.
         /// </summary>
@@ -85,8 +79,7 @@ namespace Danom
     /// <summary>
     /// decimalOption
     /// </summary>
-    public static class decimalOption
-    {
+    public static class decimalOption {
         /// <summary>
         /// Attempt to parse string as decimal, return None if invalid, Some if valid.
         /// </summary>
@@ -99,8 +92,7 @@ namespace Danom
     /// <summary>
     /// doubleOption
     /// </summary>
-    public static class doubleOption
-    {
+    public static class doubleOption {
         /// <summary>
         /// Attempt to parse string as double, return None if invalid, Some if valid.
         /// </summary>
@@ -113,8 +105,7 @@ namespace Danom
     /// <summary>
     /// floatOption
     /// </summary>
-    public static class floatOption
-    {
+    public static class floatOption {
         /// <summary>
         /// Attempt to parse string as float, return None if invalid, Some if valid.
         /// </summary>
@@ -127,8 +118,7 @@ namespace Danom
     /// <summary>
     /// GuidOption
     /// </summary>
-    public static class GuidOption
-    {
+    public static class GuidOption {
         /// <summary>
         /// Attempt to parse string as Guid, return None if invalid, Some if valid.
         /// </summary>
@@ -150,8 +140,7 @@ namespace Danom
     /// <summary>
     /// DateTimeOffsetOption
     /// </summary>
-    public static class DateTimeOffsetOption
-    {
+    public static class DateTimeOffsetOption {
         /// <summary>
         /// Attempt to parse string as DateTimeOffset, return None if invalid, Some if valid.
         /// </summary>
@@ -175,8 +164,7 @@ namespace Danom
     /// <summary>
     /// DateTimeOption
     /// </summary>
-    public static class DateTimeOption
-    {
+    public static class DateTimeOption {
         /// <summary>
         /// Attempt to parse string as DateTime, return None if invalid, Some if valid.
         /// </summary>
@@ -252,8 +240,7 @@ namespace Danom
     /// <summary>
     /// TimeSpanOption
     /// </summary>
-    public static class TimeSpanOption
-    {
+    public static class TimeSpanOption {
         /// <summary>
         /// Attempt to parse string as TimeSpan, return None if invalid, Some if valid.
         /// </summary>
@@ -285,8 +272,7 @@ namespace Danom
     /// <summary>
     /// EnumOption
     /// </summary>
-    public static class EnumOption
-    {
+    public static class EnumOption {
         /// <summary>
         /// Attempt to parse string as Enum, return None if invalid, Some if valid.
         /// </summary>

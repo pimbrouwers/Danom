@@ -3,18 +3,15 @@ namespace Danom.Validation.Tests;
 using Danom.TestHelpers;
 using Xunit;
 
-public sealed class RulesTests
-{
+public sealed class RulesTests {
     private static Result<Unit, ResultErrors> RunRule<T>(T input, ValidatorRule<T> rule) =>
         rule(input)("field").TryGetError(out var errors)
             ? Result.Error(errors)
             : Result.Ok();
 
-    public sealed class EquatableRulesTests
-    {
+    public sealed class EquatableRulesTests {
         [Fact]
-        public void EqualTo_ReturnsOk()
-        {
+        public void EqualTo_ReturnsOk() {
             Assert.True(RunRule('c', Check.IsEqualTo('c')).IsOk);
             Assert.True(RunRule('c', Check.IsNotEqualTo('d')).IsOk);
 
@@ -51,8 +48,7 @@ public sealed class RulesTests
         }
 
         [Fact]
-        public void EqualTo_ReturnsError()
-        {
+        public void EqualTo_ReturnsError() {
             Assert.True(RunRule("test", Check.IsEqualTo("example")).IsError);
             Assert.True(RunRule('c', Check.IsEqualTo('d')).IsError);
 
@@ -84,126 +80,107 @@ public sealed class RulesTests
         }
 
         [Fact]
-        public void NotEqualTo_ReturnsOk()
-        {
+        public void NotEqualTo_ReturnsOk() {
             Assert.True(RunRule(3, Check.IsNotEqualTo(5)).IsOk);
             Assert.True(RunRule("test", Check.IsNotEqualTo("example")).IsOk);
         }
 
         [Fact]
-        public void NotEqualTo_ReturnsError()
-        {
+        public void NotEqualTo_ReturnsError() {
             Assert.True(RunRule(5, Check.IsNotEqualTo(5)).IsError);
         }
     }
 
-    public sealed class ComparableRulesTests
-    {
+    public sealed class ComparableRulesTests {
         [Fact]
-        public void Between_ReturnsOk_WhenValueIsBetweenMinAndMax()
-        {
+        public void Between_ReturnsOk_WhenValueIsBetweenMinAndMax() {
             Assert.True(RunRule(5, Check.IsBetween(1, 10)).IsOk);
             Assert.True(RunRule(3.5, Check.IsBetween(1.0, 5.0)).IsOk);
         }
 
         [Fact]
-        public void Between_ReturnsError_WhenValueIsNotBetweenMinAndMax()
-        {
+        public void Between_ReturnsError_WhenValueIsNotBetweenMinAndMax() {
             Assert.True(RunRule(0, Check.IsBetween(1, 10)).IsError);
             Assert.True(RunRule(11, Check.IsBetween(1, 10)).IsError);
             Assert.True(RunRule(5, Check.IsBetween(6, 10)).IsError);
         }
 
         [Fact]
-        public void GreaterThan_ReturnsOk_WhenValueIsGreaterThanThreshold()
-        {
+        public void GreaterThan_ReturnsOk_WhenValueIsGreaterThanThreshold() {
             Assert.True(RunRule(10, Check.IsGreaterThan(5)).IsOk);
             Assert.True(RunRule(5.5, Check.IsGreaterThan(5.0)).IsOk);
         }
 
         [Fact]
-        public void GreaterThan_ReturnsError_WhenValueIsNotGreaterThanThreshold()
-        {
+        public void GreaterThan_ReturnsError_WhenValueIsNotGreaterThanThreshold() {
             Assert.True(RunRule(3, Check.IsGreaterThan(5)).IsError);
             Assert.True(RunRule(5, Check.IsGreaterThan(5)).IsError);
         }
 
         [Fact]
-        public void GreaterThanOrEqualTo_ReturnsOk_WhenValueIsGreaterThanOrEqualToThreshold()
-        {
+        public void GreaterThanOrEqualTo_ReturnsOk_WhenValueIsGreaterThanOrEqualToThreshold() {
             Assert.True(RunRule(5, Check.IsGreaterThanOrEqualTo(5)).IsOk);
             Assert.True(RunRule(6, Check.IsGreaterThanOrEqualTo(5)).IsOk);
         }
 
         [Fact]
-        public void GreaterThanOrEqualTo_ReturnsError_WhenValueIsLessThanThreshold()
-        {
+        public void GreaterThanOrEqualTo_ReturnsError_WhenValueIsLessThanThreshold() {
             Assert.True(RunRule(4, Check.IsGreaterThanOrEqualTo(5)).IsError);
             Assert.True(RunRule(3.9, Check.IsGreaterThanOrEqualTo(4.0)).IsError);
         }
 
         [Fact]
-        public void LessThan_ReturnsOk_WhenValueIsLessThanThreshold()
-        {
+        public void LessThan_ReturnsOk_WhenValueIsLessThanThreshold() {
             Assert.True(RunRule(3, Check.IsLessThan(5)).IsOk);
             Assert.True(RunRule(4.9, Check.IsLessThan(5.0)).IsOk);
         }
 
         [Fact]
-        public void LessThan_ReturnsError_WhenValueIsNotLessThanThreshold()
-        {
+        public void LessThan_ReturnsError_WhenValueIsNotLessThanThreshold() {
             Assert.True(RunRule(6, Check.IsLessThan(5)).IsError);
             Assert.True(RunRule(5, Check.IsLessThan(5)).IsError);
         }
 
         [Fact]
-        public void LessThanOrEqualTo_ReturnsOk_WhenValueIsLessThanOrEqualTo()
-        {
+        public void LessThanOrEqualTo_ReturnsOk_WhenValueIsLessThanOrEqualTo() {
             Assert.True(RunRule(5, Check.IsLessThanOrEqualTo(5)).IsOk);
             Assert.True(RunRule(4, Check.IsLessThanOrEqualTo(5)).IsOk);
         }
 
         [Fact]
-        public void LessThanOrEqualTo_ReturnsError_WhenValueIsLessThanOrEqualTo()
-        {
+        public void LessThanOrEqualTo_ReturnsError_WhenValueIsLessThanOrEqualTo() {
             Assert.True(RunRule(6, Check.IsLessThanOrEqualTo(5)).IsError);
             Assert.True(RunRule(5.1, Check.IsLessThanOrEqualTo(5.0)).IsError);
         }
     }
 
-    public sealed class StringRulesTests
-    {
+    public sealed class StringRulesTests {
         [Fact]
-        public void StringEmpty_ReturnsOk_WhenStringIsEmpty()
-        {
+        public void StringEmpty_ReturnsOk_WhenStringIsEmpty() {
             Assert.True(RunRule(string.Empty, Check.String.IsEmpty).IsOk);
             Assert.True(RunRule("", Check.String.IsEmpty).IsOk);
             Assert.True(RunRule(" ", Check.String.IsEmpty).IsOk);
         }
 
         [Fact]
-        public void StringEmpty_ReturnsError_WhenStringIsNotEmpty()
-        {
+        public void StringEmpty_ReturnsError_WhenStringIsNotEmpty() {
             Assert.True(RunRule("test", Check.String.IsEmpty).IsError);
         }
 
         [Fact]
-        public void StringNotEmpty_ReturnsOk_WhenStringIsNotEmpty()
-        {
+        public void StringNotEmpty_ReturnsOk_WhenStringIsNotEmpty() {
             Assert.True(RunRule("test", Check.String.IsNotEmpty).IsOk);
         }
 
         [Fact]
-        public void StringNotEmpty_ReturnsError_WhenStringIsEmpty()
-        {
+        public void StringNotEmpty_ReturnsError_WhenStringIsEmpty() {
             Assert.True(RunRule(string.Empty, Check.String.IsNotEmpty).IsError);
             Assert.True(RunRule("", Check.String.IsNotEmpty).IsError);
             Assert.True(RunRule(" ", Check.String.IsNotEmpty).IsError);
         }
 
         [Fact]
-        public void TypedString_ReturnsOk()
-        {
+        public void TypedString_ReturnsOk() {
             Assert.True(RunRule("jim@bob.com", Check.String.IsEmailAddress).IsOk);
             Assert.True(RunRule("http://example.com", Check.String.IsUrl).IsOk);
             Assert.True(RunRule("https://example.com", Check.String.IsUrl).IsOk);
@@ -212,105 +189,167 @@ public sealed class RulesTests
         }
 
         [Fact]
-        public void TypedString_ReturnsError()
-        {
+        public void TypedString_ReturnsError() {
             Assert.True(RunRule("invalid-email", Check.String.IsEmailAddress).IsError);
             Assert.True(RunRule("invalid-url", Check.String.IsUrl).IsError);
             Assert.True(RunRule("1", Check.String.IsE164).IsError);
         }
     }
 
-    public sealed class GuidRulesTests
-    {
+    public sealed class GuidRulesTests {
         [Fact]
-        public void GuidEmpty_ReturnsOk_WhenGuidIsEmpty()
-        {
+        public void GuidEmpty_ReturnsOk_WhenGuidIsEmpty() {
             Assert.True(RunRule(Guid.Empty, Check.Guid.IsEmpty).IsOk);
         }
 
         [Fact]
-        public void GuidEmpty_ReturnsError_WhenGuidIsNotEmpty()
-        {
+        public void GuidEmpty_ReturnsError_WhenGuidIsNotEmpty() {
             Assert.True(RunRule(Guid.NewGuid(), Check.Guid.IsEmpty).IsError);
         }
 
         [Fact]
-        public void GuidNotEmpty_ReturnsOk_WhenGuidIsNotEmpty()
-        {
+        public void GuidNotEmpty_ReturnsOk_WhenGuidIsNotEmpty() {
             Assert.True(RunRule(Guid.NewGuid(), Check.Guid.IsNotEmpty).IsOk);
         }
 
         [Fact]
-        public void GuidNotEmpty_ReturnsError_WhenGuidIsEmpty()
-        {
+        public void GuidNotEmpty_ReturnsError_WhenGuidIsEmpty() {
             Assert.True(RunRule(Guid.Empty, Check.Guid.IsNotEmpty).IsError);
         }
     }
 
-    public sealed class OptionRulesTests
-    {
+    public sealed class OptionRulesTests {
         [Fact]
-        public void OptionIsSome_ReturnsOk_WhenOptionHasValue()
-        {
+        public void OptionIsSome_ReturnsOk_WhenRequiredOptionHasValue() {
             Assert.True(RunRule(Option.Some(5), Check.Required<int>()).IsOk);
             Assert.True(RunRule(Option.Some("test"), Check.Required<string>()).IsOk);
         }
 
         [Fact]
-        public void OptionIsSome_ReturnsError_WhenOptionIsNone()
-        {
+        public void OptionIsNone_ReturnsError_WhenRequiredOptionIsNone() {
             Assert.True(RunRule(Option<int>.None(), Check.Required<int>()).IsError);
             Assert.True(RunRule(Option<string>.None(), Check.Required<string>()).IsError);
         }
 
         [Fact]
-        public void OptionIsNone_ReturnsOk_WhenOptionIsNone()
-        {
+        public void OptionIsSome_ReturnsOk_WhenRequiredOptionHasValueAndInnerRulePasses() {
+            Assert.True(RunRule(Option.Some(5), Check.Required(Check.IsGreaterThan(0))).IsOk);
+            Assert.True(RunRule(Option.Some("test"), Check.Required(Check.String.IsNotEmpty)).IsOk);
+        }
+
+        [Fact]
+        public void OptionIsSome_ReturnsError_WhenRequiredOptionHasValueButInnerRuleFails() {
+            Assert.True(RunRule(Option.Some(-1), Check.Required(Check.IsGreaterThan(0))).IsError);
+            Assert.True(RunRule(Option.Some(""), Check.Required(Check.String.IsNotEmpty)).IsError);
+        }
+
+        [Fact]
+        public void OptionIsSome_ReturnsOk_WhenRequiredOptionHasValueAndInnerRulesPass() {
+            Assert.True(RunRule(Option.Some(5), Check.Required([
+                Check.IsGreaterThan(0),
+                Check.IsLessThan(10) ])).IsOk);
+
+            Assert.True(RunRule(Option.Some("test"), Check.Required([
+                Check.String.IsNotEmpty,
+                Check.String.IsLengthBetween(1, 10) ])).IsOk);
+        }
+
+        [Fact]
+        public void OptionIsSome_ReturnsError_WhenRequiredOptionHasValueButInnerRulesFail() {
+            Assert.True(RunRule(Option.Some(-1), Check.Required([
+                Check.IsGreaterThan(0),
+                Check.IsLessThan(10) ])).IsError);
+
+            Assert.True(RunRule(Option.Some(""), Check.Required([
+                Check.String.IsNotEmpty,
+                Check.String.IsLengthBetween(1, 10) ])).IsError);
+        }
+
+        [Fact]
+        public void OptionIsNone_ReturnsOk_WhenOptionIsNone() {
             Assert.True(RunRule(Option<int>.None(), Check.Optional(Check.IsGreaterThan(0))).IsOk);
             Assert.True(RunRule(Option<string>.None(), Check.Optional(Check.String.IsNotEmpty)).IsOk);
         }
 
         [Fact]
-        public void OptionIsNone_ReturnsError_WhenOptionHasValue()
-        {
+        public void OptionIsSome_ReturnsError_WhenOptionHasValue() {
             Assert.True(RunRule(Option.Some(-1), Check.Optional(Check.IsGreaterThan(0))).IsError);
             Assert.True(RunRule(Option.Some(""), Check.Optional(Check.String.IsNotEmpty)).IsError);
         }
+
+        [Fact]
+        public void OptionIsNone_ReturnsOk_WhenOptionIsNoneAndNoInnerRule() {
+            Assert.True(RunRule(Option<int>.None(), Check.Optional<int>()).IsOk);
+            Assert.True(RunRule(Option<string>.None(), Check.Optional<string>()).IsOk);
+        }
+
+        [Fact]
+        public void OptionIsSome_ReturnsError_WhenOptionHasValueAndNoInnerRule() {
+            Assert.True(RunRule(Option.Some(5), Check.Optional<int>()).IsOk);
+            Assert.True(RunRule(Option.Some("test"), Check.Optional<string>()).IsOk);
+        }
+
+        [Fact]
+        public void OptionIsSome_ReturnsOk_WhenOptionHasValueAndInnerRulesPasses() {
+            Assert.True(RunRule(Option.Some(5), Check.Optional([
+                Check.IsGreaterThan(0),
+                Check.IsLessThan(10) ])).IsOk);
+
+            Assert.True(RunRule(Option.Some("test"), Check.Optional([
+                Check.String.IsNotEmpty,
+                Check.String.IsLengthBetween(1, 10) ])).IsOk);
+        }
+
+        [Fact]
+        public void OptionIsNone_ReturnsOk_WhenOptionIsNoneAndInnerRules() {
+            Assert.True(RunRule(Option<int>.None(), Check.Optional([
+                Check.IsGreaterThan(0),
+                Check.IsLessThan(10) ])).IsOk);
+
+            Assert.True(RunRule(Option<string>.None(), Check.Optional([
+                Check.String.IsNotEmpty,
+                Check.String.IsLengthBetween(1, 10) ])).IsOk);
+        }
+
+        [Fact]
+        public void OptionIsNone_ReturnsError_WhenOptionHasValueAndInnerRules() {
+            Assert.True(RunRule(Option.Some(-1), Check.Optional([
+                Check.IsGreaterThan(0),
+                Check.IsLessThan(10) ])).IsError);
+
+            Assert.True(RunRule(Option.Some(""), Check.Optional([
+                Check.String.IsNotEmpty,
+                Check.String.IsLengthBetween(1, 10) ])).IsError);
+        }
     }
 
-    public sealed class EnumerableRulesTests
-    {
+    public sealed class EnumerableRulesTests {
         [Fact]
-        public void EnumerableEmpty_ReturnsOk_WhenEnumerableIsEmpty()
-        {
+        public void EnumerableEmpty_ReturnsOk_WhenEnumerableIsEmpty() {
             Assert.True(RunRule([], Check.Enumerable.IsEmpty<int>()).IsOk);
             Assert.True(RunRule(new List<string>(), Check.Enumerable.IsEmpty<string>()).IsOk);
         }
 
         [Fact]
-        public void EnumerableNotEmpty_ReturnsOk_WhenEnumerableIsNotEmpty()
-        {
+        public void EnumerableNotEmpty_ReturnsOk_WhenEnumerableIsNotEmpty() {
             Assert.True(RunRule([1, 2, 3], Check.Enumerable.IsNotEmpty<int>()).IsOk);
             Assert.True(RunRule(new List<string> { "a", "b" }, Check.Enumerable.IsNotEmpty<string>()).IsOk);
         }
 
         [Fact]
-        public void EnumerableNotEmpty_ReturnsError_WhenEnumerableIsEmpty()
-        {
+        public void EnumerableNotEmpty_ReturnsError_WhenEnumerableIsEmpty() {
             Assert.True(RunRule([], Check.Enumerable.IsNotEmpty<int>()).IsError);
             Assert.True(RunRule(new List<string>(), Check.Enumerable.IsNotEmpty<string>()).IsError);
         }
 
         [Fact]
-        public void EnumerableForEach_ReturnsOk_WhenAllElementsMatchCondition()
-        {
+        public void EnumerableForEach_ReturnsOk_WhenAllElementsMatchCondition() {
             Assert.True(RunRule([1, 2, 3], Check.Enumerable.ForEach(Check.IsGreaterThan(0))).IsOk);
             Assert.True(RunRule(new List<string> { "a", "b" }, Check.Enumerable.ForEach(Check.String.IsNotEmpty)).IsOk);
         }
 
         [Fact]
-        public void EnumerableForEach_ReturnsError_WhenAnyElementDoesNotMatchCondition()
-        {
+        public void EnumerableForEach_ReturnsError_WhenAnyElementDoesNotMatchCondition() {
             Assert.True(RunRule([1, -2, 3], Check.Enumerable.ForEach(Check.IsGreaterThan(0))).IsError);
             Assert.True(RunRule(new List<string> { "a", "", "c" }, Check.Enumerable.ForEach(Check.String.IsNotEmpty)).IsError);
         }

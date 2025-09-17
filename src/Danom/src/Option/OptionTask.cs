@@ -1,5 +1,4 @@
-namespace Danom
-{
+namespace Danom {
     using System;
     using System.Threading;
     using System.Threading.Tasks;
@@ -8,8 +7,7 @@ namespace Danom
     /// Contains Task extension methods for <see cref="Option{T}"/> that allow for
     /// asynchronous operations containing <see cref="Option{T}"/>.
     /// </summary>
-    public static class OptionTaskExtensions
-    {
+    public static class OptionTaskExtensions {
         /// <summary>
         /// If the Option is Some evaluate the some delegate, otherwise none.
         /// </summary>
@@ -24,8 +22,7 @@ namespace Danom
             this Task<Option<T>> optionTask,
             Func<T, Task<U>> some,
             Func<Task<U>> none,
-            CancellationToken? cancellationToken = null)
-        {
+            CancellationToken? cancellationToken = null) {
             var option = await optionTask.WaitOrCancel(cancellationToken);
             return await option.Match(some, none).WaitOrCancel(cancellationToken);
         }

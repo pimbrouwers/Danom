@@ -1,4 +1,4 @@
-﻿namespace Danom.MinimalApi.Tests.TypedResults;
+namespace Danom.MinimalApi.Tests.TypedResults;
 
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -6,13 +6,10 @@ using Danom.MinimalApi.TypedResults;
 using Microsoft.AspNetCore.Http;
 using Xunit;
 
-public static class TypedDanomResultExtensionsTests
-{
-    public static class OptionTests
-    {
+public static class TypedDanomResultExtensionsTests {
+    public static class OptionTests {
         [Fact]
-        public static async Task Some_NoConversion_200WithJson()
-        {
+        public static async Task Some_NoConversion_200WithJson() {
             var value = new SomeType(123);
             var option = Option.Some(new SomeType(123));
 
@@ -24,8 +21,7 @@ public static class TypedDanomResultExtensionsTests
         }
 
         [Fact]
-        public static async Task Some_Conversion_200WithJson()
-        {
+        public static async Task Some_Conversion_200WithJson() {
             var value = new SomeType(123);
             var option = Option.Some(new SomeType(123));
 
@@ -37,8 +33,7 @@ public static class TypedDanomResultExtensionsTests
         }
 
         [Fact]
-        public static async Task None_NoConversion_404()
-        {
+        public static async Task None_NoConversion_404() {
             var option = Option.None();
 
             var httpResult = Results.Extensions.Option(option);
@@ -48,8 +43,7 @@ public static class TypedDanomResultExtensionsTests
         }
 
         [Fact]
-        public static async Task None_WithConversion_UsesConversion()
-        {
+        public static async Task None_WithConversion_UsesConversion() {
             var option = Option.None();
 
             var httpResult = Results.Extensions.Option(option, TypedResults.Conflict);
@@ -59,11 +53,9 @@ public static class TypedDanomResultExtensionsTests
         }
     }
 
-    public static class ResultTests
-    {
+    public static class ResultTests {
         [Fact]
-        public static async Task Ok_NoConversion_200WithJson()
-        {
+        public static async Task Ok_NoConversion_200WithJson() {
             var value = new SomeType(123);
             var result = Result<SomeType>.Ok(new SomeType(123));
 
@@ -75,8 +67,7 @@ public static class TypedDanomResultExtensionsTests
         }
 
         [Fact]
-        public static async Task Ok_Conversion_200WithJson()
-        {
+        public static async Task Ok_Conversion_200WithJson() {
             var value = new SomeType(123);
             var result = Result<SomeType>.Ok(new SomeType(123));
 
@@ -88,8 +79,7 @@ public static class TypedDanomResultExtensionsTests
         }
 
         [Fact]
-        public static async Task Error_NoConversion_400WithJson()
-        {
+        public static async Task Error_NoConversion_400WithJson() {
             var error = new SomeType(123);
             var result = Result<int, SomeType>.Error(error);
 
@@ -101,8 +91,7 @@ public static class TypedDanomResultExtensionsTests
         }
 
         [Fact]
-        public static async Task Error_Conversion_UsesConversion()
-        {
+        public static async Task Error_Conversion_UsesConversion() {
             var error = new SomeType(123);
             var result = Result<int, SomeType>.Error(error);
 

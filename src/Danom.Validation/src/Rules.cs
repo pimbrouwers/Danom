@@ -1,5 +1,4 @@
-namespace Danom.Validation
-{
+namespace Danom.Validation {
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -9,8 +8,7 @@ namespace Danom.Validation
     /// <summary>
     /// Provides a set of validation checks that can be used in validators.
     /// </summary>
-    public static class Check
-    {
+    public static class Check {
         /// <summary>
         /// Checks if the value is equal to a specified value.
         /// </summary>
@@ -110,7 +108,7 @@ namespace Danom.Validation
             value => field => RuleHelper.Check(value.CompareTo(threshold) <= 0, $"'{field}' must be less than or equal to {threshold}");
 
         /// <summary>
-        /// Checks if the value is required (i.e., not null or empty).
+        /// Checks if the value is required and satisfies the specified rule.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="func"></param>
@@ -121,7 +119,36 @@ namespace Danom.Validation
                 none: () => field => Result.Error($"'{field}' is required"));
 
         /// <summary>
-        /// Checks if the value is required (i.e., not null or empty).
+        /// Checks if the value is required and satisfies all the specified rules.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="funcs"></param>
+        /// <returns></returns>
+        public static ValidatorRule<Option<T>> Required<T>(params ValidatorRule<T>[] funcs) =>
+            Required<T>(value => field => {
+                var resultErrors = new ResultErrors();
+                var isValid = true;
+
+                foreach (var func in funcs) {
+                    var rule = func(value);
+                    var result = rule(field);
+
+                    if (result.TryGetError(out var errors)) {
+                        if (isValid) {
+                            isValid = false;
+                        }
+
+                        resultErrors.Add(errors);
+                    }
+                }
+
+                return isValid
+                    ? Result.Ok()
+                    : Result.Error(resultErrors);
+            });
+
+        /// <summary>
+        /// Checks if the Option value is some.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
@@ -129,7 +156,8 @@ namespace Danom.Validation
             Required<T>(x => field => Result.Ok());
 
         /// <summary>
-        /// Checks if the value is optional (i.e., can be null or empty).
+        /// Checks if the Option value is some, and satisfies the specified rule.
+        /// Or, if the Option is none, it is considered valid.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="func"></param>
@@ -138,6 +166,36 @@ namespace Danom.Validation
             optionValue => optionValue.Match(
                 some: value => func(value),
                 none: () => field => Result<Unit, ResultErrors>.Ok(Unit.Value));
+
+        /// <summary>
+        /// Checks if the Option value is some, and satisfies all the specified rules.
+        /// Or, if the Option is none, it is considered valid.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="funcs"></param>
+        /// <returns></returns>
+        public static ValidatorRule<Option<T>> Optional<T>(params ValidatorRule<T>[] funcs) =>
+            Optional<T>(value => field => {
+                var resultErrors = new ResultErrors();
+                var isValid = true;
+
+                foreach (var func in funcs) {
+                    var rule = func(value);
+                    var result = rule(field);
+
+                    if (result.TryGetError(out var errors)) {
+                        if (isValid) {
+                            isValid = false;
+                        }
+
+                        resultErrors.Add(errors);
+                    }
+                }
+
+                return isValid
+                    ? Result.Ok()
+                    : Result.Error(resultErrors);
+            });
 
         /// <summary>
         /// Checks if the value is valid according to a specified validator.
@@ -151,8 +209,7 @@ namespace Danom.Validation
         /// <summary>
         /// Provides a set of validation checks for string values.
         /// </summary>
-        public static class String
-        {
+        public static class String {
             /// <summary>
             /// Checks if the string is empty.
             /// </summary>
@@ -281,20 +338,16 @@ namespace Danom.Validation
                         ? Result.Ok()
                         : Result.Error($"'{field}' is not a valid email address");
 
-            private static bool CheckEmail(string email)
-            {
-                if (string.IsNullOrWhiteSpace(email))
-                {
+            private static bool CheckEmail(string email) {
+                if (string.IsNullOrWhiteSpace(email)) {
                     return false;
                 }
 
-                try
-                {
+                try {
                     var mailAddress = new MailAddress(email);
                     return true;
                 }
-                catch (FormatException)
-                {
+                catch (FormatException) {
                     return false;
                 }
             }
@@ -303,8 +356,7 @@ namespace Danom.Validation
         /// <summary>
         /// Provides a set of validation checks for GUID values.
         /// </summary>
-        public static class Guid
-        {
+        public static class Guid {
             /// <summary>
             /// Checks if the GUID is empty (i.e., 000-0000-0000-0000-0000).
             /// </summary>
@@ -321,8 +373,7 @@ namespace Danom.Validation
         /// <summary>
         /// Provides a set of validation checks for collection types.
         /// </summary>
-        public static class Enumerable
-        {
+        public static class Enumerable {
             /// <summary>
             /// Checks if the collection is empty.
             /// </summary>
@@ -344,20 +395,16 @@ namespace Danom.Validation
             /// <param name="rule"></param>
             /// <returns></returns>
             public static ValidatorRule<IEnumerable<T>> ForEach<T>(ValidatorRule<T> rule) =>
-                values => field =>
-                {
+                values => field => {
                     var resultErrors = new ResultErrors();
                     var isValid = true;
 
-                    foreach (var item in values)
-                    {
+                    foreach (var item in values) {
                         var itemRule = rule(item);
                         var result = itemRule(field);
 
-                        if (result.TryGetError(out var errors))
-                        {
-                            if(isValid)
-                            {
+                        if (result.TryGetError(out var errors)) {
+                            if (isValid) {
                                 isValid = false;
                             }
 
@@ -378,19 +425,15 @@ namespace Danom.Validation
             /// <param name="validator"></param>
             /// <returns></returns>
             public static ValidatorRule<IEnumerable<T>> ForEach<T>(IValidator<T> validator) =>
-                values => field =>
-                {
+                values => field => {
                     var resultErrors = new ResultErrors();
                     var isValid = true;
 
-                    foreach (var item in values)
-                    {
+                    foreach (var item in values) {
                         var result = validator.Validate(item);
 
-                        if (result.TryGetError(out var errors))
-                        {
-                            if (isValid)
-                            {
+                        if (result.TryGetError(out var errors)) {
+                            if (isValid) {
                                 isValid = false;
                             }
 
@@ -405,8 +448,7 @@ namespace Danom.Validation
         }
     }
 
-    internal static class RuleHelper
-    {
+    internal static class RuleHelper {
         internal static Result<Unit, ResultErrors> Check(bool isValid, string errorMessage) =>
             isValid
                 ? Result.Ok()

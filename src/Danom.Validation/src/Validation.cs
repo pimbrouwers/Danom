@@ -1,5 +1,4 @@
-namespace Danom.Validation
-{
+namespace Danom.Validation {
     using System;
     using System.Collections.Generic;
 
@@ -8,8 +7,7 @@ namespace Danom.Validation
     /// <see cref="Result{T, ResultErrors}" />.
     /// <typeparam name="T"></typeparam>
     /// </summary>
-    public static class Validate<T>
-    {
+    public static class Validate<T> {
         /// <summary>
         /// Converts an input value to a <see cref="Result{T, ResultErrors}" />
         /// using the provided validator.
@@ -37,8 +35,7 @@ namespace Danom.Validation
     /// <see cref="IValidator{T}" /> interface.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public abstract class BaseValidator<T> : IValidator<T>
-    {
+    public abstract class BaseValidator<T> : IValidator<T> {
         private readonly ValidationContext<T> _validationContext = new ValidationContext<T>();
 
         /// <summary>
@@ -46,27 +43,20 @@ namespace Danom.Validation
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        public Result<T, ResultErrors> Validate(T value)
-        {
+        public Result<T, ResultErrors> Validate(T value) {
             var isValid = true;
             var resultErrors = new ResultErrors();
 
-            foreach (var rule in _validationContext.Rules)
-            {
-                foreach (var fieldRule in rule.Value)
-                {
+            foreach (var rule in _validationContext.Rules) {
+                foreach (var fieldRule in rule.Value) {
                     var labelledRuleFunc = fieldRule.ValidatorRule(value);
-                    if (labelledRuleFunc(fieldRule.Field).TryGetError(out var errors))
-                    {
-                        if (isValid)
-                        {
+                    if (labelledRuleFunc(fieldRule.Field).TryGetError(out var errors)) {
+                        if (isValid) {
                             isValid = false;
                         }
 
-                        foreach (var error in errors)
-                        {
-                            foreach (var errorMessage in error.Errors)
-                            {
+                        foreach (var error in errors) {
+                            foreach (var errorMessage in error.Errors) {
                                 resultErrors.Add(rule.Key, fieldRule.Message ?? errorMessage);
                             }
                         }
@@ -101,10 +91,8 @@ namespace Danom.Validation
         /// <param name="selector"></param>
         /// <param name="rules"></param>
         /// <param name="message"></param>
-        public void Rule<U>(string? field, Func<T, U> selector, IEnumerable<ValidatorRule<U>> rules, string? message = null)
-        {
-            foreach (var rule in rules)
-            {
+        public void Rule<U>(string? field, Func<T, U> selector, IEnumerable<ValidatorRule<U>> rules, string? message = null) {
+            foreach (var rule in rules) {
                 Rule(field, selector, rule, message);
             }
         }
@@ -134,8 +122,7 @@ namespace Danom.Validation
     /// Represents a validator interface for validating input values.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public interface IValidator<T>
-    {
+    public interface IValidator<T> {
         /// <summary>
         /// Validates the input value.
         /// </summary>
@@ -159,22 +146,18 @@ namespace Danom.Validation
     /// <returns></returns>
     public delegate Result<Unit, ResultErrors> LabeledValidatorRule(string field);
 
-    internal sealed class ValidationContext<T>
-    {
+    internal sealed class ValidationContext<T> {
         private const string DefaultField = "Value";
         private const string DefaultKey = "";
 
-        public ValidationContext()
-        {
+        public ValidationContext() {
             Rules = new Dictionary<string, List<FieldRule>>();
         }
 
         public Dictionary<string, List<FieldRule>> Rules { get; }
 
-        public sealed class FieldRule
-        {
-            public FieldRule(string field, ValidatorRule<T> validatorRule, string? message = null)
-            {
+        public sealed class FieldRule {
+            public FieldRule(string field, ValidatorRule<T> validatorRule, string? message = null) {
                 Field = field;
                 ValidatorRule = validatorRule;
                 Message = message;
@@ -185,13 +168,11 @@ namespace Danom.Validation
             public string? Message { get; }
         }
 
-        public void AddRule(string? field, ValidatorRule<T> rule, string? message)
-        {
+        public void AddRule(string? field, ValidatorRule<T> rule, string? message) {
             var key = field ?? DefaultKey;
             var fieldname = field ?? DefaultField;
 
-            if (!Rules.TryGetValue(key, out var rules))
-            {
+            if (!Rules.TryGetValue(key, out var rules)) {
                 Rules[key] = new List<FieldRule>();
             }
             Rules[key].Add(new FieldRule(fieldname, rule, message));

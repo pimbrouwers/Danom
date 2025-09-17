@@ -4,17 +4,14 @@ using Danom;
 using Danom.Validation;
 using FluentValidation;
 
-public sealed class TodoId(int value)
-{
+public sealed class TodoId(int value) {
     internal readonly int _value = value;
     public static explicit operator int(TodoId todoId) =>
         todoId._value;
 }
 
-public sealed class TodoIdValidator : AbstractValidator<TodoId>
-{
-    public TodoIdValidator()
-    {
+public sealed class TodoIdValidator : AbstractValidator<TodoId> {
+    public TodoIdValidator() {
         RuleFor(todoId => (int)todoId).GreaterThan(0);
     }
 }
@@ -36,10 +33,8 @@ public sealed record CreateTodo(
   string Title,
   Option<DateOnly> DueDate);
 
-public sealed class CreateTodoValidator : AbstractValidator<CreateTodo>
-{
-    public CreateTodoValidator()
-    {
+public sealed class CreateTodoValidator : AbstractValidator<CreateTodo> {
+    public CreateTodoValidator() {
         RuleFor(x => x.Title)
             .NotEmpty()
             .MaximumLength(256);
@@ -58,10 +53,8 @@ public sealed record CompleteTodo(
   TodoId TodoId,
   DateTime CompletedDate);
 
-public sealed class CompleteTodoValidator : AbstractValidator<CompleteTodo>
-{
-    public CompleteTodoValidator()
-    {
+public sealed class CompleteTodoValidator : AbstractValidator<CompleteTodo> {
+    public CompleteTodoValidator() {
         RuleFor(x => x.TodoId)
             .SetValidator(new TodoIdValidator());
 
@@ -79,10 +72,8 @@ public sealed record DeleteTodo(
     TodoId TodoId,
     DateTime DeletedDate);
 
-public sealed class DeleteTodoValidator : AbstractValidator<DeleteTodo>
-{
-    public DeleteTodoValidator()
-    {
+public sealed class DeleteTodoValidator : AbstractValidator<DeleteTodo> {
+    public DeleteTodoValidator() {
         RuleFor(x => x.TodoId)
             .SetValidator(new TodoIdValidator());
 

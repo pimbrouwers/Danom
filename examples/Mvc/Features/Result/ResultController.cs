@@ -4,8 +4,7 @@ using Danom.Mvc;
 using Microsoft.AspNetCore.Mvc;
 
 public sealed class ResultController
-    : DanomController
-{
+    : DanomController {
     private readonly Result<string, ResultErrors> _okResult = Result.Ok("Success!");
     private readonly Result<string, ResultErrors> _errorResult = Result<string>.Error(["An error occurred."]);
     private readonly Result<string, string> _stringErrorResult = Result<string, string>.Error("An error occurred.");
