@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <AssemblyName>Danom</AssemblyName>
-    <Version>2.0.0-beta6</Version>
+    <Version>2.0.0</Version>
 
     <!-- General info -->
     <Description>Option and Result types for C# to simplify functional programming.</Description>
@@ -26,6 +26,7 @@
     <PackageTags>monads;error-handling;option-type;option;result;railway-oriented-programming;result-type</PackageTags>
     <PackageProjectUrl>https://github.com/pimbrouwers/Danom</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageIcon>icon.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <RepositoryType>git</RepositoryType>
@@ -38,6 +39,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="../../../assets/icon.png">
+      <Pack>true</Pack>
+      <PackagePath>$(PackageIconUrl)</PackagePath>
+    </None>
     <None Include="../../../README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 

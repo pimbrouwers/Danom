@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <AssemblyName>Danom.MinimalApi</AssemblyName>
-    <Version>2.0.0-beta4</Version>
+    <Version>2.0.0</Version>
 
     <!-- General info -->
     <Description>ASP.NET Core Minimal API support for Danom.</Description>
@@ -26,6 +26,7 @@
     <PackageTags>aspnetcore;mvc;validation;danom;</PackageTags>
     <PackageProjectUrl>https://github.com/pimbrouwers/Danom</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageIcon>icon.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <RepositoryType>git</RepositoryType>
@@ -38,7 +39,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="./README.md" Pack="true" PackagePath="\" />
+    <None Include="../../../assets/icon.png">
+      <Pack>true</Pack>
+      <PackagePath>$(PackageIconUrl)</PackagePath>
+    </None>
+    <None Include="../../../README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -46,7 +51,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Danom" Version="2.0.0-beta5" />
+    <PackageReference Include="Danom" Version="2.*" />
   </ItemGroup>
 
 </Project>
