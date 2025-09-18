@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Danom.MinimalApi.TypedResults;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Xunit;
 
 public static class TypedDanomResultExtensionsTests {
@@ -14,6 +15,7 @@ public static class TypedDanomResultExtensionsTests {
             var option = Option.Some(new SomeType(123));
 
             var httpResult = Results.Extensions.Option(option);
+            Assert.IsType<Results<Ok<SomeType>, NotFound>>(httpResult);
 
             var response = await httpResult.ToResponse();
             Assert.Equal(StatusCodes.Status200OK, response.StatusCode);
@@ -25,7 +27,8 @@ public static class TypedDanomResultExtensionsTests {
             var value = new SomeType(123);
             var option = Option.Some(new SomeType(123));
 
-            var httpResult = Results.Extensions.Option(option, () => throw new UnreachableException());
+            var httpResult = Results.Extensions.Option(option, TypedResults.NotFound);
+            Assert.IsType<Results<Ok<SomeType>, NotFound>>(httpResult);
 
             var response = await httpResult.ToResponse();
             Assert.Equal(StatusCodes.Status200OK, response.StatusCode);
@@ -34,9 +37,10 @@ public static class TypedDanomResultExtensionsTests {
 
         [Fact]
         public static async Task None_NoConversion_404() {
-            var option = Option.None();
+            var option = Option<SomeType>.NoneValue;
 
             var httpResult = Results.Extensions.Option(option);
+            Assert.IsType<Results<Ok<SomeType>, NotFound>>(httpResult);
 
             var response = await httpResult.ToResponse();
             Assert.Equal(StatusCodes.Status404NotFound, response.StatusCode);
@@ -44,9 +48,10 @@ public static class TypedDanomResultExtensionsTests {
 
         [Fact]
         public static async Task None_WithConversion_UsesConversion() {
-            var option = Option.None();
+            var option = Option<SomeType>.NoneValue;
 
             var httpResult = Results.Extensions.Option(option, TypedResults.Conflict);
+            Assert.IsType<Results<Ok<SomeType>, Conflict>>(httpResult);
 
             var response = await httpResult.ToResponse();
             Assert.Equal(StatusCodes.Status409Conflict, response.StatusCode);
@@ -60,6 +65,7 @@ public static class TypedDanomResultExtensionsTests {
             var result = Result<SomeType>.Ok(new SomeType(123));
 
             var httpResult = Results.Extensions.Result(result);
+            Assert.IsType<Results<Ok<SomeType>, BadRequest<ResultErrors>>>(httpResult);
 
             var response = await httpResult.ToResponse();
             Assert.Equal(StatusCodes.Status200OK, response.StatusCode);
@@ -72,6 +78,7 @@ public static class TypedDanomResultExtensionsTests {
             var result = Result<SomeType>.Ok(new SomeType(123));
 
             var httpResult = Results.Extensions.Result(result, IResult (_) => throw new UnreachableException());
+            Assert.IsType<Results<Ok<SomeType>, IResult>>(httpResult);
 
             var response = await httpResult.ToResponse();
             Assert.Equal(StatusCodes.Status200OK, response.StatusCode);
@@ -84,6 +91,7 @@ public static class TypedDanomResultExtensionsTests {
             var result = Result<int, SomeType>.Error(error);
 
             var httpResult = Results.Extensions.Result(result);
+            Assert.IsType<Results<Ok<int>, BadRequest<SomeType>>>(httpResult);
 
             var response = await httpResult.ToResponse();
             Assert.Equal(StatusCodes.Status400BadRequest, response.StatusCode);
@@ -96,6 +104,7 @@ public static class TypedDanomResultExtensionsTests {
             var result = Result<int, SomeType>.Error(error);
 
             var httpResult = Results.Extensions.Result(result, TypedResults.NotFound);
+            Assert.IsType<Results<Ok<int>, NotFound<SomeType>>>(httpResult);
 
             var response = await httpResult.ToResponse();
             Assert.Equal(StatusCodes.Status404NotFound, response.StatusCode);
