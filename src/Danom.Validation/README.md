@@ -83,29 +83,28 @@ public sealed class AttendeeValidator : BaseValidator<Attendee>
     }
 }
 
+var validator = new AttendeeValidator();
 // validate an instance of Attendee
-Validate<Attendee>
-    .Using<AttendeeValidator>(new(
-        Name: "John Doe",
-        Age: 30,
-        Phone: "+14055551234",
-        Email: Option<string>.Some("john@doe.com"),
-        MailingAddress: Option.Some("123 Main St, Toronto, Ontario, Canada"),
-        Interests: ["C#", "ASP.NET"]))
+validator.Validate(new(
+    Name: "John Doe",
+    Age: 30,
+    Phone: "+14055551234",
+    Email: Option<string>.Some("john@doe.com"),
+    MailingAddress: Option.Some("123 Main St, Toronto, Ontario, Canada"),
+    Interests: ["C#", "ASP.NET"]))
     .Match(
         ok: x => Console.WriteLine("Input is valid: {0}", x),
         error: e => Console.WriteLine("Input is invalid: {0}", e));
 
 // or, if you don't care about the error message(s) use Result.ToOption() to
 // flatten the result to an Option<T>
-Validate<Attendee>
-    .Using<AttendeeValidator>(new(
-        Name: "",
-        Age: -1,
-        Phone: "123",
-        Email: Option<string>.NoneValue,
-        MailingAddress: Option<string>.Some("invalid mailing address"),
-        Interests: ["a"]))
+validator.Validate(new(
+    Name: "",
+    Age: -1,
+    Phone: "123",
+    Email: Option<string>.NoneValue,
+    MailingAddress: Option<string>.Some("invalid mailing address"),
+    Interests: ["a"]))
     .ToOption()
     .Match(
         some: x => Console.WriteLine("Input is valid: {0}", x),
