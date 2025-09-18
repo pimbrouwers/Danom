@@ -27,7 +27,7 @@
     <PackageProjectUrl>https://github.com/pimbrouwers/Danom</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>icon.png</PackageIcon>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageReadmeFile>NUGET.md</PackageReadmeFile>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/pimbrouwers/Danom</RepositoryUrl>
@@ -43,7 +43,7 @@
       <Pack>true</Pack>
       <PackagePath>$(PackageIconUrl)</PackagePath>
     </None>
-    <None Include="../../../README.md" Pack="true" PackagePath="\" />
+    <None Include="../../../NUGET.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
 </Project>
