@@ -327,18 +327,24 @@ namespace Danom {
     /// </summary>
     public static class Option {
         /// <summary>
-        /// Creates a new <see cref="Option{T}"/> with <see cref="Unit"/> value.
+        /// An Option of <see cref="Unit"/> with no value.
         /// </summary>
-        /// <returns></returns>
-        public static Option<Unit> Some() =>
-            Option<Unit>.Some(Unit.Value);
+        public static Option<Unit> NoneValue =>
+            Option<Unit>.NoneValue;
 
         /// <summary>
         /// Creates a new <see cref="Option{T}"/> with <see cref="Unit"/> value.
         /// </summary>
         /// <returns></returns>
         public static Option<Unit> None() =>
-            Option<Unit>.NoneValue;
+            Option.NoneValue;
+
+        /// <summary>
+        /// Creates a new <see cref="Option{T}"/> with <see cref="Unit"/> value.
+        /// </summary>
+        /// <returns></returns>
+        public static Option<Unit> Some() =>
+            Option<Unit>.Some(Unit.Value);
 
         /// <summary>
         /// Creates a new <see cref="Option{T}"/> with the specified value, with its

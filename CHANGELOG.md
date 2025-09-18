@@ -2,7 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## Unreleased
+
+- `Option.NoneValue` alias for `Option<Unit>.NoneValue`.
+
+## [2.0.0] - 2025-09-18
 
 ### Added
 
