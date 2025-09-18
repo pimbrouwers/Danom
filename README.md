@@ -258,6 +258,26 @@ var resultErrorsKeyedMulti =
     Result<int>.Error("error-key", ["An error occurred", "Another error occurred"]);
 ```
 
+## Unit
+
+Danom provides a `Unit` type to represent the absence of a value. This type is useful in functional programming as a way to represent the absence of a meaningful value. It acts as a placeholder when a function needs to return something, but there is no actual data to return—similar to `void` in C#, but as a real type that can be used in generic code, composed in monads like `Option` and `Result`, or passed as a value. This enables more consistent and expressive APIs, especially when working with functional patterns, pipelines, or asynchronous workflows where a type is always required.
+
+```csharp
+using Danom;
+
+void Log(string message) => Console.WriteLine(message);
+
+// Convert an Action to a Func that returns Unit
+Func<string, Unit> logFunc = Log.ToUnitFunc();
+
+// Use in a functional pipeline
+Option<string> maybeMessage = Option.Some("Hello, world!");
+
+maybeMessage
+    // Logs the message and returns Option<Unit>
+    .Map(logFunc);
+```
+
 ## Procedural Programming
 
 Inevitably you'll need to interact with these functional types in a procedural way. Both [Option](#option-tryget) and [Result](#result) provide a `TryGet` method to retrieve the underlying value. This method will return a `bool` indicating whether the value was successfully retrieved and the value itself as an output parameter.
@@ -276,7 +296,6 @@ else {
     Console.WriteLine("No value");
 }
 ```
-
 
 ### Result `TryGet` and `TryGetError`
 

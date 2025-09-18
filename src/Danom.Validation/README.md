@@ -84,6 +84,7 @@ public sealed class AttendeeValidator : BaseValidator<Attendee>
 }
 
 var validator = new AttendeeValidator();
+
 // validate an instance of Attendee
 validator.Validate(new(
     Name: "John Doe",
