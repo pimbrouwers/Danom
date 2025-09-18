@@ -5,6 +5,17 @@
 
 Danom.Mvc is a library that provides a set of utilities to help integrate the [Danom](../../README.md) library with common tasks in ASP.NET Core [MVC](#mvc) and [Razor Pages](#razor-pages) applications.
 
+## Key Features
+
+- Render views based on the presence of `Option` and `Result` types.
+- Inject `ResultErrors` into the model state for easy error reporting.
+
+## Design Goals
+
+- Make it easy to work with `Option` and `Result` types in ASP.NET MVC applications.
+- Provide sensible defaults while allowing customization.
+- Integrate seamlessly with existing ASP.NET Core MVC and Razor Pages patterns.
+
 ## Getting Started
 
 Install the [Danom.Mvc](https://www.nuget.org/packages/Danom.Mvc/) NuGet package:

@@ -5,6 +5,16 @@
 
 Danom.MinimalApi is a library that provides a set of utilities to help integrate the [Danom](../../README.md) library with common tasks in ASP.NET Core Minimal API applications.
 
+## Key Features
+
+- Extension methods for converting `Option<T>` and `Result<T, TError>` types to `IResult` responses.
+- Support for both standard and typed results in Minimal APIs.
+
+## Design Goals
+
+- Simplify the handling of optional and result-based data in Minimal APIs.
+- Provide a clean and intuitive API for developers familiar with Danom and ASP.NET Core.
+
 ## Getting Started
 
 Install the [Danom.MinimalApi](https://www.nuget.org/packages/Danom.MinimalApi/) NuGet package:

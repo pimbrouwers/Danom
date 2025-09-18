@@ -2,7 +2,7 @@
 [![NuGet Version](https://img.shields.io/nuget/v/Danom.Validation.svg)](https://www.nuget.org/packages/Danom.Validation)
 [![build](https://github.com/pimbrouwers/Danom/actions/workflows/build.yml/badge.svg)](https://github.com/pimbrouwers/Danom/actions/workflows/build.yml)
 
-One of the places the `Result` type really shines is input validation. It's a natural step in most workflows to validate input data before processing it, and the `Result` type is a great way to handle this. The [Danom.Validation](https://www.nuget.org/packages/Danom.Validation/) library provides an API for defining validation rules and checking input data against those rules, returning a `Result<T, ResultErrors>` that contains either the validated data or an error message.
+Danom.Validation is a library that provides an API for defining validation rules and checking input data against those rules, returning a `Result<T, ResultErrors>` that contains either the validated data or an error message.
 
 ## Key Features
 
