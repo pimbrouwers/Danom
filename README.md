@@ -1,7 +1,6 @@
 <div align="center">
 
 ![Danom](https://github.com/pimbrouwers/Danom/blob/master/assets/banner.png?raw=true)
-
 [![NuGet Version](https://img.shields.io/nuget/v/Danom.svg)](https://www.nuget.org/packages/Danom)
 [![build](https://github.com/pimbrouwers/Danom/actions/workflows/build.yml/badge.svg)](https://github.com/pimbrouwers/Danom/actions/workflows/build.yml)
 [![license](https://img.shields.io/github/license/pimbrouwers/Danom.svg)](https://github.com/pimbrouwers/Danom/blob/master/LICENSE)
@@ -26,10 +25,9 @@ Danom provides Option and Result types for C#, inspired by F#. It’s designed t
 - Exhaustive matching to prevent null reference exceptions.
 - Fluent API for chaining operations, including async support.
 - Built-in error handling with [ResultErrors](#built-in-error-type).
-- Includes:
-    - An API for [parsing strings](#string-parsing) into .NET primitives and value types.
-    - Input validation via [Danom.Validation](src/Danom.Validation/README.md).
-    - Integration with [ASP.NET MVC](#aspnet-core-mvc-integration) and [ASP.NET Minimal API](src/Danom.MinimalApi/README.md#getting-started).
+- An API for [parsing strings](#string-parsing) into .NET primitives and value types.
+- Input validation via [Danom.Validation](src/Danom.Validation/README.md).
+- Integration with [ASP.NET MVC](#aspnet-core-mvc-integration) and [ASP.NET Minimal API](src/Danom.MinimalApi/README.md).
 
 ## Design Goals
 
@@ -53,11 +51,11 @@ OR
 PM>  Install-Package Danom
 ```
 
-### Looking for [Danom.Validation](https://www.nuget.org/packages/Danom.Validation/), [Danom.MinimalApi](https://www.nuget.org/packages/Danom.MinimalApi/) or [Danom.Mvc](https://www.nuget.org/packages/Danom.Mvc/)?
+### Looking for Validation or ASP.NET Core Integration?
 
-- Get started with [Danom.Validation](src/Danom.Validation/README.md#getting-started).
-- Get started with [Danom.MinimalApi](src/Danom.MinimalApi/README.md#getting-started).
-- Get started with [Danom.Mvc](src/Danom.Mvc/README.md#getting-started).
+- Get started with [Danom.Validation](src/Danom.Validation/README.md).
+- Get started with [Danom.MinimalApi](src/Danom.MinimalApi/README.md).
+- Get started with [Danom.Mvc](src/Danom.Mvc/README.md).
 
 ### Quick Start
 
@@ -410,18 +408,6 @@ Danom is integrated with ASP.NET Core MVC (and Razor Pages) via [Danom.Mvc](src/
 ### ASP.NET Core Minimal API Integration
 
 Danom is integrated with ASP.NET Core Minimal API via [Danom.MinimalApi](src/Danom.MinimalApi/README.md). This library provides a set of utilities to help integrate the core types with common tasks in ASP.NET Core Minimal API applications.
-
-## Contribute
-
-Thank you for considering contributing to Danom, and to those who have already contributed! We appreciate (and actively resolve) PRs of all shapes and sizes.
-
-We kindly ask that before submitting a pull request, you first submit an [issue](https://github.com/pimbrouwers/Danom/issues) or open a [discussion](https://github.com/pimbrouwers/Danom/discussions).
-
-If functionality is added to the API, or changed, please kindly update the relevant [document](https://github.com/pimbrouwers/Danom/tree/master/docs). Unit tests must also be added and/or updated before a pull request can be successfully merged.
-
-Only pull requests which pass all build checks and comply with the general coding guidelines can be approved.
-
-If you have any further questions, submit an [issue](https://github.com/pimbrouwers/Danom/issues) or open a [discussion](https://github.com/pimbrouwers/Danom/discussions).
 
 ## Find a bug?
 
