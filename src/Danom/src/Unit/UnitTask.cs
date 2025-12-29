@@ -15,5 +15,13 @@ namespace Danom {
             await task;
             return Unit.Value;
         }
+
+        /// <summary>
+        /// Converts the specified value task to a task that returns <see cref="Unit"/>.
+        /// </summary>
+        /// <param name="task"></param>
+        /// <returns></returns>
+        public static Task<Unit> ToUnitAsync(this ValueTask task) =>
+            task.AsTask().ToUnitAsync();
     }
 }

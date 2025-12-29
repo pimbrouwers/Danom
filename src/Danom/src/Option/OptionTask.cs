@@ -337,5 +337,254 @@ namespace Danom {
             CancellationToken? cancellationToken = null) =>
             (await x.WaitOrCancel(cancellationToken)).ToOption();
 
+
+
+        //
+        // ValueTask
+        //
+
+        /// <summary>
+        /// If the Option is Some evaluate the some delegate, otherwise none.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="U"></typeparam>
+        /// <param name="optionTask"></param>
+        /// <param name="some"></param>
+        /// <param name="none"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public static async Task<U> MatchAsync<T, U>(
+            this ValueTask<Option<T>> optionTask,
+            Func<T, Task<U>> some,
+            Func<Task<U>> none,
+            CancellationToken? cancellationToken = null) {
+            var option = await optionTask.AsTask().WaitOrCancel(cancellationToken).ConfigureAwait(false);
+            return await option.Match(some, none).WaitOrCancel(cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// If the Option is Some evaluate the some delegate, otherwise none.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="U"></typeparam>
+        /// <param name="optionTask"></param>
+        /// <param name="some"></param>
+        /// <param name="none"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public static async Task<U> MatchAsync<T, U>(
+            this ValueTask<Option<T>> optionTask,
+            Func<T, U> some,
+            Func<U> none,
+            CancellationToken? cancellationToken = null) =>
+            (await optionTask.AsTask().WaitOrCancel(cancellationToken).ConfigureAwait(false)).Match(some, none);
+
+        /// <summary>
+        /// Evaluates the bind delegate if the Option is Some otherwise return None.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="U"></typeparam>
+        /// <param name="optionTask"></param>
+        /// <param name="bind"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public static Task<Option<U>> BindAsync<T, U>(
+            this ValueTask<Option<T>> optionTask,
+            Func<T, Task<Option<U>>> bind,
+            CancellationToken? cancellationToken = null) =>
+            optionTask.AsTask().BindAsync(bind, cancellationToken);
+
+        /// <summary>
+        /// Evaluates the bind delegate if the Option is Some otherwise return None.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="U"></typeparam>
+        /// <param name="optionTask"></param>
+        /// <param name="bind"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public static Task<Option<U>> BindAsync<T, U>(
+            this ValueTask<Option<T>> optionTask,
+            Func<T, Option<U>> bind,
+            CancellationToken? cancellationToken = null) =>
+            optionTask.AsTask().BindAsync(bind, cancellationToken);
+
+        /// <summary>
+        /// Evaluates the map delegate if the Option is Some otherwise return None.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="U"></typeparam>
+        /// <param name="optionTask"></param>
+        /// <param name="map"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public static Task<Option<U>> MapAsync<T, U>(
+            this ValueTask<Option<T>> optionTask,
+            Func<T, Task<U>> map,
+            CancellationToken? cancellationToken = null) =>
+            optionTask.AsTask().MapAsync(map, cancellationToken);
+
+        /// <summary>
+        /// Evaluates the map delegate if the Option is Some otherwise return None.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="U"></typeparam>
+        /// <param name="optionTask"></param>
+        /// <param name="map"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public static Task<Option<U>> MapAsync<T, U>(
+            this ValueTask<Option<T>> optionTask,
+            Func<T, U> map,
+            CancellationToken? cancellationToken = null) =>
+            optionTask.AsTask().MapAsync(map, cancellationToken);
+
+        /// <summary>
+        /// Returns the value of the Option if it is T otherwise return default.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="optionTask"></param>
+        /// <param name="defaultValue"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public static Task<T> DefaultValueAsync<T>(
+            this ValueTask<Option<T>> optionTask,
+            T defaultValue,
+            CancellationToken? cancellationToken = null) =>
+            optionTask.AsTask().DefaultValueAsync(defaultValue, cancellationToken);
+
+        /// <summary>
+        /// Returns the value of the Option if it is T otherwise return default.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="optionTask"></param>
+        /// <param name="defaultValue"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public static Task<T> DefaultValueAsync<T>(
+            this ValueTask<Option<T>> optionTask,
+            Task<T> defaultValue,
+            CancellationToken? cancellationToken = null) =>
+            optionTask.AsTask().DefaultValueAsync(defaultValue, cancellationToken);
+
+        /// <summary>
+        /// Returns the value of the Option if it is T otherwise evaluate default.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="optionTask"></param>
+        /// <param name="defaultWith"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public static Task<T> DefaultWithAsync<T>(
+            this ValueTask<Option<T>> optionTask,
+            Func<Task<T>> defaultWith,
+            CancellationToken? cancellationToken = null) =>
+            optionTask.AsTask().DefaultWithAsync(defaultWith, cancellationToken);
+
+        /// <summary>
+        /// Returns the value of the Option if it is T otherwise evaluate default.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="optionTask"></param>
+        /// <param name="defaultWith"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public static Task<T> DefaultWithAsync<T>(
+            this ValueTask<Option<T>> optionTask,
+            Func<T> defaultWith,
+            CancellationToken? cancellationToken = null) =>
+            optionTask.AsTask().DefaultWithAsync(defaultWith, cancellationToken);
+
+        /// <summary>
+        /// Return the Option if it is Some, otherwise return the specified Option.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="optionTask"></param>
+        /// <param name="ifNone"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public static Task<Option<T>> OrElseAsync<T>(
+            this ValueTask<Option<T>> optionTask,
+            Task<Option<T>> ifNone,
+            CancellationToken? cancellationToken = null) =>
+            optionTask.AsTask().OrElseAsync(ifNone, cancellationToken);
+
+        /// <summary>
+        /// Return the Option if it is Some, otherwise return the specified Option.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="optionTask"></param>
+        /// <param name="ifNone"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public static Task<Option<T>> OrElseAsync<T>(
+            this ValueTask<Option<T>> optionTask,
+            Option<T> ifNone,
+            CancellationToken? cancellationToken = null) =>
+            optionTask.AsTask().OrElseAsync(ifNone, cancellationToken);
+
+        /// <summary>
+        /// Return the Option if it is Some, otherwise return the specified Option.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="optionTask"></param>
+        /// <param name="ifNoneWith"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public static Task<Option<T>> OrElseWithAsync<T>(
+            this ValueTask<Option<T>> optionTask,
+            Func<Task<Option<T>>> ifNoneWith,
+            CancellationToken? cancellationToken = null) =>
+            optionTask.AsTask().OrElseWithAsync(ifNoneWith, cancellationToken);
+
+        /// <summary>
+        /// Return the Option if it is Some, otherwise return the specified Option.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="optionTask"></param>
+        /// <param name="ifNoneWith"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public static Task<Option<T>> OrElseWithAsync<T>(
+            this ValueTask<Option<T>> optionTask,
+            Func<Option<T>> ifNoneWith,
+            CancellationToken? cancellationToken = null) =>
+            optionTask.AsTask().OrElseWithAsync(ifNoneWith, cancellationToken);
+
+        /// <summary>
+        /// Converts a nullable value to an option.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="x"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public static async Task<Option<T>> ToOptionAsync<T>(
+            this ValueTask<T> x,
+            CancellationToken? cancellationToken = null) =>
+            (await x.AsTask().WaitOrCancel(cancellationToken).ConfigureAwait(false)).ToOption();
+
+        /// <summary>
+        /// Converts a nullable strict to an option.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="x"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public static async Task<Option<T>> ToOptionAsync<T>(
+            this ValueTask<T?> x,
+            CancellationToken? cancellationToken = null) where T : struct =>
+            (await x.AsTask().WaitOrCancel(cancellationToken).ConfigureAwait(false)).ToOption();
+
+        /// <summary>
+        /// Converts a nullable string to an option.
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public static async Task<Option<string>> ToOptionAsync(
+            this ValueTask<string?> x,
+            CancellationToken? cancellationToken = null) =>
+            (await x.AsTask().WaitOrCancel(cancellationToken).ConfigureAwait(false)).ToOption();
+
     }
 }

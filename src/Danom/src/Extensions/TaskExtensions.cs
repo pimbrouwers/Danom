@@ -19,4 +19,18 @@ namespace Danom {
             return tcs.Task;
         }
     }
+
+    internal static class ValueTaskExtensions {
+        internal static async Task<T> WaitOrCancel<T>(this ValueTask<T> valueTask, CancellationToken? token = null) {
+            if (token is CancellationToken t) {
+                t.ThrowIfCancellationRequested();
+                var task = valueTask.AsTask();
+                await Task.WhenAny(task, t.WhenCanceled());
+                t.ThrowIfCancellationRequested();
+                return await task;
+            }
+
+            return await valueTask;
+        }
+    }
 }

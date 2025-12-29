@@ -200,16 +200,37 @@ namespace Danom {
         /// </summary>
         /// <param name="other"></param>
         /// <returns></returns>
-        public bool Equals(Result<T, TError> other) =>
-            Match(
-                ok: x1 =>
-                    other.Match(
-                        ok: x2 => x1 != null && x2 != null && x2.Equals(x1),
-                        error: _ => false),
-                error: e1 =>
-                    other.Match(
-                        ok: _ => false,
-                        error: e2 => e2 != null && e2.Equals(e1)));
+        public bool Equals(Result<T, TError> other) {
+            if (other.IsOk != IsOk) {
+                return false;
+            }
+
+            if (IsOk && other.IsOk) {
+                if (_ok is null && other._ok is null) {
+                    return true;
+                }
+
+                if (_ok is null || other._ok is null) {
+                    return false;
+                }
+
+                return _ok.Equals(other._ok);
+            }
+
+            if (IsError && other.IsError) {
+                if (_error is null && other._error is null) {
+                    return true;
+                }
+
+                if (_error is null || other._error is null) {
+                    return false;
+                }
+
+                return _error.Equals(other._error);
+            }
+
+            return false;
+        }
 
         /// <summary>
         /// Converts the <see cref="Result{T, TError}"/> to an <see cref="Option{T}"/>.
@@ -225,19 +246,30 @@ namespace Danom {
         /// Returns the hash code for the <see cref="Result{T, TError}"/>.
         /// </summary>
         /// <returns></returns>
-        public override int GetHashCode() =>
-            Match(
-                ok: x => x is null ? 0 : x.GetHashCode(),
-                error: e => e is null ? 0 : e.GetHashCode());
+        public override int GetHashCode() {
+            if (IsOk) {
+                return _ok is null ? 0 : _ok.GetHashCode();
+            }
+            else {
+                return _error is null ? 0 : _error.GetHashCode();
+            }
+        }
 
         /// <summary>
         /// Returns a string representation of the <see cref="Result{T, TError}"/>.
         /// </summary>
         /// <returns></returns>
-        public override string ToString() =>
-            Match(
-                ok: x => $"Ok({x})",
-                error: e => $"Error({e})");
+        public override string ToString() {
+            // Don't use Match to handle uninitialized state
+            if (IsOk && _ok is T okVal)
+                return $"Ok({okVal})";
+            if (IsError && _error is TError errVal) {
+                // handle default error being default(TError)
+                return errVal is null ? "Error()" : $"Error({errVal})";
+            }
+            // fallback for invalid state
+            return "Error()";
+        }
     }
 
 

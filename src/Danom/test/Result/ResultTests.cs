@@ -233,6 +233,101 @@ public sealed class ResultTTests {
         Assert.Equal(1, Result<int>.Error("Error").DefaultWith(() => 1));
         Assert.Equal(2, Result<int>.Ok(2).DefaultWith(() => 1));
     }
+
+    [Fact]
+    public void MapError() {
+        var ok = Result<int, string>.Ok(1).MapError(e => e.ToUpperInvariant());
+        AssertResult.IsOk(ok);
+
+        var err = Result<int, string>.Error("bad").MapError(e => e.ToUpperInvariant());
+        AssertResult.IsError(err);
+        err.Match(_ => Assert.Fail("Expected error"), e => Assert.Equal("BAD", e));
+    }
+
+    [Fact]
+    public void ToOption() {
+        var some = Result<int, string>.Ok(42).ToOption();
+        AssertOption.IsSome(42, some);
+
+        var none = Result<int, string>.Error("oops").ToOption();
+        AssertOption.IsNone(none);
+    }
+
+    [Fact]
+    public void DefaultWith_IsLazy() {
+        var called = false;
+        var ok = Result<int, string>.Ok(7).DefaultWith(() => { called = true; return 99; });
+        Assert.Equal(7, ok);
+        Assert.False(called);
+
+        called = false;
+        var err = Result<int, string>.Error("e").DefaultWith(() => { called = true; return 99; });
+        Assert.True(called);
+        Assert.Equal(99, err);
+    }
+
+    [Fact]
+    public void TryGet_FalseReturnsDefault() {
+        var r = Result<int, string>.Error("e");
+        Assert.False(r.TryGet(out var v));
+        Assert.Equal(default, v);
+    }
+
+    [Fact]
+    public void TryGetError_FalseReturnsDefault() {
+        var r = Result<int, string>.Ok(5);
+        Assert.False(r.TryGetError(out var e));
+        Assert.Equal(default, e);
+    }
+
+    [Fact]
+    public async Task OkAsyncFromValueTask() {
+        var result = await Result<int, string>.OkAsync(new ValueTask<int>(1).AsTask());
+        AssertResult.IsOk(result);
+        Assert.False(result.IsError);
+        Assert.Equal("Ok(1)", result.ToString());
+    }
+
+    [Fact]
+    public async Task ErrorAsyncFromValueTask() {
+        var result = await Result<int, string>.ErrorAsync(new ValueTask<string>("Error").AsTask());
+        AssertResult.IsError(result);
+        Assert.False(result.IsOk);
+        Assert.Equal("Error(Error)", result.ToString());
+    }
+
+    [Fact]
+    public void Map_SelectorExceptionPropagates() {
+        Assert.Throws<InvalidOperationException>(() =>
+            Result<int, string>.Ok(1).Map<int>(_ => throw new InvalidOperationException()));
+    }
+
+    [Fact]
+    public void Bind_SelectorExceptionPropagates() {
+        Assert.Throws<InvalidOperationException>(() =>
+            Result<int, string>.Ok(1).Bind<int>(_ => throw new InvalidOperationException()));
+    }
+
+    [Fact]
+    public void DefaultStructBehavior() {
+        var d = default(Result<int, string>);
+        Assert.False(d.IsOk);
+        Assert.True(d.IsError);
+
+        // TryGet/TryGetError return defaults and appropriate flags
+        Assert.False(d.TryGet(out var v));
+        Assert.Equal(default, v);
+
+        Assert.True(d.TryGetError(out var e));
+        Assert.Equal(default, e);
+
+        // ToString uses Error(e) with default error
+        Assert.Equal("Error()", d.ToString());
+
+        // HashCode/equality: default equals default
+        Assert.Equal(d, default);
+        Assert.Equal(d.GetHashCode(), default(Result<int, string>).GetHashCode());
+    }
 }
 
 public sealed class ResultTAsyncTests {

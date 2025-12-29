@@ -363,6 +363,23 @@ namespace Danom {
         public static async Task<Option<T>> SomeAsync<T>(
             Task<T> value,
             CancellationToken? cancellationToken = null) {
+            if (value is null) {
+                throw new ArgumentNullException(nameof(value));
+            }
+            var result = await value.WaitOrCancel(cancellationToken);
+            return Option<T>.Some(result);
+        }
+
+        /// <summary>
+        /// Creates a new <see cref="Option{T}"/> with the value of the awaited ValueTask.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="value"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public static async Task<Option<T>> SomeAsync<T>(
+            ValueTask<T> value,
+            CancellationToken? cancellationToken = null) {
             var result = await value.WaitOrCancel(cancellationToken);
             return Option<T>.Some(result);
         }

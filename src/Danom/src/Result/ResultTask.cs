@@ -282,5 +282,182 @@ namespace Danom {
             Func<Task<T>> defaultWith,
             CancellationToken? cancellationToken = null) =>
             Task.FromResult(result).DefaultWithAsync(defaultWith, cancellationToken);
+
+        /// <summary>
+        /// If Result is Ok evaluate the ok delegate, otherwise error. (ValueTask source and delegates)
+        /// </summary>
+        /// <typeparam name="T">Ok type.</typeparam>
+        /// <typeparam name="TError">Error type.</typeparam>
+        /// <typeparam name="U">Result of mapping.</typeparam>
+        /// <param name="resultTask">A ValueTask producing a Result.</param>
+        /// <param name="ok">Ok handler returning a ValueTask.</param>
+        /// <param name="error">Error handler returning a ValueTask.</param>
+        /// <param name="cancellationToken">Optional cancellation token.</param>
+        /// <returns>A Task producing U.</returns>
+        public static async Task<U> MatchAsync<T, TError, U>(
+            this ValueTask<Result<T, TError>> resultTask,
+            Func<T, ValueTask<U>> ok,
+            Func<TError, ValueTask<U>> error,
+            CancellationToken? cancellationToken = null) {
+            var res = await resultTask.AsTask().WaitOrCancel(cancellationToken).ConfigureAwait(false);
+            return await res.Match(t => ok(t).AsTask(), e => error(e).AsTask()).WaitOrCancel(cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// If Result is Ok evaluate the ok delegate, otherwise error. (ValueTask source, Task delegates)
+        /// </summary>
+        public static async Task<U> MatchAsync<T, TError, U>(
+            this ValueTask<Result<T, TError>> resultTask,
+            Func<T, Task<U>> ok,
+            Func<TError, Task<U>> error,
+            CancellationToken? cancellationToken = null) {
+            var res = await resultTask.AsTask().WaitOrCancel(cancellationToken).ConfigureAwait(false);
+            return await res.Match(ok, error).WaitOrCancel(cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// If Result is Ok evaluate the ok delegate, otherwise error. (ValueTask source, sync delegates)
+        /// </summary>
+        public static async Task<U> MatchAsync<T, TError, U>(
+            this ValueTask<Result<T, TError>> resultTask,
+            Func<T, U> ok,
+            Func<TError, U> error,
+            CancellationToken? cancellationToken = null) =>
+            (await resultTask.AsTask().WaitOrCancel(cancellationToken).ConfigureAwait(false)).Match(ok, error);
+
+        /// <summary>
+        /// Evaluates the bind delegate if Result is Ok otherwise return Error. (ValueTask source, sync bind)
+        /// </summary>
+        public static Task<Result<U, TError>> BindAsync<T, TError, U>(
+            this ValueTask<Result<T, TError>> resultTask,
+            Func<T, Result<U, TError>> bind,
+            CancellationToken? cancellationToken = null) =>
+            resultTask.AsTask().BindAsync(bind, cancellationToken);
+
+        /// <summary>
+        /// Evaluates the bind delegate if Result is Ok otherwise return Error. (ValueTask source, Task bind)
+        /// </summary>
+        public static Task<Result<U, TError>> BindAsync<T, TError, U>(
+            this ValueTask<Result<T, TError>> resultTask,
+            Func<T, Task<Result<U, TError>>> bind,
+            CancellationToken? cancellationToken = null) =>
+            resultTask.AsTask().BindAsync(bind, cancellationToken);
+
+        /// <summary>
+        /// Evaluates the bind delegate if Result is Ok otherwise return Error. (Result source, ValueTask bind)
+        /// </summary>
+        public static Task<Result<U, TError>> BindAsync<T, TError, U>(
+            this Result<T, TError> result,
+            Func<T, ValueTask<Result<U, TError>>> bind,
+            CancellationToken? cancellationToken = null) =>
+            Task.FromResult(result).BindAsync(x => bind(x).AsTask(), cancellationToken);
+
+        /// <summary>
+        /// Evaluates the map delegate if Result is Ok otherwise return Error. (ValueTask source, sync map)
+        /// </summary>
+        public static Task<Result<U, TError>> MapAsync<T, TError, U>(
+            this ValueTask<Result<T, TError>> resultTask,
+            Func<T, U> map,
+            CancellationToken? cancellationToken = null) =>
+            resultTask.AsTask().MapAsync(map, cancellationToken);
+
+        /// <summary>
+        /// Evaluates the map delegate if Result is Ok otherwise return Error. (ValueTask source, Task map)
+        /// </summary>
+        public static Task<Result<U, TError>> MapAsync<T, TError, U>(
+            this ValueTask<Result<T, TError>> resultTask,
+            Func<T, Task<U>> map,
+            CancellationToken? cancellationToken = null) =>
+            resultTask.AsTask().MapAsync(map, cancellationToken);
+
+        /// <summary>
+        /// Evaluates the map delegate if Result is Ok otherwise return Error. (Result source, ValueTask map)
+        /// </summary>
+        public static Task<Result<U, TError>> MapAsync<T, TError, U>(
+            this Result<T, TError> result,
+            Func<T, ValueTask<U>> map,
+            CancellationToken? cancellationToken = null) =>
+            Task.FromResult(result).MapAsync(x => map(x).AsTask(), cancellationToken);
+
+        /// <summary>
+        /// Evaluates the mapError delegate if Result is Error otherwise return Ok. (ValueTask source, sync mapError)
+        /// </summary>
+        public static Task<Result<T, UError>> MapErrorAsync<T, UError>(
+            this ValueTask<Result<T, UError>> resultTask,
+            Func<UError, UError> mapError,
+            CancellationToken? cancellationToken = null) =>
+            resultTask.AsTask().MapErrorAsync(mapError, cancellationToken);
+
+        /// <summary>
+        /// Evaluates the mapError delegate if Result is Error otherwise return Ok. (ValueTask source, Task mapError)
+        /// </summary>
+        public static Task<Result<T, UError>> MapErrorAsync<T, UError>(
+            this ValueTask<Result<T, UError>> resultTask,
+            Func<UError, Task<UError>> mapError,
+            CancellationToken? cancellationToken = null) =>
+            resultTask.AsTask().MapErrorAsync(mapError, cancellationToken);
+
+        /// <summary>
+        /// Evaluates the mapError delegate if Result is Error otherwise return Ok. (Result source, ValueTask mapError)
+        /// </summary>
+        public static Task<Result<T, UError>> MapErrorAsync<T, UError>(
+            this Result<T, UError> result,
+            Func<UError, ValueTask<UError>> mapError,
+            CancellationToken? cancellationToken = null) =>
+            Task.FromResult(result).MapErrorAsync(e => mapError(e).AsTask(), cancellationToken);
+
+        /// <summary>
+        /// Returns the value of Result if it is T, otherwise returns the specified default value. (ValueTask source, sync default)
+        /// </summary>
+        public static Task<T> DefaultValueAsync<T, TError>(
+            this ValueTask<Result<T, TError>> resultTask,
+            T defaultValue,
+            CancellationToken? cancellationToken = null) =>
+            resultTask.AsTask().DefaultValueAsync(defaultValue, cancellationToken);
+
+        /// <summary>
+        /// Returns the value of Result if it is T, otherwise returns the specified default value. (ValueTask source, Task default)
+        /// </summary>
+        public static Task<T> DefaultValueAsync<T, TError>(
+            this ValueTask<Result<T, TError>> resultTask,
+            Task<T> defaultValue,
+            CancellationToken? cancellationToken = null) =>
+            resultTask.AsTask().DefaultValueAsync(defaultValue, cancellationToken);
+
+        /// <summary>
+        /// Returns the value of Result if it is T, otherwise returns the specified default value. (ValueTask source, ValueTask default)
+        /// </summary>
+        public static Task<T> DefaultValueAsync<T, TError>(
+            this ValueTask<Result<T, TError>> resultTask,
+            ValueTask<T> defaultValue,
+            CancellationToken? cancellationToken = null) =>
+            resultTask.AsTask().DefaultValueAsync(defaultValue.AsTask(), cancellationToken);
+
+        /// <summary>
+        /// Returns the value of Result if it is T, otherwise returns the specified default value via factory. (ValueTask source, Task factory)
+        /// </summary>
+        public static Task<T> DefaultWithAsync<T, TError>(
+            this ValueTask<Result<T, TError>> resultTask,
+            Func<Task<T>> defaultWith,
+            CancellationToken? cancellationToken = null) =>
+            resultTask.AsTask().DefaultWithAsync(defaultWith, cancellationToken);
+
+        /// <summary>
+        /// Returns the value of Result if it is T, otherwise returns the specified default value via factory. (ValueTask source, sync factory)
+        /// </summary>
+        public static Task<T> DefaultWithAsync<T, TError>(
+            this ValueTask<Result<T, TError>> resultTask,
+            Func<T> defaultWith,
+            CancellationToken? cancellationToken = null) =>
+            resultTask.AsTask().DefaultWithAsync(defaultWith, cancellationToken);
+
+        /// <summary>
+        /// Returns the value of Result if it is T, otherwise returns the specified default value via factory. (Result source, ValueTask factory)
+        /// </summary>
+        public static Task<T> DefaultWithAsync<T, TError>(
+            this Result<T, TError> result,
+            Func<ValueTask<T>> defaultWith,
+            CancellationToken? cancellationToken = null) =>
+            Task.FromResult(result).DefaultWithAsync(() => defaultWith().AsTask(), cancellationToken);
     }
 }
