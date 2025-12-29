@@ -19,7 +19,7 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
 
     <!-- AOT for net8.0 and greater -->
-    <IsAotCompatible Condition="'$(TargetFramework)' == 'net8.0' or '$(TargetFramework)' == 'net9.0'">true</IsAotCompatible>
+    <IsAotCompatible Condition="'$(TargetFramework)' == 'net8.0'">true</IsAotCompatible>
 
     <!-- NuGet config -->
     <PackageId>Danom</PackageId>
