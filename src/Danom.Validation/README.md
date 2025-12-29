@@ -67,19 +67,17 @@ public sealed class AttendeeValidator : BaseValidator<Attendee>
 
         // required optional field (must be Some and valid)
         // using built-in email check
-        Rule("Email", x => x.Email,
-            Check.Required(Check.String.IsEmailAddress));
+        Required("Email", x => x.Email, Check.String.IsEmailAddress);
 
         // optional field (can be None or Some and valid)
         // demonstrating use of multiple optional checks
-        Rule("Mailing Address", x => x.MailingAddress, Check.Optional([
+        Optional("Mailing Address", x => x.MailingAddress, [
             Check.String.IsNotEmpty,
             Check.String.IsLengthOrGreaterThan(10) ]);
 
         // collection check, ensuring each item in the collection
         // is at least 2 characters long
-        Rule("Interests", x => x.Interests,
-            Check.Enumerable.ForEach(Check.String.IsLengthOrGreaterThan(2)));
+        ForEach("Interests", x => x.Interests, Check.String.IsLengthOrGreaterThan(2));
     }
 }
 
@@ -162,9 +160,13 @@ Rule("Email", x => x.Email, Check.String.IsEmailAddress);
 
 // a rule checking a sequence of values
 Rule("Tags", x => x.Tags, Check.Enumerable.ForEach(Check.String.IsNotEmpty));
+// or,
+ForEach("Tags", x => x.Tags, Check.String.IsNotEmpty);
 
 // a rule for an optional field
 Rule(x => x.OptionalAge, Check.Optional(Check.IsGreaterThan(18)));
+// or,
+Optional("OptionalAge", x => x.OptionalAge, Check.IsGreaterThan(18));
 ```
 
 ## Built-in Rules
@@ -332,22 +334,22 @@ public sealed class TestInputValidator : BaseValidator<TestInput> {
             x => field => x == -1 ? Result.Error($"This is not an acceptable response for '{field}'") : Result.Ok());
 
         // optional, single rule
-        Rule(x => x.OptionalIntValue,
-            Check.Optional(Check.IsGreaterThanOrEqualTo(1)));
+        Optional(x => x.OptionalIntValue,
+            Check.IsGreaterThanOrEqualTo(1));
 
         // optional, multiple rules
-        Rule("OptionalIntValue", x => x.OptionalIntValue, Check.Optional([
+        Optional("OptionalIntValue", x => x.OptionalIntValue, [
             Check.IsGreaterThanOrEqualTo(1),
-            Check.IsLessThanOrEqualTo(100)]));
+            Check.IsLessThanOrEqualTo(100)]);
 
         // required, single rule
-        Rule(x => x.StringOption,
-            Check.Required(Check.String.IsLengthBetween(3, 100)));
+        Required(x => x.StringOption,
+            Check.String.IsLengthBetween(3, 100));
 
         // required, multiple rules
-        Rule("StringOption", x => x.StringOption, Check.Required([
+        Required("StringOption", x => x.StringOption, [
             Check.String.IsNotEmpty,
-            Check.String.IsLengthBetween(3, 100) ]));
+            Check.String.IsLengthBetween(3, 100) ]);
 
         // collection rules
         Rule("Phones", x => x.Phones, [
@@ -359,8 +361,8 @@ public sealed class TestInputValidator : BaseValidator<TestInput> {
             Check.String.IsEmailAddress);
 
         // collection single rule
-        Rule("AlternateEmails", x => x.AlternateEmails,
-            Check.Enumerable.ForEach(Check.String.IsEmailAddress));
+        ForEach("AlternateEmails", x => x.AlternateEmails,
+            Check.String.IsEmailAddress);
     }
 }
 ```
