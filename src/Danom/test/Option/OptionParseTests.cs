@@ -39,8 +39,6 @@ public sealed class OptionParseTests {
         AssertOption.IsSome(Option.Some("-2147483648").Bind(intOption.TryParse));
         AssertOption.IsSome(intOption.TryParse("-2147483648"));
         AssertOption.IsSome(intOption.TryParse("2147483647"));
-        AssertOption.IsSome(intOption.TryParse("-2147483648"));
-        AssertOption.IsSome(intOption.TryParse("2147483647"));
     }
 
     [Fact]
@@ -188,10 +186,6 @@ public sealed class OptionParseTests {
         AssertOption.IsSome(TimeSpanOption.TryParseExact("10675199.02:48:05.4775807", "c", _culture));
         AssertOption.IsSome(TimeSpanOption.TryParseExact("3:17:14:48.153", "g", _culture));
         AssertOption.IsSome(TimeSpanOption.TryParseExact("3:17:14:48.153", "G", _culture));
-
-        AssertOption.IsSome(TimeSpanOption.TryParseExact("10675199.02:48:05.4775807", "c", _culture));
-        AssertOption.IsSome(TimeSpanOption.TryParseExact("3:17:14:48.153", "g", _culture));
-        AssertOption.IsSome(TimeSpanOption.TryParseExact("3:17:14:48.153", "G", _culture));
     }
 
     enum Borp {
@@ -205,5 +199,260 @@ public sealed class OptionParseTests {
         AssertOption.IsNone(EnumOption.TryParse<Borp>("danom"));
         AssertOption.IsSome(EnumOption.TryParse<Borp>("Meep"));
         AssertOption.IsSome(EnumOption.TryParse<Borp>("Morp"));
+    }
+
+    [Fact]
+    public void EnumOptionTryParse_CaseInsensitiveAndNumeric() {
+        AssertOption.IsSome(EnumOption.TryParse<Borp>("meep"));
+        AssertOption.IsSome(EnumOption.TryParse<Borp>("1"));
+        AssertOption.IsSome(EnumOption.TryParse<Borp>("0"));
+        AssertOption.IsNone(EnumOption.TryParse<Borp>("2"));
+    }
+
+    [Fact]
+    public void TryParse_EmptyStringIsNone() {
+        AssertOption.IsNone(boolOption.TryParse(string.Empty));
+        AssertOption.IsNone(byteOption.TryParse(string.Empty));
+        AssertOption.IsNone(shortOption.TryParse(string.Empty));
+        AssertOption.IsNone(intOption.TryParse(string.Empty));
+        AssertOption.IsNone(longOption.TryParse(string.Empty));
+        AssertOption.IsNone(decimalOption.TryParse(string.Empty));
+        AssertOption.IsNone(doubleOption.TryParse(string.Empty));
+        AssertOption.IsNone(floatOption.TryParse(string.Empty));
+        AssertOption.IsNone(GuidOption.TryParse(string.Empty));
+        AssertOption.IsNone(DateTimeOption.TryParse(string.Empty));
+        AssertOption.IsNone(DateOnlyOption.TryParse(string.Empty));
+        AssertOption.IsNone(TimeOnlyOption.TryParse(string.Empty));
+        AssertOption.IsNone(DateTimeOffsetOption.TryParse(string.Empty));
+        AssertOption.IsNone(TimeSpanOption.TryParse(string.Empty, _culture));
+    }
+
+    [Fact]
+    public void boolOptionTryParse_CaseAndWhitespace() {
+        AssertOption.IsSome(boolOption.TryParse(" TRUE "));
+        AssertOption.IsSome(boolOption.TryParse("False"));
+        AssertOption.IsNone(boolOption.TryParse("1"));
+    }
+
+    [Fact]
+    public void byteOptionTryParse_Edges() {
+        AssertOption.IsNone(byteOption.TryParse("-1"));
+        AssertOption.IsNone(byteOption.TryParse("256"));
+        AssertOption.IsSome(byteOption.TryParse(" 255 "));
+    }
+
+    [Fact]
+    public void shortOptionTryParse_OverflowPlusWhitespace() {
+        AssertOption.IsNone(shortOption.TryParse("32768"));
+        AssertOption.IsNone(shortOption.TryParse("-32769"));
+        AssertOption.IsSome(shortOption.TryParse(" +123 "));
+    }
+
+    [Fact]
+    public void intOptionTryParse_OverflowPlusWhitespace() {
+        AssertOption.IsNone(intOption.TryParse("2147483648"));
+        AssertOption.IsNone(intOption.TryParse("-2147483649"));
+        AssertOption.IsSome(intOption.TryParse(" +42 "));
+    }
+
+    [Fact]
+    public void longOptionTryParse_OverflowPlusWhitespace() {
+        AssertOption.IsNone(longOption.TryParse("9223372036854775808"));
+        AssertOption.IsNone(longOption.TryParse("-9223372036854775809"));
+        AssertOption.IsSome(longOption.TryParse(" -42 "));
+    }
+
+    [Fact]
+    public void doubleOptionTryParse_SpecialValues() {
+        var nan = doubleOption.TryParse("NaN");
+        nan.Match(d => Assert.True(double.IsNaN(d)), () => Assert.Fail("Expected Some"));
+
+        var pinf = doubleOption.TryParse("Infinity");
+        pinf.Match(d => Assert.True(double.IsPositiveInfinity(d)), () => Assert.Fail("Expected Some"));
+
+        var ninf = doubleOption.TryParse("-Infinity");
+        ninf.Match(d => Assert.True(double.IsNegativeInfinity(d)), () => Assert.Fail("Expected Some"));
+    }
+
+    [Fact]
+    public void floatOptionTryParse_SpecialValues() {
+        var nan = floatOption.TryParse("NaN");
+        nan.Match(f => Assert.True(float.IsNaN(f)), () => Assert.Fail("Expected Some"));
+
+        var pinf = floatOption.TryParse("Infinity");
+        pinf.Match(f => Assert.True(float.IsPositiveInfinity(f)), () => Assert.Fail("Expected Some"));
+
+        var ninf = floatOption.TryParse("-Infinity");
+        ninf.Match(f => Assert.True(float.IsNegativeInfinity(f)), () => Assert.Fail("Expected Some"));
+    }
+
+    [Fact]
+    public void GuidOptionTryParse_WhitespaceAndEmpty() {
+        AssertOption.IsSome(GuidOption.TryParse(" 11111111-1111-1111-1111-111111111111 "));
+        AssertOption.IsNone(GuidOption.TryParse(""));
+    }
+
+    [Fact]
+    public void GuidOptionTryParseExact_CaseInsensitiveAndInvalidFormat() {
+        AssertOption.IsSome(GuidOption.TryParseExact("11111111111111111111111111111111", "n"));
+        AssertOption.IsNone(GuidOption.TryParseExact("00000000-0000-0000-0000-000000000000", "Q"));
+    }
+
+    [Fact]
+    public void DateTimeOptionTryParse_AllowsWhitespaceIso() {
+        AssertOption.IsSome(DateTimeOption.TryParse(" 0001-01-01T00:00:00.0000000 "));
+    }
+
+    [Fact]
+    public void DateOnlyOptionTryParseExact_CustomFormat() {
+        AssertOption.IsSome(DateOnlyOption.TryParseExact("20240131", "yyyyMMdd", _culture));
+    }
+
+    [Fact]
+    public void TimeOnlyOptionTryParseExact_CustomFormat() {
+        AssertOption.IsSome(TimeOnlyOption.TryParseExact("235959", "HHmmss", _culture));
+    }
+
+    [Fact]
+    public void DateTimeOffsetOptionTryParse_ZuluAndWhitespace() {
+        AssertOption.IsSome(DateTimeOffsetOption.TryParse("2020-01-01T00:00:00Z"));
+        AssertOption.IsSome(DateTimeOffsetOption.TryParse(" 2020-01-01T00:00:00+00:00 "));
+    }
+
+    [Fact]
+    public void TimeSpanOptionTryParse_NegativeAndWhitespace() {
+        AssertOption.IsSome(TimeSpanOption.TryParse(" -00:00:01 ", _culture));
+    }
+
+    [Fact]
+    public void TimeSpanOptionTryParseExact_InvalidFormat() {
+        AssertOption.IsNone(TimeSpanOption.TryParseExact("00:00:00", "X", _culture));
+    }
+
+    [Fact]
+    public void byteOptionTryParse_WithStyles_Hex() {
+        // Default (invariant, Integer) should not accept hex
+        AssertOption.IsNone(byteOption.TryParse("FF"));
+        // Hex with styles should work
+        AssertOption.IsSome((byte)255, byteOption.TryParse("FF", NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture));
+    }
+
+    [Fact]
+    public void shortOptionTryParse_WithStyles_Hex() {
+        AssertOption.IsNone(shortOption.TryParse("7FFF"));
+        AssertOption.IsSome((short)32767, shortOption.TryParse("7FFF", NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture));
+    }
+
+    [Fact]
+    public void intOptionTryParse_WithStylesAndProvider_AllowsThousands() {
+        var us = CultureInfo.CreateSpecificCulture("en-US");
+        AssertOption.IsNone(intOption.TryParse("1,234")); // no thousands by default
+        AssertOption.IsSome(1234, intOption.TryParse("1,234", NumberStyles.Integer | NumberStyles.AllowThousands, us));
+    }
+
+    [Fact]
+    public void longOptionTryParse_WithStylesAndProvider_AllowsThousands() {
+        var us = CultureInfo.CreateSpecificCulture("en-US");
+        var s = "9,223,372,036,854,775,807";
+        AssertOption.IsNone(longOption.TryParse(s));
+        AssertOption.IsSome(9223372036854775807L, longOption.TryParse(s, NumberStyles.Integer | NumberStyles.AllowThousands, us));
+    }
+
+    [Fact]
+    public void decimalOptionTryParse_WithProvider_FrCulture() {
+        var fr = CultureInfo.CreateSpecificCulture("fr-FR");
+        var nf = fr.NumberFormat;
+        // Build "1 234,56" or "1 234,56" depending on platform (uses fr separators)
+        var s = 1234.56m.ToString("N", fr);
+        AssertOption.IsNone(decimalOption.TryParse(s)); // invariant expects '.' decimal and no thousands
+        AssertOption.IsSome(1234.56m, decimalOption.TryParse(s, NumberStyles.Number, fr));
+    }
+
+    [Fact]
+    public void doubleOptionTryParse_WithProvider_FrCulture() {
+        var fr = CultureInfo.CreateSpecificCulture("fr-FR");
+        var nf = fr.NumberFormat;
+        // Build "1 234,5" using fr separators
+        var s = 1234.5.ToString("N", fr);
+        // Default invariant fails on comma decimal and thousands
+        AssertOption.IsNone(doubleOption.TryParse(s));
+        AssertOption.IsSome(1234.5, doubleOption.TryParse(s, NumberStyles.Float | NumberStyles.AllowThousands, fr));
+    }
+
+    [Fact]
+    public void floatOptionTryParse_WithProvider_FrCulture() {
+        var fr = CultureInfo.CreateSpecificCulture("fr-FR");
+        var s = 1234.5f.ToString("N", fr);
+        AssertOption.IsNone(floatOption.TryParse(s)); // default invariant rejects fr format
+        var r = floatOption.TryParse(s, NumberStyles.Float | NumberStyles.AllowThousands, fr);
+        r.Match(f => Assert.True(Math.Abs(f - 1234.5f) < 1e-3f), () => Assert.Fail("Expected Some"));
+    }
+
+    [Fact]
+    public void DateTimeOptionTryParse_WithProvider_FrCulture() {
+        var fr = CultureInfo.CreateSpecificCulture("fr-FR");
+        var s = "31/12/2020 23:59:59";
+        AssertOption.IsNone(DateTimeOption.TryParse(s)); // default invariant
+        AssertOption.IsSome(DateTimeOption.TryParse(s, fr, DateTimeStyles.None));
+    }
+
+    [Fact]
+    public void DateTimeOptionTryParseExact_WithProviderAndFormat() {
+        var fr = CultureInfo.CreateSpecificCulture("fr-FR");
+        var s = "31/12/2020 23:59:59";
+        AssertOption.IsNone(DateTimeOption.TryParseExact(s, "O", fr)); // wrong format
+        AssertOption.IsSome(DateTimeOption.TryParseExact(s, "dd/MM/yyyy HH:mm:ss", fr));
+    }
+
+    [Fact]
+    public void DateTimeOffsetOptionTryParse_WithProvider_FrCulture() {
+        var fr = CultureInfo.CreateSpecificCulture("fr-FR");
+        var s = "31/12/2020 23:59:59 +01:00";
+        AssertOption.IsNone(DateTimeOffsetOption.TryParse(s));
+        AssertOption.IsSome(DateTimeOffsetOption.TryParse(s, fr, DateTimeStyles.None));
+    }
+
+    [Fact]
+    public void DateTimeOffsetOptionTryParseExact_WithProviderAndFormat() {
+        var fr = CultureInfo.CreateSpecificCulture("fr-FR");
+        var s = "31/12/2020 23:59:59 +01:00";
+        AssertOption.IsSome(DateTimeOffsetOption.TryParseExact(s, "dd/MM/yyyy HH:mm:ss zzz", fr, DateTimeStyles.None));
+    }
+
+    [Fact]
+    public void DateOnlyOptionTryParse_WithProvider_FrCulture() {
+        var fr = CultureInfo.CreateSpecificCulture("fr-FR");
+        var s = "31/12/2020";
+        AssertOption.IsNone(DateOnlyOption.TryParse(s)); // invariant expects yyyy-MM-dd
+        AssertOption.IsSome(DateOnlyOption.TryParse(s, fr, DateTimeStyles.None));
+    }
+
+    [Fact]
+    public void DateOnlyOptionTryParseExact_WithProviderAndFormat() {
+        var fr = CultureInfo.CreateSpecificCulture("fr-FR");
+        var s = "31/12/2020";
+        AssertOption.IsSome(DateOnlyOption.TryParseExact(s, "dd/MM/yyyy", fr, DateTimeStyles.None));
+    }
+
+    [Fact]
+    public void TimeOnlyOptionTryParseExact_WithProviderAndFormat() {
+        var fr = CultureInfo.CreateSpecificCulture("fr-FR");
+        var s = "23:59:59";
+        AssertOption.IsSome(TimeOnlyOption.TryParseExact(s, "HH:mm:ss", fr, DateTimeStyles.None));
+    }
+
+    [Fact]
+    public void TimeSpanOptionTryParse_WithProvider_FrCultureDecimalComma() {
+        var fr = CultureInfo.CreateSpecificCulture("fr-FR");
+        var s = "1:02:03,5"; // 1 hour, 2 minutes, 3.5 seconds (comma decimal)
+        AssertOption.IsNone(TimeSpanOption.TryParse(s)); // invariant expects '.'
+        AssertOption.IsSome(TimeSpanOption.TryParse(s, fr));
+    }
+
+    [Fact]
+    public void TimeSpanOptionTryParseExact_WithProvider_GeneralShort() {
+        var fr = CultureInfo.CreateSpecificCulture("fr-FR");
+        var s = "1:02:03,5"; // matches "g" with fr decimal comma
+        AssertOption.IsSome(TimeSpanOption.TryParseExact(s, "g", fr));
     }
 }
