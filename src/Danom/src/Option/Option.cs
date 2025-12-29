@@ -171,6 +171,19 @@ namespace Danom {
         }
 
         /// <summary>
+        /// Creates a new <see cref="Option{T}"/> with the value of the awaited ValueTask.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public static async Task<Option<T>> SomeAsync(
+            ValueTask<T> value,
+            CancellationToken? cancellationToken = null) {
+            var result = await value.WaitOrCancel(cancellationToken);
+            return Some(result);
+        }
+
+        /// <summary>
         /// An Option of <see cref="Option{T}"/> with no value.
         /// </summary>
         /// <returns></returns>

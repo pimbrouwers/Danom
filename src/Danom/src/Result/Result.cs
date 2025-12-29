@@ -154,6 +154,14 @@ namespace Danom {
             Ok(await valueTask);
 
         /// <summary>
+        /// Creates <see cref="Result{T, TError}"/> with the value of the awaited ValueTask.
+        /// </summary>
+        /// <param name="valueTask"></param>
+        /// <returns></returns>
+        public static async Task<Result<T, TError>> OkAsync(ValueTask<T> valueTask) =>
+            Ok(await valueTask);
+
+        /// <summary>
         /// Creates a new <see cref="Result{T, TError}"/> with the specified error.
         /// </summary>
         /// <param name="errors"></param>
@@ -167,6 +175,14 @@ namespace Danom {
         /// <param name="errors"></param>
         /// <returns></returns>
         public static async Task<Result<T, TError>> ErrorAsync(Task<TError> errors) =>
+            Error(await errors);
+
+        /// <summary>
+        /// Creates <see cref="Result{T, TError}"/> with the value of the awaited ValueTask.
+        /// </summary>
+        /// <param name="errors"></param>
+        /// <returns></returns>
+        public static async Task<Result<T, TError>> ErrorAsync(ValueTask<TError> errors) =>
             Error(await errors);
 
         /// <summary>

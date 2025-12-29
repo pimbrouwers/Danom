@@ -2,9 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
-## Unreleased
+## [2.1.0] - 2025-12-29
 
+## Added
+
+- Comprehensive `ValueTask` support for Option, Result, and Unit types.
+- `net10.0` support added to `Danom.MinimalApi` and `Danom.Mvc` packages.
 - `Option.NoneValue` alias for `Option<Unit>.NoneValue`.
+- Danom.Validation, rule overloads for `Option<T>` marking them `Required()` or `Optional()`, and collection support using `ForEach()`.
+- TryParse overloads supporting all formatting options (ex: `intOption.TryParse(string value, NumberStyles styles, IFormatProvider provider)`).
 
 ## [2.0.0] - 2025-09-18
 
