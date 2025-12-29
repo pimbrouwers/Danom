@@ -13,7 +13,7 @@ namespace Danom {
             return await task;
         }
 
-        internal static Task WhenCanceled(this CancellationToken cancellationToken) {
+        internal static Task<bool> WhenCanceled(this CancellationToken cancellationToken) {
             var tcs = new TaskCompletionSource<bool>();
             cancellationToken.Register(s => ((TaskCompletionSource<bool>)s!).SetResult(true), tcs);
             return tcs.Task;

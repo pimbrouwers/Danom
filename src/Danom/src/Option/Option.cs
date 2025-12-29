@@ -10,8 +10,7 @@ namespace Danom {
     /// using nulls, and allows for more expressive code with exhaustive matching.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public readonly struct Option<T>
-        : IEquatable<Option<T>>, IComparable<Option<T>> {
+    public readonly struct Option<T> : IEquatable<Option<T>>, IComparable<Option<T>> {
         private readonly T _some;
 
         internal Option(T t) {
