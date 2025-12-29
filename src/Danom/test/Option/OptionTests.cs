@@ -173,4 +173,88 @@ public sealed class OptionTests {
         Assert.True(Option<int>.Some(1) != Option<int>.Some(2));
         Assert.True(Option<int>.Some(1) != Option<int>.NoneValue);
     }
+
+    [Fact]
+    public void DefaultWith_IsLazy() {
+        var called = false;
+        var noneResult = Option<int>.NoneValue.DefaultWith(() => { called = true; return 5; });
+        Assert.True(called);
+        Assert.Equal(5, noneResult);
+
+        called = false;
+        var someResult = Option<int>.Some(3).DefaultWith(() => { called = true; return 5; });
+        Assert.False(called);
+        Assert.Equal(3, someResult);
+    }
+
+    [Fact]
+    public void OrElseWith_IsLazy() {
+        var called = false;
+        var noneOrElse = Option<int>.NoneValue.OrElseWith(() => { called = true; return Option<int>.Some(9); });
+        Assert.True(called);
+        AssertOption.IsSome(9, noneOrElse);
+
+        called = false;
+        var someOrElse = Option<int>.Some(2).OrElseWith(() => { called = true; return Option<int>.Some(9); });
+        Assert.False(called);
+        AssertOption.IsSome(2, someOrElse);
+    }
+
+    [Fact]
+    public void Map_SelectorNotInvokedForNone() {
+        var called = false;
+        var res = Option<int>.NoneValue.Map(x => { called = true; return x + 1; });
+        Assert.False(called);
+        AssertOption.IsNone(res);
+    }
+
+    [Fact]
+    public void Bind_SelectorNotInvokedForNone() {
+        var called = false;
+        var res = Option<int>.NoneValue.Bind(x => { called = true; return Option<int>.Some(x + 1); });
+        Assert.False(called);
+        AssertOption.IsNone(res);
+    }
+
+    [Fact]
+    public void Map_SelectorExceptionPropagates() {
+        Assert.Throws<InvalidOperationException>(() => Option<int>.Some(1).Map<int>(_ => throw new InvalidOperationException()));
+    }
+
+    [Fact]
+    public void TryGet_ReturnsDefaultForNone_ValueTypeAndRefType() {
+        // value type
+        if (Option<int>.NoneValue.TryGet(out var vi)) {
+            Assert.Fail("Expected None");
+        }
+        else {
+            Assert.Equal(default(int), vi);
+        }
+        // reference type
+        if (Option<string>.NoneValue.TryGet(out var vs)) {
+            Assert.Fail("Expected None");
+        }
+        else {
+            Assert.Null(vs);
+        }
+    }
+
+    [Fact]
+    public void ToString_None_IgnoresFormatAndProvider() {
+        var culture = new CultureInfo("fr-FR");
+        Assert.Equal("None", Option<int>.NoneValue.ToString("None", "F2", culture));
+        Assert.Equal("None", Option<DateTime>.NoneValue.ToString("None", "yyyy-MM-dd", culture));
+    }
+
+    [Fact]
+    public void ToString_NumberFormattingWithCulture() {
+        var culture = new CultureInfo("fr-FR");
+        Assert.Equal("12 345,68", Option<double>.Some(12345.6789).ToString("", "N2", culture));
+    }
+
+    [Fact]
+    public void GetHashCode_ForSomeUsesValueHash() {
+        var some = Option<string>.Some("abc");
+        Assert.Equal("abc".GetHashCode(), some.GetHashCode());
+    }
 }
