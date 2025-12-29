@@ -418,6 +418,38 @@ namespace Danom.Validation {
                 };
 
             /// <summary>
+            /// Checks if each element in the collection satisfies all specified
+            /// rules.
+            /// </summary>
+            /// <typeparam name="T"></typeparam>
+            /// <param name="rules"></param>
+            /// <returns></returns>
+            public static ValidatorRule<IEnumerable<T>> ForEach<T>(params ValidatorRule<T>[] rules) =>
+                values => field => {
+                    var resultErrors = new ResultErrors();
+                    var isValid = true;
+
+                    foreach (var item in values) {
+                        foreach (var rule in rules) {
+                            var itemRule = rule(item);
+                            var result = itemRule(field);
+
+                            if (result.TryGetError(out var errors)) {
+                                if (isValid) {
+                                    isValid = false;
+                                }
+
+                                resultErrors.Add(errors);
+                            }
+                        }
+                    }
+
+                    return isValid
+                        ? Result.Ok()
+                        : Result.Error(resultErrors);
+                };
+
+            /// <summary>
             /// Checks if each element in the collection satisfies a specified
             /// validator.
             /// </summary>
