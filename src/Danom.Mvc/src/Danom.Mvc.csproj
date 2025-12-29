@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <AssemblyName>Danom.Mvc</AssemblyName>
-    <Version>2.0.0</Version>
+    <Version>2.1.0</Version>
 
     <!-- General info -->
     <Description>ASP.NET Core MVC and Razor Pages support for Danom.</Description>
@@ -11,7 +11,7 @@
     <NeutralLanguage>en-CA</NeutralLanguage>
 
     <!-- Build config -->
-    <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
+    <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <DebugType>embedded</DebugType>
