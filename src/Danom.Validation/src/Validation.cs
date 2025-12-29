@@ -116,6 +116,102 @@ namespace Danom.Validation {
         /// <param name="message"></param>
         public void Rule<U>(Func<T, U> selector, IEnumerable<ValidatorRule<U>> rules, string? message = null) =>
             Rule(null, selector, rules, message);
+
+        /// <summary>
+        /// Adds a required validation rule for a specific optional field in the input value.
+        /// </summary>
+        /// <typeparam name="U"></typeparam>
+        /// <param name="field"></param>
+        /// <param name="selector"></param>
+        /// <param name="rules"></param>
+        /// <param name="message"></param>
+        public void Required<U>(string? field, Func<T, Option<U>> selector, ValidatorRule<U>[] rules, string? message = null) =>
+            Rule(field, selector, Check.Required(rules), message);
+
+        /// <summary>
+        /// Adds a required validation rule for a specific optional field in the input value.
+        /// </summary>
+        /// <typeparam name="U"></typeparam>
+        /// <param name="field"></param>
+        /// <param name="selector"></param>
+        /// <param name="rule"></param>
+        /// <param name="message"></param>
+        public void Required<U>(string? field, Func<T, Option<U>> selector, ValidatorRule<U> rule, string? message = null) =>
+            Required(field, selector, new ValidatorRule<U>[] { rule }, message);
+
+        /// <summary>
+        /// Adds a required validation rule for a specific optional field in the input value.
+        /// </summary>
+        /// <typeparam name="U"></typeparam>
+        /// <param name="selector"></param>
+        /// <param name="rule"></param>
+        /// <param name="message"></param>
+        public void Required<U>(Func<T, Option<U>> selector, ValidatorRule<U> rule, string? message = null) =>
+            Required(null, selector, rule, message);
+
+        /// <summary>
+        /// Adds an optional validation rule for a specific optional field in the input value.
+        /// </summary>
+        /// <typeparam name="U"></typeparam>
+        /// <param name="field"></param>
+        /// <param name="selector"></param>
+        /// <param name="rules"></param>
+        /// <param name="message"></param>
+        public void Optional<U>(string? field, Func<T, Option<U>> selector, ValidatorRule<U>[] rules, string? message = null) =>
+            Rule(field, selector, Check.Optional(rules), message);
+
+        /// <summary>
+        /// Adds an optional validation rule for a specific optional field in the input value.
+        /// </summary>
+        /// <typeparam name="U"></typeparam>
+        /// <param name="field"></param>
+        /// <param name="selector"></param>
+        /// <param name="rule"></param>
+        /// <param name="message"></param>
+        public void Optional<U>(string? field, Func<T, Option<U>> selector, ValidatorRule<U> rule, string? message = null) =>
+            Optional(field, selector, new ValidatorRule<U>[] { rule }, message);
+
+        /// <summary>
+        /// Adds an optional validation rule for a specific optional field in the input value.
+        /// </summary>
+        /// <typeparam name="U"></typeparam>
+        /// <param name="selector"></param>
+        /// <param name="rule"></param>
+        /// <param name="message"></param>
+        public void Optional<U>(Func<T, Option<U>> selector, ValidatorRule<U> rule, string? message = null) =>
+            Optional(null, selector, rule, message);
+
+        /// <summary>
+        /// Adds a validation rule that applies to each element in a collection field in the input value.
+        /// </summary>
+        /// <typeparam name="U"></typeparam>
+        /// <param name="field"></param>
+        /// <param name="selector"></param>
+        /// <param name="rules"></param>
+        /// <param name="message"></param>
+        public void ForEach<U>(string? field, Func<T, IEnumerable<U>> selector, ValidatorRule<U>[] rules, string? message = null) =>
+            Rule(field, selector, Check.Enumerable.ForEach(rules), message);
+
+        /// <summary>
+        /// Adds a validation rule that applies to each element in a collection field in the input value.
+        /// </summary>
+        /// <typeparam name="U"></typeparam>
+        /// <param name="field"></param>
+        /// <param name="selector"></param>
+        /// <param name="rule"></param>
+        /// <param name="message"></param>
+        public void ForEach<U>(string? field, Func<T, IEnumerable<U>> selector, ValidatorRule<U> rule, string? message = null) =>
+            ForEach(field, selector, new ValidatorRule<U>[] { rule }, message);
+
+        /// <summary>
+        /// Adds a validation rule that applies to each element in a collection field in the input value.
+        /// </summary>
+        /// <typeparam name="U"></typeparam>
+        /// <param name="selector"></param>
+        /// <param name="rule"></param>
+        /// <param name="message"></param>
+        public void ForEach<U>(Func<T, IEnumerable<U>> selector, ValidatorRule<U> rule, string? message = null) =>
+            ForEach(null, selector, rule, message);
     }
 
     /// <summary>

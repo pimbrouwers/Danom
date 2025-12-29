@@ -102,22 +102,20 @@ public sealed class TestInputValidator : BaseValidator<TestInput> {
             x => field => x == -1 ? Result.Error($"This is not an acceptable response for '{field}'") : Result.Ok());
 
         // optional, single rule
-        Rule(x => x.OptionalIntValue,
-            Check.Optional(Check.IsGreaterThanOrEqualTo(1)));
+        Optional(x => x.OptionalIntValue, Check.IsGreaterThanOrEqualTo(1));
 
         // optional, multiple rules
-        Rule("OptionalIntValue", x => x.OptionalIntValue, Check.Optional([
+        Optional("OptionalIntValue", x => x.OptionalIntValue, [
             Check.IsGreaterThanOrEqualTo(1),
-            Check.IsLessThanOrEqualTo(100)]));
+            Check.IsLessThanOrEqualTo(100)]);
 
         // required, single rule
-        Rule(x => x.StringOption,
-            Check.Required(Check.String.IsLengthBetween(3, 100)));
+        Required(x => x.StringOption, Check.String.IsLengthBetween(3, 100));
 
         // required, multiple rules
-        Rule("StringOption", x => x.StringOption, Check.Required([
+        Required("StringOption", x => x.StringOption, [
             Check.String.IsNotEmpty,
-            Check.String.IsLengthBetween(3, 100) ]));
+            Check.String.IsLengthBetween(3, 100) ]);
 
         // collection rules
         Rule("Phones", x => x.Phones, [
@@ -129,8 +127,12 @@ public sealed class TestInputValidator : BaseValidator<TestInput> {
             Check.String.IsEmailAddress);
 
         // collection single rule
-        Rule("AlternateEmails", x => x.AlternateEmails,
-            Check.Enumerable.ForEach(Check.String.IsEmailAddress));
+        ForEach("AlternateEmails", x => x.AlternateEmails, Check.String.IsEmailAddress);
+
+        // collection multiple rules
+        ForEach("AlternateEmails", x => x.AlternateEmails, [
+            Check.String.IsEmailAddress,
+            Check.String.IsLengthOrGreaterThan(5) ]);
     }
 }
 
