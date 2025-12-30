@@ -22,7 +22,7 @@ Danom provides Option and Result types for C#, inspired by F#. It’s designed t
 
 ## Key Features
 
-- Implementation of common monads: [Option](#option) and [Result](#result).
+- Implementation of common monads: [Option](#option), [Result](#result) and [Choice].(#choice).
 - Exhaustive matching to prevent null reference exceptions.
 - Fluent API for chaining operations, including async support.
 - Built-in error handling with [ResultErrors](#built-in-error-type).
@@ -135,33 +135,40 @@ TryFind(nums, x => x == 1)
         none: () => Console.WriteLine("Did not find number"));
 
 // Mapping the value (i.e., I want to access the value)
-Option<int> optionSum =
+var optionSum =
     TryFind(nums, x => x == 1)
         .Map(x => x + 1);
 
 // Binding the option (i.e., when a nested operation also returns an Option)
-Option<int> optionBindSum =
+var optionBindSum =
     TryFind(nums, x => x == 1)
         .Bind(num1 =>
             TryFind(nums, x => x == 2)
                 .Map(num2 => num1 + num2));
 
 // Handling "None"
-Option<int> optionDefault =
+var optionDefault =
     TryFind(nums, x => x == 4)
         .DefaultValue(99);
 
-Option<int> optionDefaultWith =
+var optionDefaultWith =
     TryFind(nums, x => x == 4)
         .DefaultWith(() => 99); // useful if creating the value is expensive
 
-Option<int> optionOrElse =
+var optionOrElse =
     TryFind(nums, x => x == 4)
         .OrElse(Option<int>.Some(99));
 
-Option<int> optionOrElseWith =
+varoptionOrElseWith =
     TryFind(nums, x => x == 4)
         .OrElseWith(() => Option<int>.Some(99)); // useful if creating the value is expensive
+
+// Procedural style
+var result = TryFind(nums, x => x == 1);
+
+if (result.TryGet(out var value)) {
+    Console.WriteLine("Found: {0}", value);
+}
 ```
 
 ## Result
@@ -188,7 +195,7 @@ Let's create a simple inline function to divide two numbers. If the denominator 
 ```csharp
 using Danom;
 
-Result<int, string> TryDivide(int numerator, int denominator) =>
+public Result<int, string> TryDivide(int numerator, int denominator) =>
     denominator == 0
         ? Result<int, string>.Error("Cannot divide by zero")
         : Result<int, string>.Ok(numerator / denominator);
@@ -206,12 +213,12 @@ TryDivide(10, 2)
         error: e => Console.WriteLine("Error: {0}", e));
 
 // Mapping the value
-Result<int, string> resultSum =
+var resultSum =
     TryDivide(10, 2)
         .Map(x => x + 1);
 
 // Binding the result (i.e., when a nested operation also returns a Result)
-Result<int, string> resultBindSum =
+var resultBindSum =
     TryDivide(10, 2)
         .Bind(num1 =>
             TryDivide(20, 2)
@@ -219,22 +226,34 @@ Result<int, string> resultBindSum =
                     num1 + num2));
 
 // Handling errors
-Result<int, string> resultDefault =
+var resultDefault =
     TryDivide(10, 0)
         .DefaultValue(99);
 
-Result<int, string> resultDefaultWith =
+var resultDefaultWith =
     TryDivide(10, 0)
         .DefaultWith(() => 99); // useful if creating the value is expensive
 
-Result<int, string> resultOrElse =
+var resultOrElse =
     TryDivide(10, 0)
         .OrElse(Result<int, string>.Ok(99));
 
-Result<int, string> resultOrElseWith =
+var resultOrElseWith =
     TryDivide(10, 0)
         .OrElseWith(() =>
             Result<int, string>.Ok(99)); // useful if creating the value is expensive
+
+// Procedural style
+var result = TryDivide(10, 2);
+
+if (result.TryGet(out var value)) {
+    Console.WriteLine("Result: {0}", value);
+}
+
+// or, accessing the error
+if (result.TryGetError(out var error)) {
+    Console.WriteLine("Error: {0}", error);
+}
 ```
 
 ### Result Errors
@@ -257,6 +276,48 @@ var resultErrorsKeyed =
 
 var resultErrorsKeyedMulti =
     Result<int>.Error("error-key", ["An error occurred", "Another error occurred"]);
+```
+
+## Choice
+
+The `Choice` type is a discriminated union that allows you to represent a value that can be one of several different types. It is similar to the `Option` and `Result` types but supports multiple possible value types (up to 5 type parameters). This is useful when you want to model a value that can take on different forms, each with its own type.
+
+### Creating Choices
+
+```csharp
+using Danom;
+
+var choice1 = Choice<int, string>.FromT1(42); // holds an int
+var choice2 = Choice<int, string>.FromT2("Hello"); // holds a string
+```
+
+### Using Choices
+
+Choices are commonly used when a value can be one of several different types. For example, you might have a function that can return either an integer or a string based on some condition (you can imagine how this gets more interesting with complex types).
+
+```csharp
+using Danom;
+
+public Choice<int, string> GetValue(bool returnInt) =>
+    returnInt
+        ? Choice<int, string>.FromT1(42)
+        : Choice<int, string>.FromT2("Hello");
+
+GetValue(true)
+    .Match(
+        t1: x => Console.WriteLine("Got int: {0}", x),
+        t2: s => Console.WriteLine("Got string: {0}", s));
+
+// Procedural style
+var choice = GetValue(false);
+
+if (choice.TryGetT1(out var intValue)) {
+    Console.WriteLine("Got int: {0}", intValue);
+}
+
+if (choice.TryGetT2(out var stringValue)) {
+    Console.WriteLine("Got string: {0}", stringValue);
+}
 ```
 
 ## Unit
@@ -316,6 +377,21 @@ else {
 }
 ```
 
+### Choice `TryGetTn`
+
+```csharp
+using Danom;
+
+var choice = Choice<int, string>.FromT1(42);
+
+if (choice.TryGetT1(out var intValue)) {
+    Console.WriteLine("Got int: {0}", intValue);
+}
+else if (choice.TryGetT2(out var stringValue)) {
+    Console.WriteLine("Got string: {0}", stringValue);
+}
+```
+
 ## String Parsing
 
 Most applications will at some point need to parse strings into primitives and value types. This is especially true when working with external data sources.
@@ -346,67 +422,85 @@ The full API is below:
 
 ```csharp
 public static class boolOption {
-    public static Option<bool> TryParse(string? x); }
+    public static Option<bool> TryParse(string? x);
+}
 
 public static class byteOption {
-    public static Option<byte> TryParse(string? x, IFormatProvider? provider = null); }
+    public static Option<byte> TryParse(string? x, System.Globalization.NumberStyles styles, IFormatProvider? provider);
+    public static Option<byte> TryParse(string? x);
+}
 
 public static class shortOption {
+    public static Option<short> TryParse(string? x, System.Globalization.NumberStyles styles, IFormatProvider? provider);
     public static Option<short> TryParse(string? x, IFormatProvider? provider = null);
-    public static Option<short> TryParse(string? x); }
+    public static Option<short> TryParse(string? x);
+}
 
 public static class intOption {
-    public static Option<int> TryParse(string? x, IFormatProvider? provider = null);
-    public static Option<int> TryParse(string? x); }
+    public static Option<int> TryParse(string? x, System.Globalization.NumberStyles styles, IFormatProvider? provider);
+    public static Option<int> TryParse(string? x);
+}
 
 public static class longOption {
-    public static Option<long> TryParse(string? x, IFormatProvider? provider = null);
-    public static Option<long> TryParse(string? x); }
+    public static Option<long> TryParse(string? x, System.Globalization.NumberStyles styles, IFormatProvider? provider);
+    public static Option<long> TryParse(string? x);
+}
 
 public static class decimalOption {
-    public static Option<decimal> TryParse(string? x, IFormatProvider? provider = null);
-    public static Option<decimal> TryParse(string? x); }
+    public static Option<decimal> TryParse(string? x, System.Globalization.NumberStyles styles, IFormatProvider? provider);
+    public static Option<decimal> TryParse(string? x);
+}
 
 public static class doubleOption {
-    public static Option<double> TryParse(string? x, IFormatProvider? provider = null);
-    public static Option<double> TryParse(string? x); }
+    public static Option<double> TryParse(string? x, System.Globalization.NumberStyles styles, IFormatProvider? provider);
+    public static Option<double> TryParse(string? x);
+}
 
 public static class floatOption {
-    public static Option<float> TryParse(string? x, IFormatProvider? provider = null);
-    public static Option<float> TryParse(string? x); }
+    public static Option<float> TryParse(string? x, System.Globalization.NumberStyles styles, IFormatProvider? provider);
+    public static Option<float> TryParse(string? x);
+}
 
 public static class GuidOption {
-    public static Option<Guid> TryParse(string? x, IFormatProvider? provider = null);
     public static Option<Guid> TryParse(string? x);
-    public static Option<Guid> TryParseExact(string? x, string? format); }
+    public static Option<Guid> TryParseExact(string? x, string? format);
+}
 
 public static class DateTimeOffsetOption {
-    public static Option<DateTimeOffset> TryParse(string? x, IFormatProvider? provider = null);
+    public static Option<DateTimeOffset> TryParse(string? x, IFormatProvider? provider, System.Globalization.DateTimeStyles dateTimeStyles);
     public static Option<DateTimeOffset> TryParse(string? x);
-    public static Option<DateTimeOffset> TryParseExact(string? x, string? format, IFormatProvider? provider = null, DateTimeStyles dateTimeStyles = DateTimeStyles.None); }
+    public static Option<DateTimeOffset> TryParseExact(string? x, string? format, IFormatProvider? provider = null, System.Globalization.DateTimeStyles dateTimeStyles = System.Globalization.DateTimeStyles.None);
+}
 
 public static class DateTimeOption {
-    public static Option<DateTime> TryParse(string? x, IFormatProvider? provider = null);
+    public static Option<DateTime> TryParse(string? x, IFormatProvider? provider, System.Globalization.DateTimeStyles dateTimeStyles);
     public static Option<DateTime> TryParse(string? x);
-    public static Option<DateTime> TryParseExact(string? x, string? format, IFormatProvider? provider = null, DateTimeStyles dateTimeStyles = DateTimeStyles.None); }
+    public static Option<DateTime> TryParseExact(string? x, string? format, IFormatProvider? provider = null, System.Globalization.DateTimeStyles dateTimeStyles = System.Globalization.DateTimeStyles.None);
+}
 
+#if NET6_0_OR_GREATER
 public static class DateOnlyOption {
-    public static Option<DateOnly> TryParse(string? x, IFormatProvider? provider = null);
+    public static Option<DateOnly> TryParse(string? x, IFormatProvider? provider, System.Globalization.DateTimeStyles dateTimeStyles);
     public static Option<DateOnly> TryParse(string? x);
-    public static Option<DateOnly> TryParseExact(string? x, string? format, IFormatProvider? provider = null, DateTimeStyles dateTimeStyles = DateTimeStyles.None); }
+    public static Option<DateOnly> TryParseExact(string? x, string? format, IFormatProvider? provider = null, System.Globalization.DateTimeStyles dateTimeStyles = System.Globalization.DateTimeStyles.None);
+}
 
 public static class TimeOnlyOption {
-    public static Option<TimeOnly> TryParse(string? x, IFormatProvider? provider = null);
+    public static Option<TimeOnly> TryParse(string? x, IFormatProvider? provider, System.Globalization.DateTimeStyles dateTimeStyles);
     public static Option<TimeOnly> TryParse(string? x);
-    public static Option<TimeOnly> TryParseExact(string? x, string? format, IFormatProvider? provider = null, DateTimeStyles dateTimeStyles = DateTimeStyles.None); }
+    public static Option<TimeOnly> TryParseExact(string? x, string? format, IFormatProvider? provider = null, System.Globalization.DateTimeStyles dateTimeStyles = System.Globalization.DateTimeStyles.None);
+}
+#endif
 
 public static class TimeSpanOption {
     public static Option<TimeSpan> TryParse(string? x, IFormatProvider? provider = null);
     public static Option<TimeSpan> TryParse(string? x);
-    public static Option<TimeSpan> TryParseExact(string? x, string? format, IFormatProvider? provider = null); }
+    public static Option<TimeSpan> TryParseExact(string? x, string? format, IFormatProvider? provider = null);
+}
 
 public static class EnumOption {
-    public static Option<TEnum> TryParse<TEnum>(string? x) where TEnum : struct; }
+    public static Option<TEnum> TryParse<TEnum>(string? x) where TEnum : struct, Enum;
+}
 ```
 
 ## Input Validation
