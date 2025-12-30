@@ -110,7 +110,7 @@ validator.Validate(new(
         none: () => Console.WriteLine("Input is invalid"));
 ```
 
-## Validation
+## A Closer Look
 
 Validation is defined by creating a validator class that specifies rules for each field or property of the type being validated.
 
