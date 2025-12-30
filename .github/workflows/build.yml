@@ -11,40 +11,41 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        dotnet-version: ['9.0.x']
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: 1
+      NUGET_PACKAGES: ${{ runner.temp }}/.nuget/packages
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
-      - name: Setup .NET Core SDK ${{ matrix.dotnet-version }}
-        uses: actions/setup-dotnet@v3
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: ${{ matrix.dotnet-version }}
+          dotnet-version: '10.0.x'
+          cache: true
+          cache-dependency-path: |
+            **/global.json
+            **/NuGet.config
+            **/*.sln
+            **/*.csproj
 
-      - name: Install solution dependencies
-        run: |
-          dotnet restore src/Danom --force-evaluate --no-http-cache --force
-          dotnet restore src/Danom.Validation --force-evaluate --no-http-cache --force
-          dotnet restore src/Danom.Mvc --force-evaluate --no-http-cache --force
-          dotnet restore src/Danom.MinimalApi --force-evaluate --no-http-cache --force
+      - name: Restore (solution)
+        run: dotnet restore Danom.sln --nologo --verbosity minimal
+
+      - name: Build (solution)
+        run: dotnet build Danom.sln -c Release --no-restore --nologo --verbosity minimal
 
       - name: Test Core
         run: |
-          dotnet build src/Danom -c Release
           dotnet test src/Danom -c Release
 
       - name: Test Validation
         run: |
-          dotnet build src/Danom.Validation -c Release
           dotnet test src/Danom.Validation -c Release
 
       - name: Test Mvc
         run: |
-          dotnet build src/Danom.Mvc -c Release
           dotnet test src/Danom.Mvc -c Release
 
       - name: Test MinimalApi
         run: |
-          dotnet build src/Danom.MinimalApi -c Release
           dotnet test src/Danom.MinimalApi -c Release
