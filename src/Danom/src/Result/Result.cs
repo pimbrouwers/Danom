@@ -11,30 +11,31 @@ namespace Danom {
     /// <typeparam name="TError"></typeparam>
     public readonly struct Result<T, TError>
         : IEquatable<Result<T, TError>> {
+        private readonly byte _state; // 1 = Ok, 2 = Error
         private readonly T _ok;
         private readonly TError _error;
 
         private Result(T t) {
+            _state = 1;
             _ok = t;
-            IsOk = true;
             _error = default!;
         }
 
         private Result(TError tError) {
+            _state = 2;
             _ok = default!;
-            IsOk = false;
             _error = tError;
         }
 
         /// <summary>
         /// Returns true if <see cref="Result{T, TError}"/> is Ok, false otherwise.
         /// </summary>
-        public bool IsOk { get; }
+        public bool IsOk => _state == 1;
 
         /// <summary>
         /// Returns true if <see cref="Result{T, TError}"/> is Error, false otherwise.
         /// </summary>
-        public bool IsError => !IsOk;
+        public bool IsError => _state == 2;
 
         /// <summary>
         /// If <see cref="Result{T, TError}"/> is Ok evaluate the ok delegate,
@@ -44,12 +45,11 @@ namespace Danom {
         /// <param name="ok"></param>
         /// <param name="error"></param>
         /// <returns></returns>
-        public U Match<U>(Func<T, U> ok, Func<TError, U> error) =>
-            IsOk && _ok is T t ?
-                ok(t) :
-                IsError && _error is TError tError ?
-                    error(tError) :
-                    throw new InvalidOperationException("Result error has not been initialized.");
+        public U Match<U>(Func<T, U> ok, Func<TError, U> error) => _state switch {
+            1 when _ok is T t => ok(t),
+            2 when _error is TError tError => error(tError),
+            _ => throw new InvalidOperationException("Result error has not been initialized."),
+        };
 
         /// <summary>
         /// If <see cref="Result{T,TError}"/> is Some, evaluates the some delegate,
@@ -217,35 +217,20 @@ namespace Danom {
         /// <param name="other"></param>
         /// <returns></returns>
         public bool Equals(Result<T, TError> other) {
-            if (other.IsOk != IsOk) {
+            if (_state != other._state) {
                 return false;
             }
 
-            if (IsOk && other.IsOk) {
-                if (_ok is null && other._ok is null) {
-                    return true;
-                }
-
-                if (_ok is null || other._ok is null) {
-                    return false;
-                }
-
-                return _ok.Equals(other._ok);
+            if (_state == 0 && other._state == 0) {
+                return true;
             }
 
-            if (IsError && other.IsError) {
-                if (_error is null && other._error is null) {
-                    return true;
-                }
+            return _state switch {
+                1 => _ok is null ? other._ok is null : _ok.Equals(other._ok),
+                2 => _error is null ? other._error is null : _error.Equals(other._error),
+                _ => false
+            };
 
-                if (_error is null || other._error is null) {
-                    return false;
-                }
-
-                return _error.Equals(other._error);
-            }
-
-            return false;
         }
 
         /// <summary>
@@ -262,30 +247,23 @@ namespace Danom {
         /// Returns the hash code for the <see cref="Result{T, TError}"/>.
         /// </summary>
         /// <returns></returns>
-        public override int GetHashCode() {
-            if (IsOk) {
-                return _ok is null ? 0 : _ok.GetHashCode();
-            }
-            else {
-                return _error is null ? 0 : _error.GetHashCode();
-            }
-        }
+        public override int GetHashCode() => _state switch {
+            1 => _ok is null ? 0 : _ok.GetHashCode(),
+            2 => _error is null ? 0 : _error.GetHashCode(),
+            _ => 0
+        };
 
         /// <summary>
         /// Returns a string representation of the <see cref="Result{T, TError}"/>.
         /// </summary>
         /// <returns></returns>
-        public override string ToString() {
-            // Don't use Match to handle uninitialized state
-            if (IsOk && _ok is T okVal)
-                return $"Ok({okVal})";
-            if (IsError && _error is TError errVal) {
-                // handle default error being default(TError)
-                return errVal is null ? "Error()" : $"Error({errVal})";
-            }
-            // fallback for invalid state
-            return "Error()";
-        }
+        public override string ToString() => _state switch {
+            1 => IsOk && _ok is T okVal ? $"Ok({okVal})" : "Ok()",
+            2 => IsError && _error is TError errVal
+                ? (errVal is null ? "Error()" : $"Error({errVal})")
+                : "Error()",
+            _ => "Error()"
+        };
     }
 
 

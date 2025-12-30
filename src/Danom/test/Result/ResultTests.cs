@@ -312,13 +312,13 @@ public sealed class ResultTTests {
     public void DefaultStructBehavior() {
         var d = default(Result<int, string>);
         Assert.False(d.IsOk);
-        Assert.True(d.IsError);
+        Assert.False(d.IsError);
 
         // TryGet/TryGetError return defaults and appropriate flags
         Assert.False(d.TryGet(out var v));
         Assert.Equal(default, v);
 
-        Assert.True(d.TryGetError(out var e));
+        Assert.False(d.TryGetError(out var e));
         Assert.Equal(default, e);
 
         // ToString uses Error(e) with default error
