@@ -10,13 +10,13 @@
 ![net6.0](https://img.shields.io/badge/net-6.0-blue.svg)
 ![netstandard2.1](https://img.shields.io/badge/netstandard-2.1-blue.svg)
 
-Option and Result types for C# to simplify functional programming.
+Option, Result and Choice types for C# to simplify functional programming.
 
 </div>
 
 ---
 
-Danom provides Option and Result types for C#, inspired by F#. It’s designed to be easy to use, efficient, and compatible with existing C# codebases. These types offer a type-safe way to represent nullable values and expected errors, while also supporting a fluent API (e.g., map, bind) for chaining operations and value transformations.
+Danom provides Option, Result and Choice types for C#, inspired by F#. It’s designed to be easy to use, efficient, and compatible with existing C# codebases. These types offer a type-safe way to represent nullable values and expected errors, while also supporting a fluent API (e.g., map, bind) for chaining operations and value transformations.
 
 ---
 
