@@ -51,7 +51,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Danom" Version="2.*" />
+    <PackageReference Include="Danom" Version="2.1.*" />
   </ItemGroup>
 
 </Project>
