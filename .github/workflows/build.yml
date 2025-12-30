@@ -13,7 +13,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DOTNET_CLI_TELEMETRY_OPTOUT: 1
-      NUGET_PACKAGES: ${{ runner.temp }}/.nuget/packages
     steps:
       - uses: actions/checkout@v4
 
@@ -23,16 +22,16 @@ jobs:
           dotnet-version: '10.0.x'
           cache: true
           cache-dependency-path: |
-            **/global.json
+            **
             **/NuGet.config
             **/*.sln
             **/*.csproj
 
       - name: Restore (solution)
-        run: dotnet restore Danom.sln --nologo --verbosity minimal
+        run: dotnet restore  --nologo --verbosity minimal
 
       - name: Build (solution)
-        run: dotnet build Danom.sln -c Release --no-restore --nologo --verbosity minimal
+        run: dotnet build  -c Release --no-restore --nologo --verbosity minimal
 
       - name: Test Core
         run: |
