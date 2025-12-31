@@ -7,6 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Danom.Validation\src\Danom.Validation.csproj" />
+    <ProjectReference Include="../../src/Danom.Validation/src/Danom.Validation.csproj" />
   </ItemGroup>
 </Project>

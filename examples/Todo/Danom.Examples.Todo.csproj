@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Danom.Validation\Danom.Validation.csproj" />
-    <ProjectReference Include="..\..\src\Danom.Mvc\Danom.Mvc.csproj" />
+    <ProjectReference Include="../../src/Danom.Validation/Danom.Validation.csproj" />
+    <ProjectReference Include="../../src/Danom.Mvc/Danom.Mvc.csproj" />
   </ItemGroup>
 </Project>
