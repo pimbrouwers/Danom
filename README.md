@@ -16,13 +16,14 @@ Option, Result and Choice types for C# to simplify functional programming.
 
 ---
 
-Danom provides Option, Result and Choice types for C#, inspired by F#. It’s designed to be easy to use, efficient, and compatible with existing C# codebases. These types offer a type-safe way to represent nullable values and expected errors, while also supporting a fluent API (e.g., map, bind) for chaining operations and value transformations.
+Danom provides Option, Result and Choice types for C#, inspired by F#. It’s designed to be easy to use, efficient, and compatible with existing C# codebases. These types offer a type-safe way to represent nullable values, expected errors and decisions, while also supporting a fluent API (e.g., map, bind) for chaining operations and value transformations.
 
 ---
 
 ## Key Features
 
-- Implementation of common monads: [Option](#option), [Result](#result) and [Choice].(#choice).
+- Implementation of common monads: [Option](#option), [Result](#result) and [Choice](#choice).
+- `Unit` type to represent the absence of a value.
 - Exhaustive matching to prevent null reference exceptions.
 - Fluent API for chaining operations, including async support.
 - Built-in error handling with [ResultErrors](#built-in-error-type).

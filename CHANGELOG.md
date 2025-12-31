@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
-## [2.1.0] - 2025-??-??
+## [2.1.1] - [Danom.MinimalApi] - 2025-12-31
+
+## Fixed
+
+- TypedResults, now backed by custom Option and Result `IResult` implementations.
+
+## [2.1.0] - 2025-12-30
 
 ## Added
 
