@@ -1,0 +1,8 @@
+@model string
+
+<h1>@(Model ?? "Default Title")</h1>
+
+@if (!ViewData.ModelState.IsValid)
+{
+    @Html.ValidationSummary()
+}

@@ -21,7 +21,8 @@ public class DanomController : Controller {
         string? viewName = null,
         Func<IActionResult>? noneAction = null,
         ResultErrors? errors = null) =>
-        this.ViewOption(
+        DanomControllerExtensions.ViewOption(
+            this,
             option: option,
             viewName: viewName,
             noneAction: noneAction,
@@ -39,7 +40,8 @@ public class DanomController : Controller {
         ResultErrors errors,
         string? viewName = null,
         object? model = null) =>
-        this.ViewResultErrors(
+        DanomControllerExtensions.ViewResultErrors(
+            this,
             errors: errors,
             viewName: viewName,
             model: model);
@@ -60,7 +62,8 @@ public class DanomController : Controller {
         Func<TError, IActionResult> errorAction,
         string? viewName = null,
         object? model = null) =>
-        this.ViewResult(
+        DanomControllerExtensions.ViewResult(
+            this,
             result: result,
             errorAction: errorAction,
             viewName: viewName,
@@ -79,7 +82,8 @@ public class DanomController : Controller {
         Result<T, ResultErrors> result,
         string? viewName = null,
         object? model = null) =>
-        this.ViewResult(
+        DanomControllerExtensions.ViewResult(
+            this,
             result: result,
             viewName: viewName,
             model: model);
@@ -112,8 +116,8 @@ public static class DanomControllerExtensions {
 
         return option.Match(
             some: x => {
-                if (viewName is not null) {
-                    return controller.View(viewName, x);
+                if (!string.IsNullOrWhiteSpace(viewName)) {
+                    return controller.View(viewName: viewName, x);
                 }
                 else {
                     return controller.View(x);

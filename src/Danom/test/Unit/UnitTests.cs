@@ -91,7 +91,7 @@ public sealed class UnitTests {
     public void ToUnitFunc_ActionOfT() {
         int received = 0;
         Action<int> a = x => received = x;
-        var f = a.ToUnitFunc<int>();
+        var f = a.ToUnitFunc();
         var r = f(7);
         Assert.Equal(7, received);
         Assert.Equal(Unit.Value, r);

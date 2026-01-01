@@ -35,17 +35,13 @@ jobs:
         run: dotnet build  -c Release --no-restore --nologo --verbosity minimal
 
       - name: Test Core
-        run: |
-          dotnet test src/Danom -c Release
+        run: dotnet test src/Danom -c Release
 
       - name: Test Validation
-        run: |
-          dotnet test src/Danom.Validation -c Release
+        run: dotnet test src/Danom.Validation -c Release
 
       - name: Test Mvc
-        run: |
-          dotnet test src/Danom.Mvc -c Release
+        run: dotnet test src/Danom.Mvc -c Release
 
       - name: Test MinimalApi
-        run: |
-          dotnet test src/Danom.MinimalApi -c Release
+        run: dotnet test src/Danom.MinimalApi -c Release
