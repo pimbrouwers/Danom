@@ -11,11 +11,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{0C88DD14-F
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "App", "App", "{2DF886D9-F4AF-D247-851D-E96B27719944}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Danom.MinimalApi.IntegrationTests.App", "test\App\Danom.MinimalApi.IntegrationTests.App.csproj", "{E3A2B761-EFC1-44C4-9421-50E265E6B4E5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Danom.MinimalApi.Tests.App", "test\App\Danom.MinimalApi.Tests.App.csproj", "{E3A2B761-EFC1-44C4-9421-50E265E6B4E5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{A4727044-5B94-F1CA-5B68-DF8E00BB2C25}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Danom.MinimalApi.IntegrationTests", "test\Tests\Danom.MinimalApi.IntegrationTests.csproj", "{13B6E102-AC94-4091-935F-813395ACA4A2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Danom.MinimalApi.Tests", "test\Tests\Danom.MinimalApi.Tests.csproj", "{13B6E102-AC94-4091-935F-813395ACA4A2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

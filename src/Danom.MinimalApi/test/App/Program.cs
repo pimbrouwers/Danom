@@ -31,26 +31,38 @@ app.MapGet("/result/error/custom", () =>
     Results.Extensions.Result(stringErrorResult,
         errorResult: error => Results.Ok(new { Message = "There was a problem", error })));
 
+app.MapGet("/result/error/problem", () =>
+    Results.Extensions.ResultProblem(errorResult));
+
+app.MapGet("/result/error/custom/problem", () =>
+    Results.Extensions.ResultProblem(stringErrorResult));
+
 // Typed Results
 app.MapGet("/typed/option/some", () =>
-    DanomHttpResults.Option(someOption));
+    DanomTypedResults.Option(someOption));
 
 app.MapGet("/typed/option/none", () =>
-    DanomHttpResults.Option(noneOption));
+    DanomTypedResults.Option(noneOption));
 
 app.MapGet("/typed/option/none/custom", () =>
-    DanomHttpResults.Option(noneOption,
+    DanomTypedResults.Option(noneOption,
         noneResult: () => Results.NotFound("Custom Not Found!")));
 
 app.MapGet("/typed/result/ok", () =>
-    DanomHttpResults.Result(okResult));
+    DanomTypedResults.Result(okResult));
 
 app.MapGet("/typed/result/error", () =>
-    DanomHttpResults.Result(errorResult));
+    DanomTypedResults.Result(errorResult));
 
 app.MapGet("/typed/result/error/custom", () =>
-    DanomHttpResults.Result(stringErrorResult,
+    DanomTypedResults.Result(stringErrorResult,
         errorResult: error => Results.Ok(new { Message = "There was a problem", error })));
+
+app.MapGet("/typed/result/error/problem", () =>
+    DanomTypedResults.ResultProblem(errorResult));
+
+app.MapGet("/typed/result/error/custom/problem", () =>
+    DanomTypedResults.ResultProblem(stringErrorResult));
 
 app.Run();
 

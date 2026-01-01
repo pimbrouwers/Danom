@@ -27,7 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../App/Danom.MinimalApi.IntegrationTests.App.csproj" />
+    <ProjectReference Include="../App/Danom.MinimalApi.Tests.App.csproj" />
     <ProjectReference Include="../../src/Danom.MinimalApi.csproj" />
   </ItemGroup>
 

@@ -175,6 +175,6 @@ public class ResultHttpResult<T, TError, [DynamicallyAccessedMembers(Methods)] T
 
     private static void PopulateMetadataInternal(MethodInfo method, IList<object> metadata, IServiceProvider services) {
         metadata.Add(new ProducesResponseTypeMetadata(StatusCodes.Status200OK, typeof(T), ["application/json"]));
-        metadata.Add(new ProducesResponseTypeMetadata(StatusCodes.Status404NotFound, typeof(TError), ["application/json"]));
+        metadata.Add(new ProducesResponseTypeMetadata(StatusCodes.Status400BadRequest, typeof(TError), ["application/json"]));
     }
 }

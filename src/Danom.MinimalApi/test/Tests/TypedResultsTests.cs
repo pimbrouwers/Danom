@@ -1,4 +1,4 @@
-namespace Danom.MinimalApi.Tests.TypedResults;
+namespace Danom.MinimalApi.Tests;
 
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -12,7 +12,7 @@ public static class TypedOptionTests {
         var value = new SomeType(123);
         var option = Option.Some(new SomeType(123));
 
-        var httpResult = DanomHttpResults.Option(option);
+        var httpResult = DanomTypedResults.Option(option);
         Assert.IsType<OptionHttpResult<SomeType>>(httpResult);
 
         var response = await httpResult.ToResponse();
@@ -25,7 +25,7 @@ public static class TypedOptionTests {
         var value = new SomeType(123);
         var option = Option.Some(new SomeType(123));
 
-        var httpResult = DanomHttpResults.Option(option, TypedResults.NotFound);
+        var httpResult = DanomTypedResults.Option(option, TypedResults.NotFound);
         Assert.IsType<OptionHttpResult<SomeType, NotFound>>(httpResult);
 
         var response = await httpResult.ToResponse();
@@ -37,7 +37,7 @@ public static class TypedOptionTests {
     public static async Task None_NoConversion_404() {
         var option = Option<SomeType>.NoneValue;
 
-        var httpResult = DanomHttpResults.Option(option);
+        var httpResult = DanomTypedResults.Option(option);
         Assert.IsType<OptionHttpResult<SomeType>>(httpResult);
 
         var response = await httpResult.ToResponse();
@@ -48,7 +48,7 @@ public static class TypedOptionTests {
     public static async Task None_WithConversion_UsesConversion() {
         var option = Option<SomeType>.NoneValue;
 
-        var httpResult = DanomHttpResults.Option(option, TypedResults.Conflict);
+        var httpResult = DanomTypedResults.Option(option, TypedResults.Conflict);
         Assert.IsType<OptionHttpResult<SomeType, Conflict>>(httpResult);
 
         var response = await httpResult.ToResponse();
@@ -62,7 +62,7 @@ public static class TypedResultTests {
         var value = new SomeType(123);
         var result = Result<SomeType>.Ok(new SomeType(123));
 
-        var httpResult = DanomHttpResults.Result(result);
+        var httpResult = DanomTypedResults.Result(result);
         Assert.IsType<ResultHttpResult<SomeType, ResultErrors>>(httpResult);
 
         var response = await httpResult.ToResponse();
@@ -75,7 +75,7 @@ public static class TypedResultTests {
         var value = new SomeType(123);
         var result = Result<SomeType>.Ok(new SomeType(123));
 
-        var httpResult = DanomHttpResults.Result(result, _ => throw new UnreachableException());
+        var httpResult = DanomTypedResults.Result(result, _ => throw new UnreachableException());
         Assert.IsType<ResultHttpResult<SomeType, ResultErrors>>(httpResult);
 
         var response = await httpResult.ToResponse();
@@ -88,7 +88,7 @@ public static class TypedResultTests {
         var error = new SomeType(123);
         var result = Result<int, SomeType>.Error(error);
 
-        var httpResult = DanomHttpResults.Result(result);
+        var httpResult = DanomTypedResults.Result(result);
         Assert.IsType<ResultHttpResult<int, SomeType>>(httpResult);
 
         var response = await httpResult.ToResponse();
@@ -101,7 +101,7 @@ public static class TypedResultTests {
         var error = new SomeType(123);
         var result = Result<int, SomeType>.Error(error);
 
-        var httpResult = DanomHttpResults.Result(result, TypedResults.NotFound);
+        var httpResult = DanomTypedResults.Result(result, TypedResults.NotFound);
         Assert.IsType<ResultHttpResult<int, SomeType, NotFound<SomeType>>>(httpResult);
 
         var response = await httpResult.ToResponse();

@@ -1,4 +1,4 @@
-namespace Danom.MinimalApi.Tests.TypedResults;
+namespace Danom.MinimalApi.Tests;
 
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;

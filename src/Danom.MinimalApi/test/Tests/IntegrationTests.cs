@@ -1,4 +1,4 @@
-namespace Danom.MinimalApi.IntegrationTests;
+namespace Danom.MinimalApi.Tests;
 
 using System.Net;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -69,5 +69,33 @@ public class MinimalApiTests : IClassFixture<WebApplicationFactory<Program>> {
         Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
         var content = await resp.Content.ReadAsStringAsync();
         Assert.Equal("{\"message\":\"There was a problem\",\"error\":\"An error occurred.\"}", content);
+    }
+
+    [Theory]
+    [InlineData("/result/error/problem")]
+    [InlineData("/typed/result/error/problem")]
+    public async Task Get_ResultProblemError_ReturnsBadRequest(string url) {
+        var resp = await _client.GetAsync(url);
+        Assert.Equal(HttpStatusCode.BadRequest, resp.StatusCode);
+        var content = await resp.Content.ReadAsStringAsync();
+        Assert.NotNull(content);
+        Assert.Contains("\"type\":\"https://tools.ietf.org/html/", content);
+        Assert.Contains("\"title\":\"An error occurred\"", content);
+        Assert.Contains("\"status\":400", content);
+        Assert.Contains("\"detail\":\"[ An error occurred. ]\"", content);
+    }
+
+    [Theory]
+    [InlineData("/result/error/custom/problem")]
+    [InlineData("/typed/result/error/custom/problem")]
+    public async Task Get_ResultProblemErrorCustom_ReturnsOkWithCustomMessage(string url) {
+        var resp = await _client.GetAsync(url);
+        Assert.Equal(HttpStatusCode.BadRequest, resp.StatusCode);
+        var content = await resp.Content.ReadAsStringAsync();
+        Assert.NotNull(content);
+        Assert.Contains("\"type\":\"https://tools.ietf.org/html/", content);
+        Assert.Contains("\"title\":\"An error occurred\"", content);
+        Assert.Contains("\"status\":400", content);
+        Assert.Contains("\"detail\":\"An error occurred.\"", content);
     }
 }

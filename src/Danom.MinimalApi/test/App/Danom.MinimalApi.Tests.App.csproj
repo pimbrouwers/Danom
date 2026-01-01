@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-     <InternalsVisibleTo Include="Danom.MinimalApi.IntegrationTests" />
+     <InternalsVisibleTo Include="Danom.MinimalApi.Tests" />
   </ItemGroup>
 
 </Project>
