@@ -3,7 +3,7 @@
 [![NuGet Version](https://img.shields.io/nuget/v/Danom.Mvc.svg)](https://www.nuget.org/packages/Danom.Mvc)
 [![build](https://github.com/pimbrouwers/Danom/actions/workflows/build.yml/badge.svg)](https://github.com/pimbrouwers/Danom/actions/workflows/build.yml)
 
-Danom.Mvc is a library that provides a set of utilities to help integrate the [Danom](../../README.md) library with common tasks in ASP.NET Core [MVC](#mvc) and [Razor Pages](#razor-pages) applications.
+Danom.Mvc is a library that provides a set of utilities to help integrate the [Danom](../README.md) library with common tasks in ASP.NET Core [MVC](#mvc) and [Razor Pages](#razor-pages) applications.
 
 ## Key Features
 
@@ -31,8 +31,7 @@ dotnet add package Danom.Mvc
 
 ## MVC
 
-The `DanomController` class extends the base controller class to provide a set of methods to help work with `Result` and `Option` types in ASP.NET Core MVC applications.
-
+The `DanomController` class extends the base controller class to provide a set of methods to help work with `Result` and `Option` types in ASP.NET Core MVC applications. These methods can also be accessed via extension methods on the `Controller` class.
 
 ### Option
 
@@ -68,6 +67,28 @@ public sealed class OptionController
             viewName: "Detail",
             noneAction: () => NotFound("Not found!"));
 }
+
+// or, using extension methods
+public sealed class OptionController
+    : Controller
+{
+    public IActionResult OptionSome() =>
+        this.ViewOption(
+            option: Option.Some("Hello world"),
+            viewName: "Detail");
+
+    // Returns the ASP.NET default `NotFound` result
+    public IActionResult OptionNone() =>
+        this.ViewOption(
+            option: Option<string>.NoneValue,
+            viewName: "Detail");
+
+    public IActionResult OptionNoneCustom() =>
+        this.ViewOption(
+            option: Option<string>.NoneValue,
+            viewName: "Detail",
+            noneAction: () => NotFound("Not found!"));
+}
 ```
 
 ### Result
@@ -95,8 +116,24 @@ public sealed class ResultController
             result: Result<string, string>.Error("An error occurred."),
             errorAction: errors => View("Detail", errors),
             viewName: "Detail");
-
 }
+
+// or, using extension methods
+public sealed class ResultController
+    : Controller
+{
+    public IActionResult ResultOk() =>
+        this.ViewResult(
+            result: Result<string, string>.Ok("Success!"),
+            viewName: "Detail");
+
+    public IActionResult ResultError() =>
+        this.ViewResult(
+            result: Result<string, string>.Error("An error occurred."),
+            errorAction: errors => View("Detail", errors),
+            viewName: "Detail");
+}
+
 ```
 
 Built into Danom is the `ResultErrors` type, which is particularly well suited for reporting model errors in ASP.NET Core MVC applications. The `ViewResultErrors` method, provided by the `DanomController` class, is a proxy for the `View` method that will inject the `ResultErrors` value into the model state.
@@ -125,6 +162,27 @@ public sealed class ResultController
     public IActionResult ResultErrorView() =>
         // can be used directly
         ViewResultErrors(
+            errors: new("An error occurred."));
+}
+
+// or, using extension methods
+public sealed class ResultController
+    : Controller
+{
+    public IActionResult ResultOk() =>
+        this.ViewResult(
+            // notice the lack of second type parameter, which is inferred to be ResultErrors
+            result: Result<string>.Ok("Success!"),
+            viewName: "Detail");
+
+    public IActionResult ResultError() =>
+        this.ViewResult(
+            result: Result<string>.Error("An error occurred."),
+            viewName: "Detail");
+
+    public IActionResult ResultErrorView() =>
+        // can be used directly
+        this.ViewResultErrors(
             errors: new("An error occurred."));
 }
 ```
@@ -189,6 +247,14 @@ public sealed class IndexModel
     }
 }
 ```
+
+## Contributing
+
+I kindly ask that before submitting a pull request, you first submit an [issue](https://github.com/pimbrouwers/Danom/issues).
+
+If functionality is added to the API, or changed, please kindly update the relevant documentation. Unit tests must also be added and/or updated before a pull request can be successfully merged.
+
+Only pull requests which pass all build checks and comply with the general coding standard can be approved.
 
 ## Find a bug?
 

@@ -389,6 +389,14 @@ else if (result.TryGetError(out var errors))
 
 For more advanced usage, see the included unit tests in the repository.
 
+## Contributing
+
+I kindly ask that before submitting a pull request, you first submit an [issue](https://github.com/pimbrouwers/Danom/issues).
+
+If functionality is added to the API, or changed, please kindly update the relevant documentation. Unit tests must also be added and/or updated before a pull request can be successfully merged.
+
+Only pull requests which pass all build checks and comply with the general coding standard can be approved.
+
 ## Find a bug?
 
 There's an [issue](https://github.com/pimbrouwers/Danom/issues) for that.

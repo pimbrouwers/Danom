@@ -3,7 +3,7 @@
 [![NuGet Version](https://img.shields.io/nuget/v/Danom.MinimalApi.svg)](https://www.nuget.org/packages/Danom.MinimalApi)
 [![build](https://github.com/pimbrouwers/Danom/actions/workflows/build.yml/badge.svg)](https://github.com/pimbrouwers/Danom/actions/workflows/build.yml)
 
-Danom.MinimalApi is a library that provides a set of utilities to help integrate the [Danom](../../README.md) library with common tasks in ASP.NET Core Minimal API applications.
+Danom.MinimalApi is a library that provides a set of utilities to help integrate the [Danom](../README.md) library with common tasks in ASP.NET Core Minimal API applications.
 
 ## Key Features
 
@@ -36,9 +36,8 @@ dotnet add package Danom.MinimalApi
 - **None**: Return `404 Not Found` (or a custom result, if provided).
 
 ```csharp
-app.MapGet("/user/{id}", (int id) =>
-{
-    Option<User> user = FindUser(id);
+app.MapGet("/user/{id}", (int id) => {
+    var user = FindUser(id);
     return Results.Extensions.Option(user);
 });
 ```
@@ -46,9 +45,8 @@ app.MapGet("/user/{id}", (int id) =>
 Or, with a custom result:
 
 ```csharp
-app.MapGet("/user/{id}", (int id) =>
-{
-    Option<User> user = FindUser(id);
+app.MapGet("/user/{id}", (int id) => {
+    var user = FindUser(id);
     return Results.Extensions.Option(user, () => Results.Conflict());
 });
 ```
@@ -56,12 +54,11 @@ app.MapGet("/user/{id}", (int id) =>
 ### Returning Result
 
 - **Ok**: Returns `200 OK` with the value.
-- **Error**: Returns `400 Bad Request` (or a custom result, if provided).
+- **Error**: Returns `400 Bad Request` (or a custom `IResult`, if provided).
 
 ```csharp
-app.MapPost("/user", (User user) =>
-{
-    Result<User, string> result = TryCreateUser(user);
+app.MapPost("/user", (User user) => {
+    var result = TryCreateUser(user);
     return Results.Extensions.Result(result);
 });
 ```
@@ -69,9 +66,8 @@ app.MapPost("/user", (User user) =>
 Or, with a custom result:
 
 ```csharp
-app.MapPost("/user", (User user) =>
-{
-    Result<User, string> result = TryCreateUser(user);
+app.MapPost("/user", (User user) => {
+    var result = TryCreateUser(user);
     return Results.Extensions.Result(result, error => Results.UnprocessableEntity());
 });
 ```
@@ -82,34 +78,62 @@ If you want to use ASP.NET Core's [typed results](https://learn.microsoft.com/en
 
 ### Returning Typed Option
 
-- **Some**: Returns `TypedResults.Ok(value)` and `200 OK`.
-- **None**: Returns `TypedResults.NotFound()` and `404 Not Found` (or a custom result, if provided).
+- **Some**: Returns `OptionHttpResult<T>` and `200 OK`.
+- **None**: Returns `OptionHttpResult<T>` and `404 Not Found` (or a custom `IResult`, if provided).
 
 ```csharp
-using Danom.MinimalApi.TypedResults;
+using Danom;
+using Danom.MinimalApi;
 
-app.MapGet("/user/{id}", (int id) =>
-{
-    Option<User> user = FindUser(id);
-    // returns TypedResults.Ok(user) or TypedResults.NotFound()
-    return Results.Extensions.Option(user);
+app.MapGet("/user/{id}", (int id) => {
+    var user = FindUser(id);
+    return DanomTypedResults.Option(user);
+});
+
+// or, with a custom error handler
+app.MapGet("/user/{id}/custom", (int id) => {
+    var user = FindUser(id);
+    return DanomTypedResults.Option(user,
+        noneResult: () => Results.NotFound("Custom not found!"));
 });
 
 ### Returning Typed Result
 
-- **Ok**: Returns `TypedResults.Ok(value)` and `200 OK`.
-- **Error**: Returns `TypedResults.BadRequest(error)` and `400 Bad Request`
+- **Ok**: Returns `ResultHttpResult<T, TError>` and `200 OK`.
+- **Error**: Returns `ResultHttpResult<T, TError>` and `400 Bad Request`
 
 ```csharp
-using Danom.MinimalApi.TypedResults;
+using Danom;
+using Danom.MinimalApi;
 
-app.MapPost("/user", (User user) =>
-{
-    Result<User, ResultErrors> result = TryCreateUser(user);
-    // returns TypedResults.Ok(user) or TypedResults.BadRequest(errors)
-    return Results.Extensions.Result(result);
+app.MapPost("/user", (User user) => {
+    var result = TryCreateUser(user);
+    return DanomTypedResults.Result(result);
 });
+
+// or, with a custom error handler
+app.MapPost("/user/custom", (User user) => {
+    var result = TryCreateUser(user);
+    return DanomTypedResults.Result(result,
+        errorResult: error => Results.Ok(new { Message = "There was a problem", error }));
+});
+
+
+// or, return a problem details response
+app.MapPost("/user/problem", (User user) => {
+    var result = TryCreateUser(user);
+    return DanomTypedResults.ResultProblem(result);
+});
+
 ```
+
+## Contributing
+
+I kindly ask that before submitting a pull request, you first submit an [issue](https://github.com/pimbrouwers/Danom/issues).
+
+If functionality is added to the API, or changed, please kindly update the relevant documentation. Unit tests must also be added and/or updated before a pull request can be successfully merged.
+
+Only pull requests which pass all build checks and comply with the general coding standard can be approved.
 
 ## Find a bug?
 

@@ -5,7 +5,7 @@
     <Version>2.1.0</Version>
 
     <!-- General info -->
-    <Description>Option and Result types for C# to simplify functional programming.</Description>
+    <Description>Option, Result, and Choice types for C# to simplify and enhance functional programming.</Description>
     <Copyright>Copyright 2025 Pim Brouwers</Copyright>
     <Authors>Pim Brouwers</Authors>
     <NeutralLanguage>en-CA</NeutralLanguage>
@@ -43,7 +43,7 @@
       <Pack>true</Pack>
       <PackagePath>$(PackageIconUrl)</PackagePath>
     </None>
-    <None Include="../../../NUGET.md" Pack="true" PackagePath="\" />
+    <None Include="../README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
 </Project>

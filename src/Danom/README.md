@@ -1,0 +1,514 @@
+# Danom
+
+[![NuGet Version](https://img.shields.io/nuget/v/Danom.svg)](https://www.nuget.org/packages/Danom)
+[![build](https://github.com/pimbrouwers/Danom/actions/workflows/build.yml/badge.svg)](https://github.com/pimbrouwers/Danom/actions/workflows/build.yml)
+[![license](https://img.shields.io/github/license/pimbrouwers/Danom.svg)](https://github.com/pimbrouwers/Danom/blob/master/LICENSE)
+![aot](https://img.shields.io/badge/aot-compatible-green.svg)
+![net8.0](https://img.shields.io/badge/net-8.0-blue.svg)
+![net6.0](https://img.shields.io/badge/net-6.0-blue.svg)
+![netstandard2.1](https://img.shields.io/badge/netstandard-2.1-blue.svg)
+
+Danom provides Option, Result and Choice types for C#, inspired by F#. It’s designed to be easy to use, efficient, and compatible with existing C# codebases. These discriminated unions offer a type-safe way to represent nullable values, expected errors and decisions, while also supporting a fluent API (e.g., map, bind) for chaining operations and value transformations.
+
+## Key Features
+
+- Implementation of common monads: [Option](#option), [Result](#result) and [Choice](#choice).
+- `Unit` type to represent the absence of a value.
+- Exhaustive matching to prevent null reference exceptions.
+- Fluent API for chaining operations, including async support.
+- Built-in error handling with [ResultErrors](#built-in-error-type).
+- An API for [parsing strings](#string-parsing) into .NET primitives and value types.
+
+## Design Goals
+
+- `netstandard2.1` compatible.
+- Simplify and enhance functional programming in C#.
+- Support both synchronous and asynchronous operations.
+- Provide opionated monads to encourage consistent use.
+- Help reduce (or eliminate) null reference exceptions.
+- Minimize overhead by creating efficients implementations.
+- Enforce exhaustive matching.
+
+## Getting Started
+
+Install the [Danom](https://www.nuget.org/packages/Danom/) NuGet package:
+
+```cmd
+dotnet add package Danom
+
+OR
+
+PM>  Install-Package Danom
+```
+
+### Looking for Validation or ASP.NET Core Integration?
+
+- Get started with [Danom.Validation](src/Danom.Validation/README.md).
+- Get started with [Danom.MinimalApi](src/Danom.MinimalApi/README.md).
+- Get started with [Danom.Mvc](src/Danom.Mvc/README.md).
+
+## Quick Start
+
+```csharp
+using Danom;
+
+// Option
+Option.Some(5)
+    .Map(x => x * 2)
+    // ^--- transform the value
+    .Bind(x => x > 5 ? Option.Some(x) : Option<int>.None())
+    // ^--- chain another operation that returns an Option
+    .Match(
+        some: x => Console.WriteLine("Value: {0}", x),
+        none: () => Console.WriteLine("No value"));
+    // ^-- Output: Value: 10
+
+// Result
+public Result<int, string> TryDivide(int numerator, int denominator) =>
+    denominator == 0
+        ? Result<int, string>.Error("Cannot divide by zero")
+        : Result<int, string>.Ok(numerator / denominator);
+
+TryDivide(10, 2)
+    .Map(x => x + 1)
+    // ^--- transform the value
+    .Bind(x => TryDivide(x, 0))
+    // ^--- chain another operation that returns a Result
+    .MapError(e => $"Error occurred: {e}")
+    // ^--- transform the error
+    .Match(
+        ok: x => Console.WriteLine("Result: {0}", x),
+        error: e => Console.WriteLine("Error: {0}", e));
+    // ^-- Output: Error: Error occurred: Cannot divide by zero
+
+// Choice
+public void PrintChoice(Choice<int, string> choice) =>
+    choice.Match(
+        t1: x => Console.WriteLine("Got int: {0}", x),
+        t2: s => Console.WriteLine("Got string: {0}", s));
+
+PrintChoice(Choice<int, string>.FromT1(42));
+// ^-- Output: Got int: 42
+PrintChoice(Choice<int, string>.FromT2("Hello"));
+// ^-- Output: Got string: Hello
+```
+
+## Option
+
+Options have an underlying type and can optionally hold a value of that type. Options are a much safer way to handle nullable values, they virtually eliminate null reference exceptions. They also provide a fantastic means of reducing primitive congestion in your code.
+
+### Creating Options
+
+```csharp
+var option = Option<int>.Some(5);
+
+// or, with type inference
+var optionInferred = Option.Some(5);
+
+// or, with no value
+var optionNone = Option<int>.NoneValue;
+
+// also returns none
+var optionNull = Option<object>.Some(default!);
+```
+
+### Using Option
+
+Options are commonly used when a operation might not return a value. For example, the method below tries to find a number in a list that satisfies a predicate. If the number is found, it is returned as a `Some`, otherwise, `None` is returned.
+
+```csharp
+using Danom;
+
+public Option<int> TryFind(IEnumerable<int> numbers, Func<int, bool> predicate) =>
+    numbers.FirstOrDefault(predicate).ToOption();
+```
+
+With this method defined we can begin performing operations against the Option result:
+
+```csharp
+using Danom;
+
+IEnumerable<int> nums = [1,2,3];
+
+// Exhaustive matching
+TryFind(nums, x => x == 1)
+    .Match(
+        some: x => Console.WriteLine("Found: {0}", x),
+        none: () => Console.WriteLine("Did not find number"));
+
+// Mapping the value (i.e., I want to access the value)
+var optionSum =
+    TryFind(nums, x => x == 1)
+        .Map(x => x + 1);
+
+// Binding the option (i.e., when a nested operation also returns an Option)
+var optionBindSum =
+    TryFind(nums, x => x == 1)
+        .Bind(num1 =>
+            TryFind(nums, x => x == 2)
+                .Map(num2 => num1 + num2));
+
+// Handling "None"
+var optionDefault =
+    TryFind(nums, x => x == 4)
+        .DefaultValue(99);
+
+var optionDefaultWith =
+    TryFind(nums, x => x == 4)
+        .DefaultWith(() => 99); // useful if creating the value is expensive
+
+var optionOrElse =
+    TryFind(nums, x => x == 4)
+        .OrElse(Option<int>.Some(99));
+
+varoptionOrElseWith =
+    TryFind(nums, x => x == 4)
+        .OrElseWith(() => Option<int>.Some(99)); // useful if creating the value is expensive
+
+// Procedural style
+var result = TryFind(nums, x => x == 1);
+
+if (result.TryGet(out var value)) {
+    Console.WriteLine("Found: {0}", value);
+}
+```
+
+## Result
+
+Results are used to represent a success or failure outcome. They provide a more concrete way to manage the expected errors of an operation, then throwing exceptions. Especially in recoverable or reportable scenarios.
+
+### Creating Results
+
+```csharp
+using Danom;
+
+var result = Result<int, string>.Ok(5);
+
+// or, with an error
+var resultError = Result<int, string>.Error("An error occurred");
+```
+
+### Using Results
+
+Results are commonly used when an operation might not succeed, and you want to manage or report back the _expected_ errors. For example:
+
+Let's create a simple inline function to divide two numbers. If the denominator is zero, we want to return an error message.
+
+```csharp
+using Danom;
+
+public Result<int, string> TryDivide(int numerator, int denominator) =>
+    denominator == 0
+        ? Result<int, string>.Error("Cannot divide by zero")
+        : Result<int, string>.Ok(numerator / denominator);
+```
+
+With this method defined we can begin performing operations against the result:
+
+```csharp
+using Danom;
+
+// Exhaustive matching
+TryDivide(10, 2)
+    .Match(
+        ok: x => Console.WriteLine("Result: {0}", x),
+        error: e => Console.WriteLine("Error: {0}", e));
+
+// Mapping the value
+var resultSum =
+    TryDivide(10, 2)
+        .Map(x => x + 1);
+
+// Binding the result (i.e., when a nested operation also returns a Result)
+var resultBindSum =
+    TryDivide(10, 2)
+        .Bind(num1 =>
+            TryDivide(20, 2)
+                .Map(num2 =>
+                    num1 + num2));
+
+// Handling errors
+var resultDefault =
+    TryDivide(10, 0)
+        .DefaultValue(99);
+
+var resultDefaultWith =
+    TryDivide(10, 0)
+        .DefaultWith(() => 99); // useful if creating the value is expensive
+
+var resultOrElse =
+    TryDivide(10, 0)
+        .OrElse(Result<int, string>.Ok(99));
+
+var resultOrElseWith =
+    TryDivide(10, 0)
+        .OrElseWith(() =>
+            Result<int, string>.Ok(99)); // useful if creating the value is expensive
+
+// Procedural style
+var result = TryDivide(10, 2);
+
+if (result.TryGet(out var value)) {
+    Console.WriteLine("Result: {0}", value);
+}
+
+// or, accessing the error
+if (result.TryGetError(out var error)) {
+    Console.WriteLine("Error: {0}", error);
+}
+```
+
+### Result Errors
+
+Danom provides a built-in error type, `ResultErrors`, to simplify the creation of results with multiple errors. This type can be initialized with a single string, a collection of strings, or a key-value pair. It can be thought of as a domain-specific dictionary of string keys and N string values.
+
+```csharp
+using Danom;
+
+var resultOk = Result.Ok(5); // or, Result<int>.Ok(5);
+
+var resultErrors =
+    Result<int>.Error("An error occurred");
+
+var resultErrorsMultiError =
+    Result<int>.Error(["An error occurred", "Another error occurred"]);
+
+var resultErrorsKeyed =
+    Result<int>.Error("error-key", "An error occurred");
+
+var resultErrorsKeyedMulti =
+    Result<int>.Error("error-key", ["An error occurred", "Another error occurred"]);
+```
+
+## Choice
+
+The `Choice` type is a discriminated union that allows you to represent a value that can be one of several different types. It is similar to the `Option` and `Result` types but supports multiple possible value types (up to 5 type parameters). This is useful when you want to model a value that can take on different forms, each with its own type.
+
+### Creating Choices
+
+```csharp
+using Danom;
+
+var choice1 = Choice<int, string>.FromT1(42); // holds an int
+var choice2 = Choice<int, string>.FromT2("Hello"); // holds a string
+```
+
+### Using Choices
+
+Choices are commonly used when a value can be one of several different types. For example, you might have a function that can return either an integer or a string based on some condition (you can imagine how this gets more interesting with complex types).
+
+```csharp
+using Danom;
+
+public Choice<int, string> GetValue(bool returnInt) =>
+    returnInt
+        ? Choice<int, string>.FromT1(42)
+        : Choice<int, string>.FromT2("Hello");
+
+GetValue(true)
+    .Match(
+        t1: x => Console.WriteLine("Got int: {0}", x),
+        t2: s => Console.WriteLine("Got string: {0}", s));
+
+// Procedural style
+var choice = GetValue(false);
+
+if (choice.TryGetT1(out var intValue)) {
+    Console.WriteLine("Got int: {0}", intValue);
+}
+
+if (choice.TryGetT2(out var stringValue)) {
+    Console.WriteLine("Got string: {0}", stringValue);
+}
+```
+
+## Unit
+
+Danom provides a `Unit` type to represent the absence of a value. This type is useful in functional programming as a way to represent the absence of a meaningful value. It acts as a placeholder when a function needs to return something, but there is no actual data to return—similar to `void` in C#, but as a real type that can be used in generic code, composed in monads like `Option` and `Result`, or passed as a value. This enables more consistent and expressive APIs, especially when working with functional patterns, pipelines, or asynchronous workflows where a type is always required.
+
+```csharp
+using Danom;
+
+void Log(string message) => Console.WriteLine(message);
+
+// Convert an Action to a Func that returns Unit
+Func<string, Unit> logFunc = Log.ToUnitFunc();
+
+// Use in a functional pipeline
+Option<string> maybeMessage = Option.Some("Hello, world!");
+
+maybeMessage
+    // Logs the message and returns Option<Unit>
+    .Map(logFunc);
+```
+
+## Procedural Programming
+
+Inevitably you'll need to interact with these functional types in a procedural way. Both [Option](#option-tryget) and [Result](#result) provide a `TryGet` method to retrieve the underlying value. This method will return a `bool` indicating whether the value was successfully retrieved and the value itself as an output parameter.
+
+### Option `TryGet`
+
+```csharp
+using Danom;
+
+var option = Option<int>.Some(5);
+
+if (option.TryGet(out var value)) {
+    Console.WriteLine("Value: {0}", value);
+}
+else {
+    Console.WriteLine("No value");
+}
+```
+
+### Result `TryGet` and `TryGetError`
+
+```csharp
+using Danom;
+
+var result = Result<int, string>.Ok(5);
+
+if (result.TryGet(out var value)) {
+    Console.WriteLine("Result: {0}", value);
+}
+else if (result.TryGetError(out var error)) {
+    Console.WriteLine("Error: {0}", error);
+}
+else {
+    Console.WriteLine("No value or error");
+}
+```
+
+### Choice `TryGetTn`
+
+```csharp
+using Danom;
+
+var choice = Choice<int, string>.FromT1(42);
+
+if (choice.TryGetT1(out var intValue)) {
+    Console.WriteLine("Got int: {0}", intValue);
+}
+else if (choice.TryGetT2(out var stringValue)) {
+    Console.WriteLine("Got string: {0}", stringValue);
+}
+```
+
+## String Parsing
+
+Most applications will at some point need to parse strings into primitives and value types. This is especially true when working with external data sources.
+
+`Option` provides a natural mechanism to handle the case where the string cannot be parsed. The "TryParse" API is provided to simplify the process of parsing strings into .NET primitives and value types.
+
+```csharp
+using Danom;
+
+// a common pattern
+var x = int.TryParse("123", out var y) ? Option<int>.Some(y) : Option<int>.NoneValue;
+
+// or, more simply using the TryParse API
+var myInt = intOption.TryParse("123"); // -> Some(123)
+var myDouble = doubleOption.TryParse("123.45"); // -> Some(123.45)
+var myBool = boolOption.TryParse("true"); // -> Some(true)
+
+// if the string cannot be parsed
+var myIntNone = intOption.TryParse("danom"); // -> None
+var myDoubleNone = doubleOption.TryParse("danom"); // -> None
+var myBoolNone = boolOption.TryParse("danom"); // -> None
+
+// null strings are treated as None
+var myIntNull = intOption.TryParse(null); // -> None
+```
+
+The full API is below:
+
+```csharp
+public static class boolOption {
+    public static Option<bool> TryParse(string? x);
+}
+
+public static class byteOption {
+    public static Option<byte> TryParse(string? x, System.Globalization.NumberStyles styles, IFormatProvider? provider);
+    public static Option<byte> TryParse(string? x);
+}
+
+public static class shortOption {
+    public static Option<short> TryParse(string? x, System.Globalization.NumberStyles styles, IFormatProvider? provider);
+    public static Option<short> TryParse(string? x, IFormatProvider? provider = null);
+    public static Option<short> TryParse(string? x);
+}
+
+public static class intOption {
+    public static Option<int> TryParse(string? x, System.Globalization.NumberStyles styles, IFormatProvider? provider);
+    public static Option<int> TryParse(string? x);
+}
+
+public static class longOption {
+    public static Option<long> TryParse(string? x, System.Globalization.NumberStyles styles, IFormatProvider? provider);
+    public static Option<long> TryParse(string? x);
+}
+
+public static class decimalOption {
+    public static Option<decimal> TryParse(string? x, System.Globalization.NumberStyles styles, IFormatProvider? provider);
+    public static Option<decimal> TryParse(string? x);
+}
+
+public static class doubleOption {
+    public static Option<double> TryParse(string? x, System.Globalization.NumberStyles styles, IFormatProvider? provider);
+    public static Option<double> TryParse(string? x);
+}
+
+public static class floatOption {
+    public static Option<float> TryParse(string? x, System.Globalization.NumberStyles styles, IFormatProvider? provider);
+    public static Option<float> TryParse(string? x);
+}
+
+public static class GuidOption {
+    public static Option<Guid> TryParse(string? x);
+    public static Option<Guid> TryParseExact(string? x, string? format);
+}
+
+public static class DateTimeOffsetOption {
+    public static Option<DateTimeOffset> TryParse(string? x, IFormatProvider? provider, System.Globalization.DateTimeStyles dateTimeStyles);
+    public static Option<DateTimeOffset> TryParse(string? x);
+    public static Option<DateTimeOffset> TryParseExact(string? x, string? format, IFormatProvider? provider = null, System.Globalization.DateTimeStyles dateTimeStyles = System.Globalization.DateTimeStyles.None);
+}
+
+public static class DateTimeOption {
+    public static Option<DateTime> TryParse(string? x, IFormatProvider? provider, System.Globalization.DateTimeStyles dateTimeStyles);
+    public static Option<DateTime> TryParse(string? x);
+    public static Option<DateTime> TryParseExact(string? x, string? format, IFormatProvider? provider = null, System.Globalization.DateTimeStyles dateTimeStyles = System.Globalization.DateTimeStyles.None);
+}
+
+#if NET6_0_OR_GREATER
+public static class DateOnlyOption {
+    public static Option<DateOnly> TryParse(string? x, IFormatProvider? provider, System.Globalization.DateTimeStyles dateTimeStyles);
+    public static Option<DateOnly> TryParse(string? x);
+    public static Option<DateOnly> TryParseExact(string? x, string? format, IFormatProvider? provider = null, System.Globalization.DateTimeStyles dateTimeStyles = System.Globalization.DateTimeStyles.None);
+}
+
+public static class TimeOnlyOption {
+    public static Option<TimeOnly> TryParse(string? x, IFormatProvider? provider, System.Globalization.DateTimeStyles dateTimeStyles);
+    public static Option<TimeOnly> TryParse(string? x);
+    public static Option<TimeOnly> TryParseExact(string? x, string? format, IFormatProvider? provider = null, System.Globalization.DateTimeStyles dateTimeStyles = System.Globalization.DateTimeStyles.None);
+}
+#endif
+
+public static class TimeSpanOption {
+    public static Option<TimeSpan> TryParse(string? x, IFormatProvider? provider = null);
+    public static Option<TimeSpan> TryParse(string? x);
+    public static Option<TimeSpan> TryParseExact(string? x, string? format, IFormatProvider? provider = null);
+}
+
+public static class EnumOption {
+    public static Option<TEnum> TryParse<TEnum>(string? x) where TEnum : struct, Enum;
+}
+```
+
+## Find a bug?
+
+There's an [issue](https://github.com/pimbrouwers/Danom/issues) for that.
+
+## License
+
+Licensed under [MIT](https://github.com/pimbrouwers/Danom/blob/master/LICENSE).
