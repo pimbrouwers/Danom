@@ -47,9 +47,7 @@ Some examples demonstrating the use of `ViewOption` are shown below:
 using Danom.Mvc;
 using Microsoft.AspNetCore.Mvc;
 
-public sealed class OptionController
-    : DanomController
-{
+public sealed class OptionController : DanomController {
     public IActionResult OptionSome() =>
         ViewOption(
             option: Option.Some("Hello world"),
@@ -69,9 +67,7 @@ public sealed class OptionController
 }
 
 // or, using extension methods
-public sealed class OptionController
-    : Controller
-{
+public sealed class OptionController : Controller {
     public IActionResult OptionSome() =>
         this.ViewOption(
             option: Option.Some("Hello world"),
@@ -103,9 +99,7 @@ A custom view name can be provided to render a view with a different name than t
 using Danom.Mvc;
 using Microsoft.AspNetCore.Mvc;
 
-public sealed class ResultController
-    : DanomController
-{
+public sealed class ResultController : DanomController {
     public IActionResult ResultOk() =>
         ViewResult(
             result: Result<string, string>.Ok("Success!"),
@@ -119,9 +113,7 @@ public sealed class ResultController
 }
 
 // or, using extension methods
-public sealed class ResultController
-    : Controller
-{
+public sealed class ResultController : Controller {
     public IActionResult ResultOk() =>
         this.ViewResult(
             result: Result<string, string>.Ok("Success!"),
@@ -144,9 +136,7 @@ When using `ResultErrors` as the error type, the `ViewResultErrors` will default
 using Danom.Mvc;
 using Microsoft.AspNetCore.Mvc;
 
-public sealed class ResultController
-    : DanomController
-{
+public sealed class ResultController : DanomController {
     public IActionResult ResultOk() =>
         ViewResult(
             // notice the lack of second type parameter, which is inferred to be ResultErrors
@@ -166,9 +156,7 @@ public sealed class ResultController
 }
 
 // or, using extension methods
-public sealed class ResultController
-    : Controller
-{
+public sealed class ResultController : Controller {
     public IActionResult ResultOk() =>
         this.ViewResult(
             // notice the lack of second type parameter, which is inferred to be ResultErrors
@@ -234,14 +222,10 @@ The `DanomPageModel` class extends the base page model class to provide method(s
 ```csharp
 using Danom.Mvc;
 
-public sealed class IndexModel
-    : DanomPageModel
-{
-    public void OnGet()
-    {
+public sealed class IndexModel : DanomPageModel {
+    public void OnGet() {
         var resultWithErrors = Result<string, string>.Error("An error occurred.");
-        if(resultWithErrors.TryGetError(out var e))
-        {
+        if(resultWithErrors.TryGetError(out var e)) {
             return Page(e);
         }
     }

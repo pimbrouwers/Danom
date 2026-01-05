@@ -13,11 +13,11 @@ Danom provides Option, Result and Choice types for C#, inspired by F#. It’s de
 ## Key Features
 
 - Implementation of common monads: [Option](#option), [Result](#result) and [Choice](#choice).
-- `Unit` type to represent the absence of a value.
 - Exhaustive matching to prevent null reference exceptions.
 - Fluent API for chaining operations, including async support.
 - Built-in error handling with [ResultErrors](#built-in-error-type).
 - An API for [parsing strings](#string-parsing) into .NET primitives and value types.
+- `Unit` type to represent the absence of a value.
 
 ## Design Goals
 

@@ -45,11 +45,11 @@ Choice<int, string, double>.FromT2("Hello")
 ## Key Features
 
 - Implementation of common monads: [Option](src/Danom/README.md#option), [Result](src/Danom/README.md#result) and [Choice](src/Danom/README.md#choice).
-- [Unit](src/Danom/README.md#unit) type to represent the absence of a value.
 - Exhaustive matching to prevent null reference exceptions.
 - Fluent API for chaining operations, including async support.
 - Built-in error handling with [ResultErrors](src/Danom/README.md#built-in-error-type).
 - An API for [parsing strings](src/Danom/README.md#string-parsing) into .NET primitives and value types.
+- [Unit](src/Danom/README.md#unit) type to represent the absence of a value.
 - Input validation via [Danom.Validation](#input-validation).
 - Integrations with [ASP.NET MVC](#aspnet-core-mvc--razor-pages-integration) and [ASP.NET Minimal API](#aspnet-core-minimal-api-integration).
 
