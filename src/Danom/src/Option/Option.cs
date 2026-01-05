@@ -11,23 +11,24 @@ namespace Danom {
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public readonly struct Option<T> : IEquatable<Option<T>>, IComparable<Option<T>> {
+        private readonly byte _state; // 0 = None, 1 = Some
         private readonly T _some;
 
         internal Option(T t) {
             if (t is null) {
+                _state = 0;
                 _some = default!;
-                IsSome = false;
             }
             else {
+                _state = 1;
                 _some = t;
-                IsSome = true;
             }
         }
 
         /// <summary>
         /// Returns true if <see cref="Option{T}"/> is Some, false otherwise.
         /// </summary>
-        public bool IsSome { get; }
+        public bool IsSome => _state == 1 && _some != null;
 
         /// <summary>
         /// Returns true if <see cref="Option{T}"/> is None, false otherwise.
@@ -41,10 +42,10 @@ namespace Danom {
         /// <param name="some"></param>
         /// <param name="none"></param>
         /// <returns></returns>
-        public U Match<U>(Func<T, U> some, Func<U> none) =>
-            IsSome && _some is T t ?
-                some(t) :
-                none();
+        public U Match<U>(Func<T, U> some, Func<U> none) => _state switch {
+            1 when _some != null => some(_some),
+            _ => none(),
+        };
 
         /// <summary>
         /// If <see cref="Option{T}"/> is Some evaluate the some delegate, otherwise none.
@@ -129,16 +130,11 @@ namespace Danom {
         /// <summary>
         /// Safely retrieve the value using procedural code.
         /// </summary>
-        /// <param name="result"></param>
+        /// <param name="value"></param>
         /// <returns></returns>
-        public bool TryGet([MaybeNullWhen(false)] out T result) {
-            var success = true;
-            result = DefaultWith(() => {
-                success = false;
-                // we return this only to satisfy the compiler
-                return default!;
-            });
-            return success;
+        public bool TryGet([MaybeNullWhen(false)] out T value) {
+            value = IsSome ? _some : default!;
+            return IsSome;
         }
 
         /// <summary>
@@ -264,52 +260,50 @@ namespace Danom {
         /// </summary>
         /// <param name="other"></param>
         /// <returns></returns>
-        public readonly bool Equals(Option<T> other) =>
-            Match(
-                some: x1 =>
-                    other.Match(
-                        some: x2 => x1 != null && x2 != null && x2.Equals(x1),
-                        none: () => false),
-                none: () =>
-                    other.Match(
-                        some: _ => false,
-                        none: () => true)
-                );
+        public readonly bool Equals(Option<T> other) {
+            if (_state != other._state) {
+                return false;
+            }
+
+            if (_state == 0 && other._state == 0) {
+                return true;
+            }
+
+            return _state switch {
+                1 => _some is null ? other._some is null : _some.Equals(other._some),
+                _ => false
+            };
+        }
 
         /// <summary>
         /// Returns the hash code of the <see cref="Option{T}"/>.
         /// </summary>
         /// <returns></returns>
-        public override int GetHashCode() =>
-            Match(
-                some: x => x is null ? 0 : x.GetHashCode(),
-                none: () => 0);
+        public override int GetHashCode() => _state switch {
+            1 when _some != null => _some.GetHashCode(),
+            _ => 0
+        };
 
         /// <summary>
         /// Compares the <see cref="Option{T}"/> to another <see cref="Option{T}"/>.
         /// </summary>
         /// <param name="other"></param>
         /// <returns></returns>
-        public int CompareTo(Option<T> other) =>
-            Match(
-                some: x1 =>
-                    other.Match(
-                        some: x2 => Comparer<T>.Default.Compare(x1, x2),
-                        none: () => 1),
-                none: () =>
-                    other.Match(
-                        some: _ => -1,
-                        none: () => 0)
-                );
+        public int CompareTo(Option<T> other) => _state switch {
+            1 when _some is T t1 && other._state == 1 && other._some is T t2 => Comparer<T>.Default.Compare(t1, t2),
+            1 when other._state == 0 => 1,
+            0 when other._state == 1 => -1,
+            _ => 0
+        };
 
         /// <summary>
         /// Returns the string representation of the <see cref="Option{T}"/>.
         /// </summary>
         /// <returns></returns>
-        public override string ToString() =>
-            Match(
-                some: x => $"Some({x})",
-                none: () => "None");
+        public override string ToString() => _state switch {
+            1 when _some != null => $"Some({_some})",
+            _ => "None"
+        };
 
         /// <summary>
         /// Returns the string representation of the <see cref="Option{T}"/> or the
@@ -325,13 +319,11 @@ namespace Danom {
         public string ToString(
             string defaultValue,
             string? format = null,
-            IFormatProvider? provider = null) =>
-            Match(
-                some: x =>
-                x is IFormattable f ?
-                    f!.ToString(format, provider) :
-                    x!.ToString(),
-                none: () => defaultValue) ?? string.Empty;
+            IFormatProvider? provider = null) => _state switch {
+                1 when _some is T t && t is IFormattable f => f.ToString(format, provider),
+                1 when _some is T t => t.ToString(),
+                _ => defaultValue
+            } ?? string.Empty;
     }
 
     /// <summary>
