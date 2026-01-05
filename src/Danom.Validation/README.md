@@ -160,13 +160,18 @@ Rule("Email", x => x.Email, Check.String.IsEmailAddress);
 
 // a rule checking a sequence of values
 Rule("Tags", x => x.Tags, Check.Enumerable.ForEach(Check.String.IsNotEmpty));
-// or,
+// or
 ForEach("Tags", x => x.Tags, Check.String.IsNotEmpty);
 
 // a rule for an optional field
 Rule(x => x.OptionalAge, Check.Optional(Check.IsGreaterThan(18)));
-// or,
+// or
 Optional("OptionalAge", x => x.OptionalAge, Check.IsGreaterThan(18));
+
+// a rule for a required optional field
+Rule(x => x.RequiredAge, Check.Required(Check.IsGreaterThan(18)));
+// or
+Required("RequiredAge", x => x.RequiredAge, Check.IsGreaterThan(18));
 ```
 
 ## Built-in Rules
@@ -217,6 +222,12 @@ Check.Optional(rule1, rule2, ...)
 **Example:**
 ```csharp
 Rule(x => x.OptionalAge, Check.Optional(Check.IsGreaterThan(18)));
+// or
+Optional("OptionalAge", x => x.OptionalAge, Check.IsGreaterThan(18));
+
+Rule(x => x.RequiredAge, Check.Required(Check.IsGreaterThan(18)));
+// or
+Required("RequiredAge", x => x.RequiredAge, Check.IsGreaterThan(18));
 ```
 
 ### Nested Validation
@@ -273,11 +284,20 @@ Rule("Id", x => x.Id, Check.Guid.IsNotEmpty);
 Check.Enumerable.IsEmpty<T>()
 Check.Enumerable.IsNotEmpty<T>()
 Check.Enumerable.ForEach(rule)
+Check.Enumerable.ForEach(rules)
 Check.Enumerable.ForEach(validator)
 ```
 
 ```csharp
 Rule("Tags", x => x.Tags, Check.Enumerable.ForEach(Check.String.IsNotEmpty));
+
+// or
+ForEach("Tags", x => x.Tags, Check.String.IsNotEmpty)
+
+// or, multiple rules
+ForEach("Tags", x => x.Tags, [
+    Check.String.IsNotEmpty,
+    Check.String.IsLengthOrGreaterThan(3) ]);
 ```
 
 ### Inline Rules

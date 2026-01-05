@@ -96,6 +96,7 @@ app.MapGet("/user/{id}/custom", (int id) => {
     return DanomTypedResults.Option(user,
         noneResult: () => Results.NotFound("Custom not found!"));
 });
+```
 
 ### Returning Typed Result
 
