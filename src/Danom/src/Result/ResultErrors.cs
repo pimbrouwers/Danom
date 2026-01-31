@@ -12,18 +12,6 @@ namespace Danom {
             new Dictionary<string, ResultError>(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
-        /// Gets the error collection for the specified key.
-        /// If the key does not exist, a <see cref="KeyNotFoundException"/>
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        /// <exception cref="KeyNotFoundException"></exception>
-        public ResultError this[string key] =>
-            _resultErrors.TryGetValue(key, out var resultError)
-                ? resultError
-                : throw new KeyNotFoundException($"No errors found for key '{key}'.");
-
-        /// <summary>
         /// Creates a new empty instance of <see cref="ResultErrors"/>.
         /// </summary>
         public ResultErrors() { }
@@ -61,6 +49,36 @@ namespace Danom {
         /// <param name="errors"></param>
         public ResultErrors(IEnumerable<string> errors)
             : this(string.Empty, errors) { }
+
+        /// <summary>
+        /// Gets an empty instance of <see cref="ResultErrors"/>.
+        /// </summary>
+        public static ResultErrors Empty { get; } = new ResultErrors();
+
+        /// <summary>
+        /// Merges multiple <see cref="ResultErrors"/> collections into a single one.
+        /// </summary>
+        /// <param name="errorsCollections"></param>
+        /// <returns></returns>
+        public static ResultErrors Merge(params ResultErrors[] errorsCollections) {
+            var merged = new ResultErrors();
+            foreach (var errors in errorsCollections) {
+                merged.Add(errors);
+            }
+            return merged;
+        }
+
+        /// <summary>
+        /// Gets the error collection for the specified key.
+        /// If the key does not exist, a <see cref="KeyNotFoundException"/>
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        /// <exception cref="KeyNotFoundException"></exception>
+        public ResultError this[string key] =>
+            _resultErrors.TryGetValue(key, out var resultError)
+                ? resultError
+                : throw new KeyNotFoundException($"No errors found for key '{key}'.");
 
         /// <summary>
         /// Adds a new error to the collection with the specified key and errors.

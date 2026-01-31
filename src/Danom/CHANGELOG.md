@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 ## Added
 
+- ResultErrors.Merge method and keyed accessor (ex: `resultErrors["key"]`).
 - Pipe extension method, allowing for functional piping of values (ex: `value.Pipe(func)`).
 
 ## [2.1.0] - 2025-12-30
