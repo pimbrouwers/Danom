@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+## Added
+
+- Pipe extension method, allowing for functional piping of values (ex: `value.Pipe(func)`).
+
 ## [2.1.0] - 2025-12-30
 
 ## Added
