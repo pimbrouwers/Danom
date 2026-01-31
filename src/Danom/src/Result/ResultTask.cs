@@ -76,7 +76,7 @@ namespace Danom {
             this Task<Result<T, TError>> resultTask,
             Func<T, Task<Result<U, TError>>> bind,
             CancellationToken? cancellationToken = null) =>
-            resultTask.MatchAsync(bind, e => Task.FromResult(Result<U, TError>.Error(e)), cancellationToken);
+            resultTask.MatchAsync(bind, e => Result<U, TError>.ErrorAsync(Task.FromResult(e)), cancellationToken);
 
         /// <summary>
         /// Evaluates the bind delegate if Result is Ok otherwise return Error.

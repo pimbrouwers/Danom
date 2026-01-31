@@ -10,7 +10,7 @@ public sealed class ResultTaskTests {
             .MatchAsync(x => Task.FromResult(x), _ => Task.FromResult(-1));
         Assert.Equal(1, ok);
 
-        var err = await Task.FromResult(Result<int, string>.Error("e"))
+        var err = await Result<int, string>.ErrorAsync(Task.FromResult("e"))
             .MatchAsync(_ => Task.FromResult(-1), _ => Task.FromResult(1));
         Assert.Equal(1, err);
     }
@@ -19,7 +19,7 @@ public sealed class ResultTaskTests {
     public async Task Bind_TaskBind() {
         AssertResult.IsOk(2, await Task.FromResult(Result<int, string>.Ok(1))
             .BindAsync(x => Result<int, string>.OkAsync(Task.FromResult(x + 1))));
-        AssertResult.IsError(await Task.FromResult(Result<int, string>.Error("e"))
+        AssertResult.IsError(await Result<int, string>.ErrorAsync(Task.FromResult("e"))
             .BindAsync(x => Result<int, string>.OkAsync(Task.FromResult(x + 1))));
     }
 
@@ -27,7 +27,7 @@ public sealed class ResultTaskTests {
     public async Task Map_TaskMap() {
         AssertResult.IsOk(2, await Task.FromResult(Result<int, string>.Ok(1))
             .MapAsync(x => Task.FromResult(x + 1)));
-        AssertResult.IsError(await Task.FromResult(Result<int, string>.Error("e"))
+        AssertResult.IsError(await Result<int, string>.ErrorAsync(Task.FromResult("e"))
             .MapAsync(x => Task.FromResult(x + 1)));
     }
 
@@ -37,7 +37,7 @@ public sealed class ResultTaskTests {
             .MapErrorAsync(e => Task.FromResult(e.ToUpperInvariant()));
         AssertResult.IsOk(ok);
 
-        var err = await Task.FromResult(Result<int, string>.Error("bad"))
+        var err = await Result<int, string>.ErrorAsync(Task.FromResult("bad"))
             .MapErrorAsync(e => Task.FromResult(e.ToUpperInvariant()));
         AssertResult.IsError(err);
         err.Match(_ => Assert.Fail("Expected error"), e => Assert.Equal("BAD", e));
@@ -45,7 +45,7 @@ public sealed class ResultTaskTests {
 
     [Fact]
     public async Task DefaultValue_TaskDefault() {
-        Assert.Equal(1, await Task.FromResult(Result<int, string>.Error("e"))
+        Assert.Equal(1, await Result<int, string>.ErrorAsync(Task.FromResult("e"))
             .DefaultValueAsync(Task.FromResult(1)));
         Assert.Equal(2, await Task.FromResult(Result<int, string>.Ok(2))
             .DefaultValueAsync(Task.FromResult(1)));
@@ -53,7 +53,7 @@ public sealed class ResultTaskTests {
 
     [Fact]
     public async Task DefaultWith_TaskFactory() {
-        Assert.Equal(1, await Task.FromResult(Result<int, string>.Error("e"))
+        Assert.Equal(1, await Result<int, string>.ErrorAsync(Task.FromResult("e"))
             .DefaultWithAsync(() => Task.FromResult(1)));
         Assert.Equal(2, await Task.FromResult(Result<int, string>.Ok(2))
             .DefaultWithAsync(() => Task.FromResult(1)));
@@ -67,7 +67,7 @@ public sealed class ResultValueTaskTests {
             .MatchAsync(x => x, _ => -1);
         Assert.Equal(1, ok);
 
-        var err = await new ValueTask<Result<int, string>>(Result<int, string>.Error("e"))
+        var err = await Result<int, string>.ErrorAsync(new ValueTask<string>("e"))
             .MatchAsync(_ => -1, _ => 1);
         Assert.Equal(1, err);
     }
@@ -78,7 +78,7 @@ public sealed class ResultValueTaskTests {
             .MatchAsync(x => Task.FromResult(x), _ => Task.FromResult(-1));
         Assert.Equal(1, ok);
 
-        var err = await new ValueTask<Result<int, string>>(Result<int, string>.Error("e"))
+        var err = await Result<int, string>.ErrorAsync(new ValueTask<string>("e"))
             .MatchAsync(_ => Task.FromResult(-1), _ => Task.FromResult(1));
         Assert.Equal(1, err);
     }
@@ -89,7 +89,7 @@ public sealed class ResultValueTaskTests {
             .MatchAsync(x => new ValueTask<int>(x), _ => new ValueTask<int>(-1));
         Assert.Equal(1, ok);
 
-        var err = await new ValueTask<Result<int, string>>(Result<int, string>.Error("e"))
+        var err = await Result<int, string>.ErrorAsync(new ValueTask<string>("e"))
             .MatchAsync(_ => new ValueTask<int>(-1), _ => new ValueTask<int>(1));
         Assert.Equal(1, err);
     }
@@ -98,7 +98,7 @@ public sealed class ResultValueTaskTests {
     public async Task Bind_ValueTask_Source_SyncBind() {
         AssertResult.IsOk(2, await new ValueTask<Result<int, string>>(Result<int, string>.Ok(1))
             .BindAsync(x => Result<int, string>.Ok(x + 1)));
-        AssertResult.IsError(await new ValueTask<Result<int, string>>(Result<int, string>.Error("e"))
+        AssertResult.IsError(await Result<int, string>.ErrorAsync(new ValueTask<string>("e"))
             .BindAsync(x => Result<int, string>.Ok(x + 1)));
     }
 
@@ -106,7 +106,7 @@ public sealed class ResultValueTaskTests {
     public async Task Bind_ValueTask_Source_TaskBind() {
         AssertResult.IsOk(2, await new ValueTask<Result<int, string>>(Result<int, string>.Ok(1))
             .BindAsync(x => Result<int, string>.OkAsync(Task.FromResult(x + 1))));
-        AssertResult.IsError(await new ValueTask<Result<int, string>>(Result<int, string>.Error("e"))
+        AssertResult.IsError(await Result<int, string>.ErrorAsync(new ValueTask<string>("e"))
             .BindAsync(x => Result<int, string>.OkAsync(Task.FromResult(x + 1))));
     }
 
@@ -123,7 +123,7 @@ public sealed class ResultValueTaskTests {
     public async Task Map_ValueTask_Source_SyncMap() {
         AssertResult.IsOk(2, await new ValueTask<Result<int, string>>(Result<int, string>.Ok(1))
             .MapAsync(x => x + 1));
-        AssertResult.IsError(await new ValueTask<Result<int, string>>(Result<int, string>.Error("e"))
+        AssertResult.IsError(await Result<int, string>.ErrorAsync(new ValueTask<string>("e"))
             .MapAsync(x => x + 1));
     }
 
@@ -131,7 +131,7 @@ public sealed class ResultValueTaskTests {
     public async Task Map_ValueTask_Source_TaskMap() {
         AssertResult.IsOk(2, await new ValueTask<Result<int, string>>(Result<int, string>.Ok(1))
             .MapAsync(x => Task.FromResult(x + 1)));
-        AssertResult.IsError(await new ValueTask<Result<int, string>>(Result<int, string>.Error("e"))
+        AssertResult.IsError(await Result<int, string>.ErrorAsync(new ValueTask<string>("e"))
             .MapAsync(x => Task.FromResult(x + 1)));
     }
 
@@ -150,7 +150,7 @@ public sealed class ResultValueTaskTests {
             .MapErrorAsync(e => e.ToUpperInvariant());
         AssertResult.IsOk(ok);
 
-        var err = await new ValueTask<Result<int, string>>(Result<int, string>.Error("bad"))
+        var err = await Result<int, string>.ErrorAsync(new ValueTask<string>("bad"))
             .MapErrorAsync(e => e.ToUpperInvariant());
         AssertResult.IsError(err);
         err.Match(_ => Assert.Fail("Expected error"), e => Assert.Equal("BAD", e));
@@ -162,7 +162,7 @@ public sealed class ResultValueTaskTests {
             .MapErrorAsync(e => Task.FromResult(e.ToUpperInvariant()));
         AssertResult.IsOk(ok);
 
-        var err = await new ValueTask<Result<int, string>>(Result<int, string>.Error("bad"))
+        var err = await Result<int, string>.ErrorAsync(new ValueTask<string>("bad"))
             .MapErrorAsync(e => Task.FromResult(e.ToUpperInvariant()));
         AssertResult.IsError(err);
         err.Match(_ => Assert.Fail("Expected error"), e => Assert.Equal("BAD", e));
@@ -181,7 +181,7 @@ public sealed class ResultValueTaskTests {
 
     [Fact]
     public async Task DefaultValue_ValueTask_Source_SyncDefault() {
-        Assert.Equal(1, await new ValueTask<Result<int, string>>(Result<int, string>.Error("e"))
+        Assert.Equal(1, await Result<int, string>.ErrorAsync(new ValueTask<string>("e"))
             .DefaultValueAsync(1));
         Assert.Equal(2, await new ValueTask<Result<int, string>>(Result<int, string>.Ok(2))
             .DefaultValueAsync(1));
@@ -189,7 +189,7 @@ public sealed class ResultValueTaskTests {
 
     [Fact]
     public async Task DefaultValue_ValueTask_Source_TaskDefault() {
-        Assert.Equal(1, await new ValueTask<Result<int, string>>(Result<int, string>.Error("e"))
+        Assert.Equal(1, await Result<int, string>.ErrorAsync(new ValueTask<string>("e"))
             .DefaultValueAsync(Task.FromResult(1)));
         Assert.Equal(2, await new ValueTask<Result<int, string>>(Result<int, string>.Ok(2))
             .DefaultValueAsync(Task.FromResult(1)));
@@ -197,7 +197,7 @@ public sealed class ResultValueTaskTests {
 
     [Fact]
     public async Task DefaultValue_ValueTask_Source_ValueTaskDefault() {
-        Assert.Equal(1, await new ValueTask<Result<int, string>>(Result<int, string>.Error("e"))
+        Assert.Equal(1, await Result<int, string>.ErrorAsync(new ValueTask<string>("e"))
             .DefaultValueAsync(new ValueTask<int>(1)));
         Assert.Equal(2, await new ValueTask<Result<int, string>>(Result<int, string>.Ok(2))
             .DefaultValueAsync(new ValueTask<int>(1)));
@@ -205,7 +205,7 @@ public sealed class ResultValueTaskTests {
 
     [Fact]
     public async Task DefaultWith_ValueTask_Source_TaskFactory() {
-        Assert.Equal(1, await new ValueTask<Result<int, string>>(Result<int, string>.Error("e"))
+        Assert.Equal(1, await Result<int, string>.ErrorAsync(new ValueTask<string>("e"))
             .DefaultWithAsync(() => Task.FromResult(1)));
         Assert.Equal(2, await new ValueTask<Result<int, string>>(Result<int, string>.Ok(2))
             .DefaultWithAsync(() => Task.FromResult(1)));
@@ -213,7 +213,7 @@ public sealed class ResultValueTaskTests {
 
     [Fact]
     public async Task DefaultWith_ValueTask_Source_SyncFactory() {
-        Assert.Equal(1, await new ValueTask<Result<int, string>>(Result<int, string>.Error("e"))
+        Assert.Equal(1, await Result<int, string>.ErrorAsync(new ValueTask<string>("e"))
             .DefaultWithAsync(() => 1));
         Assert.Equal(2, await new ValueTask<Result<int, string>>(Result<int, string>.Ok(2))
             .DefaultWithAsync(() => 1));
@@ -227,4 +227,49 @@ public sealed class ResultValueTaskTests {
         Assert.Equal(1, await err.DefaultWithAsync(() => new ValueTask<int>(1)));
         Assert.Equal(2, await ok.DefaultWithAsync(() => new ValueTask<int>(1)));
     }
+}
+
+public sealed class ResultTAsyncTests {
+    [Fact]
+    public async Task Match() {
+        var resultOk = await Task.FromResult(Result<int>.Ok(1)).MatchAsync(x => x, _ => -1);
+        Assert.Equal(1, resultOk);
+
+        var resultError = await Task.FromResult(Result<int>.Error("Error")).MatchAsync(_ => -1, _ => 1);
+        Assert.Equal(1, resultError);
+    }
+
+    [Fact]
+    public async Task Bind() {
+        AssertResult.IsOk(2, await Task.FromResult(Result<int>.Ok(1)).BindAsync(x => Result<int>.Ok(x + 1)));
+        AssertResult.IsOk(2, await Task.FromResult(Result<int>.Ok(1)).BindAsync(x => Result<int>.OkAsync(Task.FromResult(x + 1))));
+        AssertResult.IsError(await Task.FromResult(Result<int>.Error("Error")).BindAsync(x => Result<int>.Ok(x + 1)));
+        AssertResult.IsError(await Task.FromResult(Result<int>.Error("Error")).BindAsync(x => Result<int>.OkAsync(Task.FromResult(x + 1))));
+    }
+
+    [Fact]
+    public async Task Map() {
+        AssertResult.IsOk(2, await Task.FromResult(Result<int>.Ok(1)).MapAsync(x => x + 1));
+        AssertResult.IsOk(2, await Task.FromResult(Result<int>.Ok(1)).MapAsync(x => Task.FromResult(x + 1)));
+        AssertResult.IsError(await Task.FromResult(Result<int>.Error("Error")).MapAsync(x => x + 1));
+        AssertResult.IsError(await Task.FromResult(Result<int>.Error("Error")).MapAsync(x => Task.FromResult(x + 1)));
+    }
+
+    [Fact]
+    public async Task DefaultValue() {
+        Assert.Equal(1, await Task.FromResult(Result<int>.Error("Error")).DefaultValueAsync(1));
+        Assert.Equal(1, await Task.FromResult(Result<int>.Error("Error")).DefaultValueAsync(Task.FromResult(1)));
+        Assert.Equal(2, await Task.FromResult(Result<int>.Ok(2)).DefaultValueAsync(1));
+        Assert.Equal(2, await Task.FromResult(Result<int>.Ok(2)).DefaultValueAsync(Task.FromResult(1)));
+    }
+
+    [Fact]
+    public async Task DefaultWith() {
+        Assert.Equal(1, await Task.FromResult(Result<int>.Error("Error")).DefaultWithAsync(() => 1));
+        Assert.Equal(1, await Task.FromResult(Result<int>.Error("Error")).DefaultWithAsync(() => Task.FromResult(1)));
+        Assert.Equal(2, await Task.FromResult(Result<int>.Ok(2)).DefaultWithAsync(() => 1));
+        Assert.Equal(2, await Task.FromResult(Result<int>.Ok(2)).DefaultWithAsync(() => Task.FromResult(1)));
+    }
+
+
 }
