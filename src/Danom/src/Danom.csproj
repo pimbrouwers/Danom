@@ -46,4 +46,8 @@
     <None Include="../README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="Danom.Tests" />
+  </ItemGroup>
+
 </Project>
