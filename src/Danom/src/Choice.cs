@@ -35,6 +35,22 @@ namespace Danom {
         public bool IsT2 => _state == 2;
 
         /// <summary>
+        /// Creates a new <see cref="Choice{T1, T2}"/> from the specified T1 value.
+        /// </summary>
+        /// <param name="t1"></param>
+        /// <returns></returns>
+        public static Choice<T1, T2> FromT1(T1 t1) =>
+            new Choice<T1, T2>(t1);
+
+        /// <summary>
+        /// Creates a new <see cref="Choice{T1, T2}"/> from the specified T2 value.
+        /// </summary>
+        /// <param name="t2"></param>
+        /// <returns></returns>
+        public static Choice<T1, T2> FromT2(T2 t2) =>
+            new Choice<T1, T2>(t2);
+
+        /// <summary>
         /// If <see cref="Choice{T1, T2}"/> is T1 evaluate the t1 delegate,
         /// otherwise evaluate the t2 delegate and return its result.
         /// </summary>
@@ -65,6 +81,42 @@ namespace Danom {
         }
 
         /// <summary>
+        /// If <see cref="Choice{T1,T2}"/> is T1, evaluates the t1 delegate and returns its result,
+        /// otherwise evaluates the t2 delegate and returns its result.
+        /// </summary>
+        /// <param name="binder"></param>
+        /// <returns></returns>
+        public Choice<T1, T2> BindT1(Func<T1, Choice<T1, T2>> binder) =>
+            Match(t1 => binder(t1), FromT2);
+
+        /// <summary>
+        /// If <see cref="Choice{T1,T2}"/> is T1, evaluates the t1 delegate and returns its result,
+        /// otherwise evaluates the t2 delegate and returns its result.
+        /// </summary>
+        /// <param name="binder"></param>
+        /// <returns></returns>
+        public Choice<T1, T2> BindT2(Func<T2, Choice<T1, T2>> binder) =>
+            Match(FromT1, t2 => binder(t2));
+
+        /// <summary>
+        /// If <see cref="Choice{T1,T2}"/> is T1, evaluates the t1 delegate and returns a new Choice with the result,
+        /// otherwise evaluates the t2 delegate and returns a new Choice with the result.
+        /// </summary>
+        /// <param name="mapper"></param>
+        /// <returns></returns>
+        public Choice<T1, T2> MapT1(Func<T1, T1> mapper) =>
+            Match(t1 => FromT1(mapper(t1)), FromT2);
+
+        /// <summary>
+        /// If <see cref="Choice{T1,T2}"/> is T1, evaluates the t1 delegate and returns a new Choice with the result,
+        /// otherwise evaluates the t2 delegate and returns a new Choice with the result.
+        /// </summary>
+        /// <param name="mapper"></param>
+        /// <returns></returns>
+        public Choice<T1, T2> MapT2(Func<T2, T2> mapper) =>
+            Match(FromT1, t2 => FromT2(mapper(t2)));
+
+        /// <summary>
         /// Safely retrieves the value if the Choice is in T1 state.
         /// </summary>
         /// <param name="value">The value if in T1 state, default otherwise.</param>
@@ -85,20 +137,11 @@ namespace Danom {
         }
 
         /// <summary>
-        /// Creates a new <see cref="Choice{T1, T2}"/> from the specified T1 value.
+        /// Returns a new <see cref="Choice{T2, T1}"/> with the values swapped.
         /// </summary>
-        /// <param name="t1"></param>
         /// <returns></returns>
-        public static Choice<T1, T2> FromT1(T1 t1) =>
-            new Choice<T1, T2>(t1);
-
-        /// <summary>
-        /// Creates a new <see cref="Choice{T1, T2}"/> from the specified T2 value.
-        /// </summary>
-        /// <param name="t2"></param>
-        /// <returns></returns>
-        public static Choice<T1, T2> FromT2(T2 t2) =>
-            new Choice<T1, T2>(t2);
+        public Choice<T2, T1> Swap() =>
+            Match(Choice<T2, T1>.FromT2, Choice<T2, T1>.FromT1);
 
         /// <summary>
         /// Returns true if the specified <see cref="Choice{T1, T2}"/>s are equal.

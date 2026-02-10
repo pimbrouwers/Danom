@@ -70,6 +70,238 @@ public sealed class ChoiceOf4Tests {
     }
 
     [Fact]
+    public void BindT1_BindsOnlyT1() {
+        var a = Choice<int, string, bool, double>.FromT1(10);
+        var b = a.BindT1(x => Choice<int, string, bool, double>.FromT1(x + 1));
+        Assert.True(b.IsT1);
+        Assert.Equal(11, b.Match(x => x, _ => -1, _ => -1, _ => -1));
+
+        var c = a.BindT1(x => Choice<int, string, bool, double>.FromT2($"err:{x}"));
+        Assert.True(c.IsT2);
+        Assert.Equal("err:10", c.Match(_ => "", s => s, _ => "", _ => ""));
+
+        var d = a.BindT1(x => Choice<int, string, bool, double>.FromT3(x > 5));
+        Assert.True(d.IsT3);
+        Assert.True(d.Match(_ => false, _ => false, z => z, _ => false));
+
+        var e = a.BindT1(x => Choice<int, string, bool, double>.FromT4(x * 1.5));
+        Assert.True(e.IsT4);
+        Assert.Equal(15.0, e.Match(_ => -1.0, _ => -1.0, _ => -1.0, v => v));
+
+        var f = Choice<int, string, bool, double>.FromT2("boom");
+        var g = f.BindT1(x => Choice<int, string, bool, double>.FromT1(x + 1));
+        Assert.True(g.IsT2);
+        Assert.Equal("boom", g.Match(_ => "", s => s, _ => "", _ => ""));
+
+        var h = Choice<int, string, bool, double>.FromT3(true);
+        var i = h.BindT1(x => Choice<int, string, bool, double>.FromT1(x + 1));
+        Assert.True(i.IsT3);
+        Assert.True(i.Match(_ => false, _ => false, z => z, _ => false));
+
+        var j = Choice<int, string, bool, double>.FromT4(2.5);
+        var k = j.BindT1(x => Choice<int, string, bool, double>.FromT1(x + 1));
+        Assert.True(k.IsT4);
+        Assert.Equal(2.5, k.Match(_ => -1.0, _ => -1.0, _ => -1.0, v => v));
+    }
+
+    [Fact]
+    public void BindT2_BindsOnlyT2() {
+        var a = Choice<int, string, bool, double>.FromT2("x");
+        var b = a.BindT2(s => Choice<int, string, bool, double>.FromT2(s + "y"));
+        Assert.True(b.IsT2);
+        Assert.Equal("xy", b.Match(_ => "", s => s, _ => "", _ => ""));
+
+        var c = a.BindT2(s => Choice<int, string, bool, double>.FromT1(s.Length));
+        Assert.True(c.IsT1);
+        Assert.Equal(1, c.Match(x => x, _ => -1, _ => -1, _ => -1));
+
+        var d = a.BindT2(s => Choice<int, string, bool, double>.FromT3(s == "x"));
+        Assert.True(d.IsT3);
+        Assert.True(d.Match(_ => false, _ => false, z => z, _ => false));
+
+        var e = a.BindT2(s => Choice<int, string, bool, double>.FromT4(s.Length * 1.5));
+        Assert.True(e.IsT4);
+        Assert.Equal(1.5, e.Match(_ => -1.0, _ => -1.0, _ => -1.0, v => v));
+
+        var f = Choice<int, string, bool, double>.FromT1(7);
+        var g = f.BindT2(s => Choice<int, string, bool, double>.FromT2(s + "!"));
+        Assert.True(g.IsT1);
+        Assert.Equal(7, g.Match(x => x, _ => -1, _ => -1, _ => -1));
+
+        var h = Choice<int, string, bool, double>.FromT3(false);
+        var i = h.BindT2(s => Choice<int, string, bool, double>.FromT2(s + "!"));
+        Assert.True(i.IsT3);
+        Assert.False(i.Match(_ => true, _ => true, z => z, _ => true));
+
+        var j = Choice<int, string, bool, double>.FromT4(3.14);
+        var k = j.BindT2(s => Choice<int, string, bool, double>.FromT2(s + "!"));
+        Assert.True(k.IsT4);
+        Assert.Equal(3.14, k.Match(_ => -1.0, _ => -1.0, _ => -1.0, v => v));
+    }
+
+    [Fact]
+    public void BindT3_BindsOnlyT3() {
+        var a = Choice<int, string, bool, double>.FromT3(true);
+        var b = a.BindT3(z => Choice<int, string, bool, double>.FromT3(!z));
+        Assert.True(b.IsT3);
+        Assert.False(b.Match(_ => true, _ => true, z => z, _ => true));
+
+        var c = a.BindT3(z => Choice<int, string, bool, double>.FromT1(z ? 1 : 0));
+        Assert.True(c.IsT1);
+        Assert.Equal(1, c.Match(x => x, _ => -1, _ => -1, _ => -1));
+
+        var d = a.BindT3(z => Choice<int, string, bool, double>.FromT2(z ? "yes" : "no"));
+        Assert.True(d.IsT2);
+        Assert.Equal("yes", d.Match(_ => "", s => s, _ => "", _ => ""));
+
+        var e = a.BindT3(z => Choice<int, string, bool, double>.FromT4(z ? 1.0 : 0.0));
+        Assert.True(e.IsT4);
+        Assert.Equal(1.0, e.Match(_ => -1.0, _ => -1.0, _ => -1.0, v => v));
+
+        var f = Choice<int, string, bool, double>.FromT1(5);
+        var g = f.BindT3(z => Choice<int, string, bool, double>.FromT3(!z));
+        Assert.True(g.IsT1);
+        Assert.Equal(5, g.Match(x => x, _ => -1, _ => -1, _ => -1));
+
+        var h = Choice<int, string, bool, double>.FromT2("test");
+        var i = h.BindT3(z => Choice<int, string, bool, double>.FromT3(!z));
+        Assert.True(i.IsT2);
+        Assert.Equal("test", i.Match(_ => "", s => s, _ => "", _ => ""));
+
+        var j = Choice<int, string, bool, double>.FromT4(2.71);
+        var k = j.BindT3(z => Choice<int, string, bool, double>.FromT3(!z));
+        Assert.True(k.IsT4);
+        Assert.Equal(2.71, k.Match(_ => -1.0, _ => -1.0, _ => -1.0, v => v));
+    }
+
+    [Fact]
+    public void BindT4_BindsOnlyT4() {
+        var a = Choice<int, string, bool, double>.FromT4(3.14);
+        var b = a.BindT4(v => Choice<int, string, bool, double>.FromT4(v * 2));
+        Assert.True(b.IsT4);
+        Assert.Equal(6.28, b.Match(_ => -1.0, _ => -1.0, _ => -1.0, v => v));
+
+        var c = a.BindT4(v => Choice<int, string, bool, double>.FromT1((int)v));
+        Assert.True(c.IsT1);
+        Assert.Equal(3, c.Match(x => x, _ => -1, _ => -1, _ => -1));
+
+        var d = a.BindT4(v => Choice<int, string, bool, double>.FromT2($"val:{v}"));
+        Assert.True(d.IsT2);
+        Assert.Equal("val:3.14", d.Match(_ => "", s => s, _ => "", _ => ""));
+
+        var e = a.BindT4(v => Choice<int, string, bool, double>.FromT3(v > 3.0));
+        Assert.True(e.IsT3);
+        Assert.True(e.Match(_ => false, _ => false, z => z, _ => false));
+
+        var f = Choice<int, string, bool, double>.FromT1(7);
+        var g = f.BindT4(v => Choice<int, string, bool, double>.FromT4(v * 2));
+        Assert.True(g.IsT1);
+        Assert.Equal(7, g.Match(x => x, _ => -1, _ => -1, _ => -1));
+
+        var h = Choice<int, string, bool, double>.FromT2("test");
+        var i = h.BindT4(v => Choice<int, string, bool, double>.FromT4(v * 2));
+        Assert.True(i.IsT2);
+        Assert.Equal("test", i.Match(_ => "", s => s, _ => "", _ => ""));
+
+        var j = Choice<int, string, bool, double>.FromT3(true);
+        var k = j.BindT4(v => Choice<int, string, bool, double>.FromT4(v * 2));
+        Assert.True(k.IsT3);
+        Assert.True(k.Match(_ => false, _ => false, z => z, _ => false));
+    }
+
+    [Fact]
+    public void MapT1_MapsOnlyT1() {
+        var a = Choice<int, string, bool, double>.FromT1(5);
+        var b = a.MapT1(x => x * 2);
+        Assert.True(b.IsT1);
+        Assert.Equal(10, b.Match(x => x, _ => -1, _ => -1, _ => -1));
+
+        var c = Choice<int, string, bool, double>.FromT2("e");
+        var d = c.MapT1(x => x * 2);
+        Assert.True(d.IsT2);
+        Assert.Equal("e", d.Match(_ => "", s => s, _ => "", _ => ""));
+
+        var e = Choice<int, string, bool, double>.FromT3(true);
+        var f = e.MapT1(x => x * 2);
+        Assert.True(f.IsT3);
+        Assert.True(f.Match(_ => false, _ => false, z => z, _ => false));
+
+        var g = Choice<int, string, bool, double>.FromT4(2.5);
+        var h = g.MapT1(x => x * 2);
+        Assert.True(h.IsT4);
+        Assert.Equal(2.5, h.Match(_ => -1.0, _ => -1.0, _ => -1.0, v => v));
+    }
+
+    [Fact]
+    public void MapT2_MapsOnlyT2() {
+        var a = Choice<int, string, bool, double>.FromT2("ab");
+        var b = a.MapT2(s => s + "c");
+        Assert.True(b.IsT2);
+        Assert.Equal("abc", b.Match(_ => "", s => s, _ => "", _ => ""));
+
+        var c = Choice<int, string, bool, double>.FromT1(3);
+        var d = c.MapT2(s => s + "c");
+        Assert.True(d.IsT1);
+        Assert.Equal(3, d.Match(x => x, _ => -1, _ => -1, _ => -1));
+
+        var e = Choice<int, string, bool, double>.FromT3(false);
+        var f = e.MapT2(s => s + "c");
+        Assert.True(f.IsT3);
+        Assert.False(f.Match(_ => true, _ => true, z => z, _ => true));
+
+        var g = Choice<int, string, bool, double>.FromT4(1.618);
+        var h = g.MapT2(s => s + "c");
+        Assert.True(h.IsT4);
+        Assert.Equal(1.618, h.Match(_ => -1.0, _ => -1.0, _ => -1.0, v => v));
+    }
+
+    [Fact]
+    public void MapT3_MapsOnlyT3() {
+        var a = Choice<int, string, bool, double>.FromT3(true);
+        var b = a.MapT3(z => !z);
+        Assert.True(b.IsT3);
+        Assert.False(b.Match(_ => true, _ => true, z => z, _ => true));
+
+        var c = Choice<int, string, bool, double>.FromT1(7);
+        var d = c.MapT3(z => !z);
+        Assert.True(d.IsT1);
+        Assert.Equal(7, d.Match(x => x, _ => -1, _ => -1, _ => -1));
+
+        var e = Choice<int, string, bool, double>.FromT2("test");
+        var f = e.MapT3(z => !z);
+        Assert.True(f.IsT2);
+        Assert.Equal("test", f.Match(_ => "", s => s, _ => "", _ => ""));
+
+        var g = Choice<int, string, bool, double>.FromT4(3.14);
+        var h = g.MapT3(z => !z);
+        Assert.True(h.IsT4);
+        Assert.Equal(3.14, h.Match(_ => -1.0, _ => -1.0, _ => -1.0, v => v));
+    }
+
+    [Fact]
+    public void MapT4_MapsOnlyT4() {
+        var a = Choice<int, string, bool, double>.FromT4(2.5);
+        var b = a.MapT4(v => v * 3);
+        Assert.True(b.IsT4);
+        Assert.Equal(7.5, b.Match(_ => -1.0, _ => -1.0, _ => -1.0, v => v));
+
+        var c = Choice<int, string, bool, double>.FromT1(9);
+        var d = c.MapT4(v => v * 3);
+        Assert.True(d.IsT1);
+        Assert.Equal(9, d.Match(x => x, _ => -1, _ => -1, _ => -1));
+
+        var e = Choice<int, string, bool, double>.FromT2("hello");
+        var f = e.MapT4(v => v * 3);
+        Assert.True(f.IsT2);
+        Assert.Equal("hello", f.Match(_ => "", s => s, _ => "", _ => ""));
+
+        var g = Choice<int, string, bool, double>.FromT3(false);
+        var h = g.MapT4(v => v * 3);
+        Assert.True(h.IsT3);
+        Assert.False(h.Match(_ => true, _ => true, z => z, _ => true));
+    }
+
+    [Fact]
     public void TryGet_BothArms() {
         var a = Choice<int, string, bool, double>.FromT1(7);
         Assert.True(a.TryGetT1(out var v1));

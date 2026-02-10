@@ -54,6 +54,139 @@ public sealed class ChoiceOf3Tests {
         Assert.True(seen3);
     }
 
+
+    [Fact]
+    public void BindT1_BindsOnlyT1() {
+        var a = Choice<int, string, bool>.FromT1(10);
+        var b = a.BindT1(x => Choice<int, string, bool>.FromT1(x + 1));
+        Assert.True(b.IsT1);
+        Assert.Equal(11, b.Match(x => x, _ => -1, _ => -1));
+
+        var c = a.BindT1(x => Choice<int, string, bool>.FromT2($"err:{x}"));
+        Assert.True(c.IsT2);
+        Assert.Equal("err:10", c.Match(_ => "", s => s, _ => ""));
+
+        var d = a.BindT1(x => Choice<int, string, bool>.FromT3(x > 5));
+        Assert.True(d.IsT3);
+        Assert.True(d.Match(_ => false, _ => false, z => z));
+
+        var e = Choice<int, string, bool>.FromT2("boom");
+        var f = e.BindT1(x => Choice<int, string, bool>.FromT1(x + 1));
+        Assert.True(f.IsT2);
+        Assert.Equal("boom", f.Match(_ => "", s => s, _ => ""));
+
+        var g = Choice<int, string, bool>.FromT3(true);
+        var h = g.BindT1(x => Choice<int, string, bool>.FromT1(x + 1));
+        Assert.True(h.IsT3);
+        Assert.True(h.Match(_ => false, _ => false, z => z));
+    }
+
+    [Fact]
+    public void BindT2_BindsOnlyT2() {
+        var a = Choice<int, string, bool>.FromT2("x");
+        var b = a.BindT2(s => Choice<int, string, bool>.FromT2(s + "y"));
+        Assert.True(b.IsT2);
+        Assert.Equal("xy", b.Match(_ => "", s => s, _ => ""));
+
+        var c = a.BindT2(s => Choice<int, string, bool>.FromT1(s.Length));
+        Assert.True(c.IsT1);
+        Assert.Equal(1, c.Match(x => x, _ => -1, _ => -1));
+
+        var d = a.BindT2(s => Choice<int, string, bool>.FromT3(s == "x"));
+        Assert.True(d.IsT3);
+        Assert.True(d.Match(_ => false, _ => false, z => z));
+
+        var e = Choice<int, string, bool>.FromT1(7);
+        var f = e.BindT2(s => Choice<int, string, bool>.FromT2(s + "!"));
+        Assert.True(f.IsT1);
+        Assert.Equal(7, f.Match(x => x, _ => -1, _ => -1));
+
+        var g = Choice<int, string, bool>.FromT3(false);
+        var h = g.BindT2(s => Choice<int, string, bool>.FromT2(s + "!"));
+        Assert.True(h.IsT3);
+        Assert.False(h.Match(_ => true, _ => true, z => z));
+    }
+
+    [Fact]
+    public void BindT3_BindsOnlyT3() {
+        var a = Choice<int, string, bool>.FromT3(true);
+        var b = a.BindT3(z => Choice<int, string, bool>.FromT3(!z));
+        Assert.True(b.IsT3);
+        Assert.False(b.Match(_ => true, _ => true, z => z));
+
+        var c = a.BindT3(z => Choice<int, string, bool>.FromT1(z ? 1 : 0));
+        Assert.True(c.IsT1);
+        Assert.Equal(1, c.Match(x => x, _ => -1, _ => -1));
+
+        var d = a.BindT3(z => Choice<int, string, bool>.FromT2(z ? "yes" : "no"));
+        Assert.True(d.IsT2);
+        Assert.Equal("yes", d.Match(_ => "", s => s, _ => ""));
+
+        var e = Choice<int, string, bool>.FromT1(5);
+        var f = e.BindT3(z => Choice<int, string, bool>.FromT3(!z));
+        Assert.True(f.IsT1);
+        Assert.Equal(5, f.Match(x => x, _ => -1, _ => -1));
+
+        var g = Choice<int, string, bool>.FromT2("test");
+        var h = g.BindT3(z => Choice<int, string, bool>.FromT3(!z));
+        Assert.True(h.IsT2);
+        Assert.Equal("test", h.Match(_ => "", s => s, _ => ""));
+    }
+
+    [Fact]
+    public void MapT1_MapsOnlyT1() {
+        var a = Choice<int, string, bool>.FromT1(5);
+        var b = a.MapT1(x => x * 2);
+        Assert.True(b.IsT1);
+        Assert.Equal(10, b.Match(x => x, _ => -1, _ => -1));
+
+        var c = Choice<int, string, bool>.FromT2("e");
+        var d = c.MapT1(x => x * 2);
+        Assert.True(d.IsT2);
+        Assert.Equal("e", d.Match(_ => "", s => s, _ => ""));
+
+        var e = Choice<int, string, bool>.FromT3(true);
+        var f = e.MapT1(x => x * 2);
+        Assert.True(f.IsT3);
+        Assert.True(f.Match(_ => false, _ => false, z => z));
+    }
+
+    [Fact]
+    public void MapT2_MapsOnlyT2() {
+        var a = Choice<int, string, bool>.FromT2("ab");
+        var b = a.MapT2(s => s + "c");
+        Assert.True(b.IsT2);
+        Assert.Equal("abc", b.Match(_ => "", s => s, _ => ""));
+
+        var c = Choice<int, string, bool>.FromT1(3);
+        var d = c.MapT2(s => s + "c");
+        Assert.True(d.IsT1);
+        Assert.Equal(3, d.Match(x => x, _ => -1, _ => -1));
+
+        var e = Choice<int, string, bool>.FromT3(false);
+        var f = e.MapT2(s => s + "c");
+        Assert.True(f.IsT3);
+        Assert.False(f.Match(_ => true, _ => true, z => z));
+    }
+
+    [Fact]
+    public void MapT3_MapsOnlyT3() {
+        var a = Choice<int, string, bool>.FromT3(true);
+        var b = a.MapT3(z => !z);
+        Assert.True(b.IsT3);
+        Assert.False(b.Match(_ => true, _ => true, z => z));
+
+        var c = Choice<int, string, bool>.FromT1(7);
+        var d = c.MapT3(z => !z);
+        Assert.True(d.IsT1);
+        Assert.Equal(7, d.Match(x => x, _ => -1, _ => -1));
+
+        var e = Choice<int, string, bool>.FromT2("test");
+        var f = e.MapT3(z => !z);
+        Assert.True(f.IsT2);
+        Assert.Equal("test", f.Match(_ => "", s => s, _ => ""));
+    }
+
     [Fact]
     public void TryGet_BothArms() {
         var a = Choice<int, string, bool>.FromT1(7);

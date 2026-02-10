@@ -27,6 +27,15 @@ namespace Danom {
 
         /// <summary>
         /// Creates a new instance of <see cref="ResultErrors"/> from the specified
+        /// key and errors.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="errors"></param>
+        public ResultErrors(string key, params string[] errors)
+            : this(key, (IEnumerable<string>)errors) { }
+
+        /// <summary>
+        /// Creates a new instance of <see cref="ResultErrors"/> from the specified
         /// key and error.
         /// </summary>
         /// <param name="key"></param>
@@ -271,7 +280,8 @@ namespace Danom {
                 throw new ArgumentNullException(nameof(next), "Next error cannot be null.");
             }
 
-            if (!string.Equals(next.Key, Key, StringComparison.OrdinalIgnoreCase)) {
+            if (!string.IsNullOrWhiteSpace(next.Key)
+                && !string.Equals(next.Key, Key, StringComparison.OrdinalIgnoreCase)) {
                 throw new InvalidOperationException("Cannot append errors with different keys.");
             }
 

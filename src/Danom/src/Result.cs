@@ -3,7 +3,6 @@ namespace Danom {
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
-    using System.Threading.Tasks;
 
     /// <summary>
     /// Represents a result of an operation that can be either successful or not. It
@@ -53,48 +52,12 @@ namespace Danom {
             new Result<T, TError>(value);
 
         /// <summary>
-        /// Creates <see cref="Result{T, TError}"/> with the value of the awaited Task.
-        /// </summary>
-        /// <param name="valueTask"></param>
-        /// <returns></returns>
-        public static async Task<Result<T, TError>> OkAsync(Task<T> valueTask) =>
-            Ok(await valueTask);
-
-        /// <summary>
-        /// Creates <see cref="Result{T, TError}"/> with the value of the awaited ValueTask.
-        /// </summary>
-        /// <param name="valueTask"></param>
-        /// <returns></returns>
-        public static async ValueTask<Result<T, TError>> OkAsync(ValueTask<T> valueTask) =>
-            Ok(await valueTask);
-
-        /// <summary>
         /// Creates a new <see cref="Result{T, TError}"/> with the specified error.
         /// </summary>
         /// <param name="error"></param>
         /// <returns></returns>
         public static Result<T, TError> Error(TError error) =>
             new Result<T, TError>(error);
-
-        // must remove this because it creates false positive CA1849 warnings
-        // public static Task<Result<T, TError>> ErrorAsync(TError error) =>
-        //     Task.FromResult(Error(error));
-
-        /// <summary>
-        /// Creates <see cref="Result{T, TError}"/> with the value of the awaited Task.
-        /// </summary>
-        /// <param name="error"></param>
-        /// <returns></returns>
-        public static async Task<Result<T, TError>> ErrorAsync(Task<TError> error) =>
-            Error(await error);
-
-        /// <summary>
-        /// Creates <see cref="Result{T, TError}"/> with the value of the awaited ValueTask.
-        /// </summary>
-        /// <param name="error"></param>
-        /// <returns></returns>
-        public static async ValueTask<Result<T, TError>> ErrorAsync(ValueTask<TError> error) =>
-            Error(await error);
 
         /// <summary>
         /// If <see cref="Result{T, TError}"/> is Ok evaluate the ok delegate,
@@ -111,7 +74,7 @@ namespace Danom {
         };
 
         /// <summary>
-        /// If <see cref="Result{T,TError}"/> is Some, evaluates the some delegate,
+        /// If <see cref="Result{T,TError}"/> is Some, evaluates the ok delegate,
         /// otherwise evaluates
         /// the none delegate.
         /// </summary>
@@ -168,12 +131,24 @@ namespace Danom {
             Bind(x => fn.Map(i => i.Invoke(x)));
 
         /// <summary>
-        /// Executes the some action if <see cref="Result{T, TError}"/> is Ok.
+        /// Executes the action if <see cref="Result{T, TError}"/> is Ok.
         /// </summary>
-        /// <param name="some"></param>
+        /// <param name="action"></param>
+        /// <returns></returns>
+        public Result<T, TError> Tap(
+            Action<T> action) =>
+            Map(x => {
+                action(x);
+                return x;
+            });
+
+        /// <summary>
+        /// Executes the ok action if <see cref="Result{T, TError}"/> is Ok.
+        /// </summary>
+        /// <param name="ok"></param>
         public void Iter(
-            Action<T> some) =>
-            Match(some, _ => { });
+            Action<T> ok) =>
+            Match(ok, _ => { });
 
         /// <summary>
         /// Returns the value of <see cref="Result{T, TError}"/> if it is T, otherwise returns the
@@ -213,24 +188,15 @@ namespace Danom {
             Match(Result<T, TError>.Ok, _ => ifErrorWith());
 
         /// <summary>
-        /// Safely retrieves the value if the Result is in Ok state.
+        /// Returns this Result if it is Error and the predicate is satisfied,
         /// </summary>
-        /// <param name="value">The value if in Ok state, default otherwise.</param>
-        /// <returns>True if the Result is in Ok state, false otherwise.</returns>
-        public bool TryGet([MaybeNullWhen(false)] out T value) {
-            value = IsOk ? _ok : default!;
-            return IsOk;
-        }
-
-        /// <summary>
-        /// Safely retrieves the error if the Result is in Error state.
-        /// </summary>
-        /// <param name="error">The error if in Error state, default otherwise.</param>
-        /// <returns>True if the Result is in Error state, false otherwise.</returns>
-        public bool TryGetError([MaybeNullWhen(false)] out TError error) {
-            error = IsError ? _error : default!;
-            return IsError;
-        }
+        /// <param name="predicate"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public Result<T, TError> Filter(
+            Func<T, bool> predicate,
+            TError error) =>
+            Bind(ok => predicate(ok) ? Result<T, TError>.Ok(ok) : Result<T, TError>.Error(error));
 
         /// <summary>
         /// Returns true if any value in the <see cref="Option{T}"/> satisfies the predicate.
@@ -264,6 +230,26 @@ namespace Danom {
         public T[] ToArray() =>
             Map(x => new T[] { x })
                 .DefaultWith(() => Array.Empty<T>());
+
+        /// <summary>
+        /// Safely retrieves the value if the Result is in Ok state.
+        /// </summary>
+        /// <param name="value">The value if in Ok state, default otherwise.</param>
+        /// <returns>True if the Result is in Ok state, false otherwise.</returns>
+        public bool TryGet([MaybeNullWhen(false)] out T value) {
+            value = IsOk ? _ok : default!;
+            return IsOk;
+        }
+
+        /// <summary>
+        /// Safely retrieves the error if the Result is in Error state.
+        /// </summary>
+        /// <param name="error">The error if in Error state, default otherwise.</param>
+        /// <returns>True if the Result is in Error state, false otherwise.</returns>
+        public bool TryGetError([MaybeNullWhen(false)] out TError error) {
+            error = IsError ? _error : default!;
+            return IsError;
+        }
 
         /// <summary>
         /// Returns true if the specified Result is equal to the current <see cref="Result{T, TError}"/>.
@@ -362,44 +348,12 @@ namespace Danom {
             Result<T, ResultErrors>.Ok(value);
 
         /// <summary>
-        /// Creates <see cref="Result{T, ResultErrors}"/> with the value of the awaited Task.
-        /// </summary>
-        /// <param name="valueTask"></param>
-        /// <returns></returns>
-        public static Task<Result<T, ResultErrors>> OkAsync(Task<T> valueTask) =>
-            Result<T, ResultErrors>.OkAsync(valueTask);
-
-        /// <summary>
-        /// Creates <see cref="Result{T, ResultErrors}"/> with the value of the awaited ValueTask.
-        /// </summary>
-        /// <param name="valueTask"></param>
-        /// <returns></returns>
-        public static ValueTask<Result<T, ResultErrors>> OkAsync(ValueTask<T> valueTask) =>
-            Result<T, ResultErrors>.OkAsync(valueTask);
-
-        /// <summary>
         /// Creates a new <see cref="Result{T, ResultErrors}"/> with the specified error.
         /// </summary>
         /// <param name="errors"></param>
         /// <returns></returns>
         public static Result<T, ResultErrors> Error(ResultErrors errors) =>
             Result<T, ResultErrors>.Error(errors);
-
-        /// <summary>
-        /// Creates <see cref="Result{T, ResultErrors}"/> with the value of the awaited Task.
-        /// </summary>
-        /// <param name="errors"></param>
-        /// <returns></returns>
-        public static Task<Result<T, ResultErrors>> ErrorAsync(Task<ResultErrors> errors) =>
-            Result<T, ResultErrors>.ErrorAsync(errors);
-
-        /// <summary>
-        /// Creates <see cref="Result{T, ResultErrors}"/> with the value of the awaited ValueTask.
-        /// </summary>
-        /// <param name="errors"></param>
-        /// <returns></returns>
-        public static ValueTask<Result<T, ResultErrors>> ErrorAsync(ValueTask<ResultErrors> errors) =>
-            Result<T, ResultErrors>.ErrorAsync(errors);
 
         /// <summary>
         /// Create <see cref="Result{T, ResultErrors}"/> with the specified error.
@@ -499,61 +453,6 @@ namespace Danom {
             Error(new ResultErrors(errors));
 
         /// <summary>
-        /// Matches two Results and invokes the appropriate delegate based on their states.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <typeparam name="TError"></typeparam>
-        /// <typeparam name="T2"></typeparam>
-        /// <typeparam name="T2Error"></typeparam>
-        /// <typeparam name="U"></typeparam>
-        /// <param name="r1"></param>
-        /// <param name="r2"></param>
-        /// <param name="defaultWith"></param>
-        /// <param name="ok"></param>
-        /// <param name="error"></param>
-        /// <param name="ok1"></param>
-        /// <param name="ok2"></param>
-        /// <param name="error1"></param>
-        /// <param name="error2"></param>
-        /// <returns></returns>
-        public static U Match<T, TError, T2, T2Error, U>(
-            Result<T, TError> r1,
-            Result<T2, T2Error> r2,
-            Func<U> defaultWith,
-            Func<T, T2, U>? ok = default,
-            Func<TError, T2Error, U>? error = default,
-            Func<T, U>? ok1 = default,
-            Func<T2, U>? ok2 = default,
-            Func<TError, U>? error1 = default,
-            Func<T2Error, U>? error2 = default) {
-            if (ok != null && r1.TryGet(out var v1) && r2.TryGet(out var v2)) {
-                return ok(v1, v2);
-            }
-
-            if (error != null && r1.TryGetError(out var e1) && r2.TryGetError(out var e2)) {
-                return error(e1, e2);
-            }
-
-            if (ok1 != null && r1.TryGet(out v1)) {
-                return ok1(v1);
-            }
-
-            if (error1 != null && r1.TryGetError(out e1)) {
-                return error1(e1);
-            }
-
-            if (ok2 != null && r2.TryGet(out v2)) {
-                return ok2(v2);
-            }
-
-            if (error2 != null && r2.TryGetError(out e2)) {
-                return error2(e2);
-            }
-
-            return defaultWith();
-        }
-
-        /// <summary>
         /// Matches a collection of Results and invokes the appropriate delegate based on their states.
         ///
         /// Note: this implementation is applicative and not monadic, meaning that all Results are evaluated.
@@ -588,98 +487,8 @@ namespace Danom {
         }
 
         /// <summary>
-        /// Binds two Results together using the specified bind function if both are Ok.
-        /// If either Result is Error, and no error aggregator is provider, returns the first encountered Error.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <typeparam name="T2"></typeparam>
-        /// <typeparam name="TError"></typeparam>
-        /// <typeparam name="U"></typeparam>
-        /// <param name="r1"></param>
-        /// <param name="r2"></param>
-        /// <param name="bind"></param>
-        /// <param name="error"></param>
-        /// <returns></returns>
-        /// <exception cref="InvalidOperationException"></exception>
-        public static Result<U, TError> Bind<T, T2, TError, U>(
-            Result<T, TError> r1,
-            Result<T2, TError> r2,
-            Func<T, T2, Result<U, TError>> bind,
-            Func<TError, TError, TError>? error = default) {
-            if (r1.TryGet(out var v1) && r2.TryGet(out var v2)) {
-                return bind(v1, v2);
-            }
-
-            if (error != null && r1.TryGetError(out var e1) && r2.TryGetError(out var e2)) {
-                return Result<U, TError>.Error(error(e1, e2));
-            }
-
-            if (r1.TryGetError(out e1)) {
-                return Result<U, TError>.Error(e1);
-            }
-
-            if (r2.TryGetError(out e2)) {
-                return Result<U, TError>.Error(e2);
-            }
-
-            // unreachable, here to satisfy the compiler
-            throw new InvalidOperationException("You'll never find me!");
-        }
-
-        /// <summary>
-        /// Binds three Results together using the specified bind function if all are Ok.
-        /// If any Result is Error, and no error aggregator is provider, returns the first encountered Error.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <typeparam name="T2"></typeparam>
-        /// <typeparam name="T3"></typeparam>
-        /// <typeparam name="TError"></typeparam>
-        /// <typeparam name="U"></typeparam>
-        /// <param name="r1"></param>
-        /// <param name="r2"></param>
-        /// <param name="r3"></param>
-        /// <param name="bind"></param>
-        /// <param name="error"></param>
-        /// <returns></returns>
-        /// <exception cref="InvalidOperationException"></exception>
-        public static Result<U, TError> Bind<T, T2, T3, TError, U>(
-            Result<T, TError> r1,
-            Result<T2, TError> r2,
-            Result<T3, TError> r3,
-            Func<T, T2, T3, Result<U, TError>> bind,
-            Func<TError, TError, TError, TError>? error = default) {
-            if (r1.TryGet(out var v1)
-                && r2.TryGet(out var v2)
-                && r3.TryGet(out var v3)) {
-                return bind(v1, v2, v3);
-            }
-
-            if (error != null
-                && r1.TryGetError(out var e1)
-                && r2.TryGetError(out var e2)
-                && r3.TryGetError(out var e3)) {
-                return Result<U, TError>.Error(error(e1, e2, e3));
-            }
-
-            if (r1.TryGetError(out e1)) {
-                return Result<U, TError>.Error(e1);
-            }
-
-            if (r2.TryGetError(out e2)) {
-                return Result<U, TError>.Error(e2);
-            }
-
-            if (r3.TryGetError(out e3)) {
-                return Result<U, TError>.Error(e3);
-            }
-
-            // unreachable, here to satisfy the compiler
-            throw new InvalidOperationException("You'll never find me!");
-        }
-
-        /// <summary>
         /// Maps two Results together using the specified map function if both are Ok.
-        /// If either Result is Error, and no error aggregator is provider, returns the first encountered Error.
+        /// Returns the aggregated errors if either or both Result is Error.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <typeparam name="T2"></typeparam>
@@ -687,20 +496,159 @@ namespace Danom {
         /// <typeparam name="U"></typeparam>
         /// <param name="r1"></param>
         /// <param name="r2"></param>
-        /// <param name="map"></param>
+        /// <param name="ok"></param>
         /// <param name="error"></param>
         /// <returns></returns>
-        public static Result<U, TError> Map<T, T2, TError, U>(
+        public static U Match<T, T2, TError, U>(
             Result<T, TError> r1,
             Result<T2, TError> r2,
-            Func<T, T2, U> map,
-            Func<TError, TError, TError>? error = default) {
-            return Bind(r1, r2, (v1, v2) => Result<U, TError>.Ok(map(v1, v2)), error);
+            Func<T, T2, U> ok,
+            Func<IEnumerable<TError>, U> error) {
+            if (ok != null && r1.TryGet(out var v1) && r2.TryGet(out var v2)) {
+                return ok(v1, v2);
+            }
+
+            var errors = new List<TError>();
+
+            if (r1.TryGetError(out var e1)) {
+                errors.Add(e1);
+            }
+
+            if (r2.TryGetError(out var e2)) {
+                errors.Add(e2);
+            }
+
+            return error(errors);
         }
 
         /// <summary>
         /// Maps three Results together using the specified map function if all are Ok.
-        /// If any Result is Error, and no error aggregator is provider, returns the first encountered Error.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T2"></typeparam>
+        /// <typeparam name="T3"></typeparam>
+        /// <typeparam name="TError"></typeparam>
+        /// <typeparam name="U"></typeparam>
+        /// <param name="r1"></param>
+        /// <param name="r2"></param>
+        /// <param name="r3"></param>
+        /// <param name="ok"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public static U Match<T, T2, T3, TError, U>(
+            Result<T, TError> r1,
+            Result<T2, TError> r2,
+            Result<T3, TError> r3,
+            Func<T, T2, T3, U> ok,
+            Func<IEnumerable<TError>, U> error) {
+            if (ok != null
+                && r1.TryGet(out var v1)
+                && r2.TryGet(out var v2)
+                && r3.TryGet(out var v3)) {
+                return ok(v1, v2, v3);
+            }
+
+            var errors = new List<TError>();
+
+            if (r1.TryGetError(out var e1)) {
+                errors.Add(e1);
+            }
+
+            if (r2.TryGetError(out var e2)) {
+                errors.Add(e2);
+            }
+
+            if (r3.TryGetError(out var e3)) {
+                errors.Add(e3);
+            }
+
+            return error(errors);
+        }
+
+        /// <summary>
+        /// Binds the specified Result using the specified bind function if it is Ok.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TError"></typeparam>
+        /// <typeparam name="U"></typeparam>
+        /// <param name="result"></param>
+        /// <param name="bind"></param>
+        /// <returns></returns>
+        public static Result<U, TError> Bind<T, TError, U>(
+            Result<T, TError> result,
+            Func<T, Result<U, TError>> bind) =>
+            result.Bind(bind);
+
+        /// <summary>
+        /// Binds two Results together using the specified bind function if both are Ok.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T2"></typeparam>
+        /// <typeparam name="TError"></typeparam>
+        /// <typeparam name="U"></typeparam>
+        /// <param name="r1"></param>
+        /// <param name="r2"></param>
+        /// <param name="bind"></param>
+        /// <returns></returns>
+        public static Result<U, TError> Bind<T, T2, TError, U>(
+            Result<T, TError> r1,
+            Result<T2, TError> r2,
+            Func<T, T2, Result<U, TError>> bind) =>
+            Bind(r1, v1 => Bind(r2, v2 => bind(v1, v2)));
+
+        /// <summary>
+        /// Binds three Results together using the specified bind function if all are Ok.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T2"></typeparam>
+        /// <typeparam name="T3"></typeparam>
+        /// <typeparam name="TError"></typeparam>
+        /// <typeparam name="U"></typeparam>
+        /// <param name="r1"></param>
+        /// <param name="r2"></param>
+        /// <param name="r3"></param>
+        /// <param name="bind"></param>
+        /// <returns></returns>
+        public static Result<U, TError> Bind<T, T2, T3, TError, U>(
+            Result<T, TError> r1,
+            Result<T2, TError> r2,
+            Result<T3, TError> r3,
+            Func<T, T2, T3, Result<U, TError>> bind) =>
+            Bind(r1, v1 => Bind(r2, v2 => Bind(r3, v3 => bind(v1, v2, v3))));
+
+        /// <summary>
+        /// Maps the specified Result using the specified map function if it is Ok.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TError"></typeparam>
+        /// <typeparam name="U"></typeparam>
+        /// <param name="result"></param>
+        /// <param name="map"></param>
+        /// <returns></returns>
+        public static Result<U, TError> Map<T, TError, U>(
+            Result<T, TError> result,
+            Func<T, U> map) =>
+            result.Map(map);
+
+        /// <summary>
+        /// Maps two Results together using the specified map function if both are Ok.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T2"></typeparam>
+        /// <typeparam name="TError"></typeparam>
+        /// <typeparam name="U"></typeparam>
+        /// <param name="r1"></param>
+        /// <param name="r2"></param>
+        /// <param name="map"></param>
+        /// <returns></returns>
+        public static Result<U, TError> Map<T, T2, TError, U>(
+            Result<T, TError> r1,
+            Result<T2, TError> r2,
+            Func<T, T2, U> map) =>
+            Bind(r1, v1 => Map(r2, v2 => map(v1, v2)));
+
+        /// <summary>
+        /// Maps three Results together using the specified map function if all are Ok.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <typeparam name="T2"></typeparam>
@@ -711,16 +659,27 @@ namespace Danom {
         /// <param name="r2"></param>
         /// <param name="r3"></param>
         /// <param name="map"></param>
-        /// <param name="error"></param>
         /// <returns></returns>
         public static Result<U, TError> Map<T, T2, T3, TError, U>(
             Result<T, TError> r1,
             Result<T2, TError> r2,
             Result<T3, TError> r3,
-            Func<T, T2, T3, U> map,
-            Func<TError, TError, TError, TError>? error = default) {
-            return Bind(r1, r2, r3, (v1, v2, v3) => Result<U, TError>.Ok(map(v1, v2, v3)), error);
-        }
+            Func<T, T2, T3, U> map) =>
+            Bind(r1, v1 => Bind(r2, v2 => Map(r3, v3 => map(v1, v2, v3))));
+
+        /// <summary>
+        /// Maps the specified Result's error using the specified mapError function if it is Error.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TError"></typeparam>
+        /// <typeparam name="UError"></typeparam>
+        /// <param name="result"></param>
+        /// <param name="mapError"></param>
+        /// <returns></returns>
+        public static Result<T, UError> MapError<T, TError, UError>(
+            Result<T, TError> result,
+            Func<TError, UError> mapError) =>
+            result.MapError(mapError);
 
         /// <summary>
         /// Traverses the specified items, applying the func to each item and aggregating the results.
@@ -798,5 +757,35 @@ namespace Danom {
             IEnumerable<Result<T, ResultErrors>> results) =>
             Sequence(results, (e1, e2) => ResultErrors.Merge(e1, e2));
 
+        /// <summary>
+        /// Zips two Results into a Result containing a tuple of their values if both are Ok.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T2"></typeparam>
+        /// <typeparam name="TError"></typeparam>
+        /// <param name="r1"></param>
+        /// <param name="r2"></param>
+        /// <returns></returns>
+        public static Result<(T, T2), TError> Zip<T, T2, TError>(
+            Result<T, TError> r1,
+            Result<T2, TError> r2) =>
+            Bind(r1, v1 => Map(r2, v2 => (v1, v2)));
+
+        /// <summary>
+        /// Zips three Results into a Result containing a tuple of their values if all are Ok.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T2"></typeparam>
+        /// <typeparam name="T3"></typeparam>
+        /// <typeparam name="TError"></typeparam>
+        /// <param name="r1"></param>
+        /// <param name="r2"></param>
+        /// <param name="r3"></param>
+        /// <returns></returns>
+        public static Result<(T, T2, T3), TError> Zip<T, T2, T3, TError>(
+            Result<T, TError> r1,
+            Result<T2, TError> r2,
+            Result<T3, TError> r3) =>
+            Bind(r1, v1 => Bind(r2, v2 => Map(r3, v3 => (v1, v2, v3))));
     }
 }

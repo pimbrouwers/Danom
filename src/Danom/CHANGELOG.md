@@ -4,10 +4,27 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+> Version 3.0.0 introduces a major simplification by removing the async API. This change focuses the library on its core purpose—providing functional constructs for synchronous workflows—while reducing complexity and maintenance overhead. Users relying on async methods will need to refactor their code to handle async workflows externally. See the migration guide for details.
+
 ## Added
 
-- ResultErrors.Merge method and keyed accessor (ex: `resultErrors["key"]`).
+- New `Option` method:
+    - `Option.Match<T, T2, U>(Option<T> o1, Option<T2> o2, // ...)`
+    - `Option.Match<T, U>(IEnumerable<Option<T> options, // ...)`
+    - `Option.Bind<T, T2, U>(Option<T> o1, Option<T2> o2, // ...)`
+- New `Option` static methods:
+    -
+- New `Result` method:
+    -
+- New `Result` static methods:
+    -
+- ResultErrors.Merge method and keyed accessor (ex: `ResultErrors.Merge([r1, r2, r3])`, `resultErrors["key"]`).
 - Pipe extension method, allowing for functional piping of values (ex: `value.Pipe(func)`).
+
+## Removed
+
+- All async methods and types (ex: `Option<T>.MapAsync`, `Result<T, TError>.BindAsync`, etc.). Users should handle async workflows externally.
+- `shortOption.TryParse(string? x, IFormatProvider provider)`, was a development artifact and should be replaced by `shortOption.TryParse(string? x, NumberStyles styles, IFormatProvider? provider)`.
 
 ## [2.1.0] - 2025-12-30
 

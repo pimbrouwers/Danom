@@ -21,67 +21,108 @@ public sealed class OptionParseTests {
         AssertOption.IsNone(byteOption.TryParse("danom"));
         AssertOption.IsSome(byteOption.TryParse("0"));
         AssertOption.IsSome(byteOption.TryParse("255"));
+
+        AssertOption.IsNone(byteOption.TryParse(null, NumberStyles.Any, _culture));
+        AssertOption.IsNone(byteOption.TryParse("danom", NumberStyles.Any, _culture));
+        AssertOption.IsSome(byteOption.TryParse("0", NumberStyles.Integer, _culture));
+        AssertOption.IsSome(byteOption.TryParse("255", NumberStyles.Integer, _culture));
     }
 
     [Fact]
     public void shortOptionTryParse() {
         AssertOption.IsNone(shortOption.TryParse(null));
         AssertOption.IsNone(shortOption.TryParse("danom"));
-        AssertOption.IsSome(Option.Some("-32768").Bind(shortOption.TryParse));
+        AssertOption.IsSome(shortOption.TryParse("-32768"));
         AssertOption.IsSome(shortOption.TryParse("-32768"));
         AssertOption.IsSome(shortOption.TryParse("32767"));
+
+        AssertOption.IsNone(shortOption.TryParse(null, NumberStyles.Integer, _culture));
+        AssertOption.IsNone(shortOption.TryParse("danom", NumberStyles.Integer, _culture));
+        AssertOption.IsSome(shortOption.TryParse("-32768", NumberStyles.Integer, _culture));
+        AssertOption.IsSome(shortOption.TryParse("-32768", NumberStyles.Integer, _culture));
+        AssertOption.IsSome(shortOption.TryParse("32767", NumberStyles.Integer, _culture));
     }
 
     [Fact]
     public void intOptionTryParse() {
         AssertOption.IsNone(intOption.TryParse(null));
         AssertOption.IsNone(intOption.TryParse("danom"));
-        AssertOption.IsSome(Option.Some("-2147483648").Bind(intOption.TryParse));
+        AssertOption.IsSome(intOption.TryParse("-2147483648"));
         AssertOption.IsSome(intOption.TryParse("-2147483648"));
         AssertOption.IsSome(intOption.TryParse("2147483647"));
+
+        AssertOption.IsNone(intOption.TryParse(null, NumberStyles.Integer, _culture));
+        AssertOption.IsNone(intOption.TryParse("danom", NumberStyles.Integer, _culture));
+        AssertOption.IsSome(intOption.TryParse("-2147483648", NumberStyles.Integer, _culture));
+        AssertOption.IsSome(intOption.TryParse("-2147483648", NumberStyles.Integer, _culture));
+        AssertOption.IsSome(intOption.TryParse("2147483647", NumberStyles.Integer, _culture));
     }
 
     [Fact]
     public void longOptionTryParse() {
         AssertOption.IsNone(longOption.TryParse(null));
         AssertOption.IsNone(longOption.TryParse("danom"));
-        AssertOption.IsSome(Option.Some("-9223372036854775808").Bind(longOption.TryParse));
+        AssertOption.IsSome(longOption.TryParse("-9223372036854775808"));
         AssertOption.IsSome(longOption.TryParse("-9223372036854775808"));
         AssertOption.IsSome(longOption.TryParse("9223372036854775807"));
+
+        AssertOption.IsNone(longOption.TryParse(null, NumberStyles.Integer, _culture));
+        AssertOption.IsNone(longOption.TryParse("danom", NumberStyles.Integer, _culture));
+        AssertOption.IsSome(longOption.TryParse("-9223372036854775808", NumberStyles.Integer, _culture));
+        AssertOption.IsSome(longOption.TryParse("-9223372036854775808", NumberStyles.Integer, _culture));
+        AssertOption.IsSome(longOption.TryParse("9223372036854775807", NumberStyles.Integer, _culture));
     }
 
     [Fact]
     public void decimalOptionTryParse() {
         AssertOption.IsNone(decimalOption.TryParse(null));
         AssertOption.IsNone(decimalOption.TryParse("danom"));
-        AssertOption.IsSome(Option.Some("-79228162514264337593543950335").Bind(decimalOption.TryParse));
+        AssertOption.IsSome(decimalOption.TryParse("-79228162514264337593543950335"));
         AssertOption.IsSome(decimalOption.TryParse("-79228162514264337593543950335"));
         AssertOption.IsSome(decimalOption.TryParse("79228162514264337593543950335"));
+
+        AssertOption.IsNone(decimalOption.TryParse(null, NumberStyles.Number, _culture));
+        AssertOption.IsNone(decimalOption.TryParse("danom", NumberStyles.Number, _culture));
+        AssertOption.IsSome(decimalOption.TryParse("-79228162514264337593543950335", NumberStyles.Number, _culture));
+        AssertOption.IsSome(decimalOption.TryParse("-79228162514264337593543950335", NumberStyles.Number, _culture));
+        AssertOption.IsSome(decimalOption.TryParse("79228162514264337593543950335", NumberStyles.Number, _culture));
     }
 
     [Fact]
     public void doubleOptionTryParse() {
         AssertOption.IsNone(doubleOption.TryParse(null));
         AssertOption.IsNone(doubleOption.TryParse("danom"));
-        AssertOption.IsSome(Option.Some("-1.7976931348623157E+308").Bind(doubleOption.TryParse));
+        AssertOption.IsSome(doubleOption.TryParse("-1.7976931348623157E+308"));
         AssertOption.IsSome(doubleOption.TryParse("-1.7976931348623157E+308"));
         AssertOption.IsSome(doubleOption.TryParse("1.7976931348623157E+308"));
+
+        AssertOption.IsNone(doubleOption.TryParse(null, NumberStyles.Float | NumberStyles.AllowThousands, _culture));
+        AssertOption.IsNone(doubleOption.TryParse("danom", NumberStyles.Float | NumberStyles.AllowThousands, _culture));
+        AssertOption.IsSome(doubleOption.TryParse("-1.7976931348623157E+308", NumberStyles.Float | NumberStyles.AllowThousands, _culture));
+        AssertOption.IsSome(doubleOption.TryParse("-1.7976931348623157E+308", NumberStyles.Float | NumberStyles.AllowThousands, _culture));
+        AssertOption.IsSome(doubleOption.TryParse("1.7976931348623157E+308", NumberStyles.Float | NumberStyles.AllowThousands, _culture));
     }
 
     [Fact]
     public void floatOptionTryParse() {
         AssertOption.IsNone(floatOption.TryParse(null));
         AssertOption.IsNone(floatOption.TryParse("danom"));
-        AssertOption.IsSome(Option.Some("-3.40282347E+38").Bind(floatOption.TryParse));
+        AssertOption.IsSome(floatOption.TryParse("-3.40282347E+38"));
         AssertOption.IsSome(floatOption.TryParse("-3.40282347E+38"));
         AssertOption.IsSome(floatOption.TryParse("3.40282347E+38"));
+
+        AssertOption.IsNone(floatOption.TryParse(null, NumberStyles.Float | NumberStyles.AllowThousands, _culture));
+        AssertOption.IsNone(floatOption.TryParse("danom", NumberStyles.Float | NumberStyles.AllowThousands, _culture));
+        AssertOption.IsSome(floatOption.TryParse("-3.40282347E+38", NumberStyles.Float | NumberStyles.AllowThousands, _culture));
+        AssertOption.IsSome(floatOption.TryParse("-3.40282347E+38", NumberStyles.Float | NumberStyles.AllowThousands, _culture));
+        AssertOption.IsSome(floatOption.TryParse("3.40282347E+38", NumberStyles.Float | NumberStyles.AllowThousands, _culture));
     }
 
     [Fact]
     public void GuidOptionTryParse() {
         AssertOption.IsNone(GuidOption.TryParse(null));
         AssertOption.IsNone(GuidOption.TryParse("danom"));
-        AssertOption.IsSome(Option.Some("00000000-0000-0000-0000-000000000000").Bind(GuidOption.TryParse));
+        AssertOption.IsSome(GuidOption.TryParse("00000000-0000-0000-0000-000000000000"));
         AssertOption.IsSome(GuidOption.TryParse("00000000-0000-0000-0000-000000000000"));
         AssertOption.IsSome(GuidOption.TryParse("11111111-1111-1111-1111-111111111111"));
     }
@@ -89,8 +130,9 @@ public sealed class OptionParseTests {
     [Fact]
     public void GuidOptionTryParseExact() {
         AssertOption.IsNone(GuidOption.TryParseExact(null, null));
-        AssertOption.IsNone(GuidOption.TryParseExact("danom", "N"));
+        AssertOption.IsNone(GuidOption.TryParseExact("danom", null));
         AssertOption.IsSome(GuidOption.TryParseExact("00000000-0000-0000-0000-000000000000", "D"));
+        AssertOption.IsSome(GuidOption.TryParseExact("00000000-0000-0000-0000-000000000000", "d"));
         AssertOption.IsSome(GuidOption.TryParseExact("11111111111111111111111111111111", "N"));
         AssertOption.IsSome(GuidOption.TryParseExact("{00000000-0000-0000-0000-000000000000}", "B"));
         AssertOption.IsSome(GuidOption.TryParseExact("(00000000-0000-0000-0000-000000000000)", "P"));
@@ -101,9 +143,15 @@ public sealed class OptionParseTests {
     public void DateTimeOptionTryParse() {
         AssertOption.IsNone(DateTimeOption.TryParse(null));
         AssertOption.IsNone(DateTimeOption.TryParse("danom"));
-        AssertOption.IsSome(Option.Some("0001-01-01T00:00:00.0000000").Bind(DateTimeOption.TryParse));
+        AssertOption.IsSome(DateTimeOption.TryParse("0001-01-01T00:00:00.0000000"));
         AssertOption.IsSome(DateTimeOption.TryParse("0001-01-01T00:00:00.0000000"));
         AssertOption.IsSome(DateTimeOption.TryParse("9999-12-31T23:59:59.9999999"));
+
+        AssertOption.IsNone(DateTimeOption.TryParse(null, _culture, DateTimeStyles.None));
+        AssertOption.IsNone(DateTimeOption.TryParse("danom", _culture, DateTimeStyles.None));
+        AssertOption.IsSome(DateTimeOption.TryParse("0001-01-01T00:00:00.0000000", _culture, DateTimeStyles.None));
+        AssertOption.IsSome(DateTimeOption.TryParse("0001-01-01T00:00:00.0000000", _culture, DateTimeStyles.None));
+        AssertOption.IsSome(DateTimeOption.TryParse("9999-12-31T23:59:59.9999999", _culture, DateTimeStyles.None));
     }
 
     [Fact]
@@ -118,9 +166,15 @@ public sealed class OptionParseTests {
     public void DateOnlyTryParse() {
         AssertOption.IsNone(DateOnlyOption.TryParse(null));
         AssertOption.IsNone(DateOnlyOption.TryParse("danom"));
-        AssertOption.IsSome(Option.Some("0001-01-01").Bind(DateOnlyOption.TryParse));
+        AssertOption.IsSome(DateOnlyOption.TryParse("0001-01-01"));
         AssertOption.IsSome(DateOnlyOption.TryParse("0001-01-01"));
         AssertOption.IsSome(DateOnlyOption.TryParse("9999-12-31"));
+
+        AssertOption.IsNone(DateOnlyOption.TryParse(null, _culture, DateTimeStyles.None));
+        AssertOption.IsNone(DateOnlyOption.TryParse("danom", _culture, DateTimeStyles.None));
+        AssertOption.IsSome(DateOnlyOption.TryParse("0001-01-01", _culture, DateTimeStyles.None));
+        AssertOption.IsSome(DateOnlyOption.TryParse("0001-01-01", _culture, DateTimeStyles.None));
+        AssertOption.IsSome(DateOnlyOption.TryParse("9999-12-31", _culture, DateTimeStyles.None));
     }
 
     [Fact]
@@ -135,9 +189,15 @@ public sealed class OptionParseTests {
     public void TimeOnlyOptionTryParse() {
         AssertOption.IsNone(TimeOnlyOption.TryParse(null));
         AssertOption.IsNone(TimeOnlyOption.TryParse("danom"));
-        AssertOption.IsSome(Option.Some("00:00:00").Bind(TimeOnlyOption.TryParse));
+        AssertOption.IsSome(TimeOnlyOption.TryParse("00:00:00"));
         AssertOption.IsSome(TimeOnlyOption.TryParse("00:00:00"));
         AssertOption.IsSome(TimeOnlyOption.TryParse("23:59:59.9999999"));
+
+        AssertOption.IsNone(TimeOnlyOption.TryParse(null, _culture));
+        AssertOption.IsNone(TimeOnlyOption.TryParse("danom", _culture));
+        AssertOption.IsSome(TimeOnlyOption.TryParse("00:00:00", _culture));
+        AssertOption.IsSome(TimeOnlyOption.TryParse("00:00:00", _culture));
+        AssertOption.IsSome(TimeOnlyOption.TryParse("23:59:59.9999999", _culture));
     }
 
     [Fact]
@@ -151,9 +211,15 @@ public sealed class OptionParseTests {
     public void DateTimeOffsetOptionTryParse() {
         AssertOption.IsNone(DateTimeOffsetOption.TryParse(null));
         AssertOption.IsNone(DateTimeOffsetOption.TryParse("danom"));
-        AssertOption.IsSome(Option.Some("0001-01-01T00:00:00.0000000+00:00").Bind(DateTimeOffsetOption.TryParse));
+        AssertOption.IsSome(DateTimeOffsetOption.TryParse("0001-01-01T00:00:00.0000000+00:00"));
         AssertOption.IsSome(DateTimeOffsetOption.TryParse("0001-01-01T00:00:00.0000000+00:00"));
         AssertOption.IsSome(DateTimeOffsetOption.TryParse("9999-12-31T23:59:59.9999999+00:00"));
+
+        AssertOption.IsNone(DateTimeOffsetOption.TryParse(null, _culture, DateTimeStyles.None));
+        AssertOption.IsNone(DateTimeOffsetOption.TryParse("danom", _culture, DateTimeStyles.None));
+        AssertOption.IsSome(DateTimeOffsetOption.TryParse("0001-01-01T00:00:00.0000000+00:00", _culture, DateTimeStyles.None));
+        AssertOption.IsSome(DateTimeOffsetOption.TryParse("0001-01-01T00:00:00.0000000+00:00", _culture, DateTimeStyles.None));
+        AssertOption.IsSome(DateTimeOffsetOption.TryParse("9999-12-31T23:59:59.9999999+00:00", _culture, DateTimeStyles.None));
     }
 
     [Fact]
@@ -172,9 +238,14 @@ public sealed class OptionParseTests {
 
     [Fact]
     public void TimeSpanOptionTryParse() {
+        AssertOption.IsNone(TimeSpanOption.TryParse(null));
+        AssertOption.IsNone(TimeSpanOption.TryParse("danom"));
+        AssertOption.IsSome(TimeSpanOption.TryParse("00:00:00"));
+        AssertOption.IsSome(TimeSpanOption.TryParse("00:00:00"));
+
         AssertOption.IsNone(TimeSpanOption.TryParse(null, _culture));
         AssertOption.IsNone(TimeSpanOption.TryParse("danom", _culture));
-        AssertOption.IsSome(Option.Some("00:00:00").Bind(TimeSpanOption.TryParse));
+        AssertOption.IsSome(TimeSpanOption.TryParse("00:00:00"));
         AssertOption.IsSome(TimeSpanOption.TryParse("00:00:00", _culture));
         AssertOption.IsSome(TimeSpanOption.TryParse("10675199.02:48:05.4775807", _culture));
     }

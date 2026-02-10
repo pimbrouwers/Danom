@@ -69,6 +69,38 @@ namespace Danom {
         public bool IsT4 => _state == 4;
 
         /// <summary>
+        /// Creates a new <see cref="Choice{T1, T2, T3, T4}"/> from the specified T1 value.
+        /// </summary>
+        /// <param name="t1"></param>
+        /// <returns></returns>
+        public static Choice<T1, T2, T3, T4> FromT1(T1 t1) =>
+            new Choice<T1, T2, T3, T4>(t1);
+
+        /// <summary>
+        /// Creates a new <see cref="Choice{T1, T2, T3, T4}"/> from the specified T2 value.
+        /// </summary>
+        /// <param name="t2"></param>
+        /// <returns></returns>
+        public static Choice<T1, T2, T3, T4> FromT2(T2 t2) =>
+            new Choice<T1, T2, T3, T4>(t2);
+
+        /// <summary>
+        /// Creates a new <see cref="Choice{T1, T2, T3, T4}"/> from the specified T3 value.
+        /// </summary>
+        /// <param name="t3"></param>
+        /// <returns></returns>
+        public static Choice<T1, T2, T3, T4> FromT3(T3 t3) =>
+            new Choice<T1, T2, T3, T4>(t3);
+
+        /// <summary>
+        /// Creates a new <see cref="Choice{T1, T2, T3, T4}"/> from the specified T4 value.
+        /// </summary>
+        /// <param name="t4"></param>
+        /// <returns></returns>
+        public static Choice<T1, T2, T3, T4> FromT4(T4 t4) =>
+            new Choice<T1, T2, T3, T4>(t4);
+
+        /// <summary>
         /// If <see cref="Choice{T1, T2, T3, T4}"/> is T1 evaluate the t1 delegate,
         /// otherwise evaluate the t2 delegate and return its result.
         /// </summary>
@@ -87,7 +119,7 @@ namespace Danom {
         };
 
         /// <summary>
-        /// If <see cref="Choice{T1,T2}"/> is T1, evaluates the t1 delegate,
+        /// If <see cref="Choice{T1,T2,T3,T4}"/> is T1, evaluates the t1 delegate,
         /// otherwise evaluates the t2 delegate and ignores its result.
         /// </summary>
         public void Match(Action<T1> t1, Action<T2> t2, Action<T3> t3, Action<T4> t4) {
@@ -109,6 +141,78 @@ namespace Danom {
                     return Unit.Value;
                 });
         }
+
+        /// <summary>
+        /// If <see cref="Choice{T1,T2,T3,T4}"/> is T1, evaluates the t1 delegate and returns its result,
+        /// otherwise evaluates the t2 delegate and returns its result.
+        /// </summary>
+        /// <param name="binder"></param>
+        /// <returns></returns>
+        public Choice<T1, T2, T3, T4> BindT1(Func<T1, Choice<T1, T2, T3, T4>> binder) =>
+            Match(t1 => binder(t1), FromT2, FromT3, FromT4);
+
+        /// <summary>
+        /// If <see cref="Choice{T1,T2,T3,T4}"/> is T1, evaluates the t1 delegate and returns its result,
+        /// otherwise evaluates the t2 delegate and returns its result.
+        /// </summary>
+        /// <param name="binder"></param>
+        /// <returns></returns>
+        public Choice<T1, T2, T3, T4> BindT2(Func<T2, Choice<T1, T2, T3, T4>> binder) =>
+            Match(FromT1, t2 => binder(t2), FromT3, FromT4);
+
+        /// <summary>
+        /// If <see cref="Choice{T1,T2,T3,T4}"/> is T1, evaluates the t1 delegate and returns a new Choice with the result,
+        /// otherwise evaluates the t2 delegate and returns a new Choice with the result.
+        /// </summary>
+        /// <param name="binder"></param>
+        /// <returns></returns>
+        public Choice<T1, T2, T3, T4> BindT3(Func<T3, Choice<T1, T2, T3, T4>> binder) =>
+            Match(FromT1, FromT2, t3 => binder(t3), FromT4);
+
+        /// <summary>
+        /// If <see cref="Choice{T1,T2,T3,T4}"/> is T1, evaluates the t1 delegate and returns a new Choice with the result,
+        /// otherwise evaluates the t2 delegate and returns a new Choice with the result.
+        /// </summary>
+        /// <param name="binder"></param>
+        /// <returns></returns>
+        public Choice<T1, T2, T3, T4> BindT4(Func<T4, Choice<T1, T2, T3, T4>> binder) =>
+            Match(FromT1, FromT2, FromT3, t4 => binder(t4));
+
+        /// <summary>
+        /// If <see cref="Choice{T1,T2,T3,T4}"/> is T1, evaluates the t1 delegate and returns a new Choice with the result,
+        /// otherwise evaluates the t2 delegate and returns a new Choice with the result.
+        /// </summary>
+        /// <param name="mapper"></param>
+        /// <returns></returns>
+        public Choice<T1, T2, T3, T4> MapT1(Func<T1, T1> mapper) =>
+            Match(t1 => FromT1(mapper(t1)), FromT2, FromT3, FromT4);
+
+        /// <summary>
+        /// If <see cref="Choice{T1,T2,T3,T4}"/> is T1, evaluates the t1 delegate and returns a new Choice with the result,
+        /// otherwise evaluates the t2 delegate and returns a new Choice with the result.
+        /// </summary>
+        /// <param name="mapper"></param>
+        /// <returns></returns>
+        public Choice<T1, T2, T3, T4> MapT2(Func<T2, T2> mapper) =>
+            Match(FromT1, t2 => FromT2(mapper(t2)), FromT3, FromT4);
+
+        /// <summary>
+        /// If <see cref="Choice{T1,T2,T3,T4}"/> is T1, evaluates the t1 delegate and returns a new Choice with the result,
+        /// otherwise evaluates the t2 delegate and returns a new Choice with the result.
+        /// </summary>
+        /// <param name="mapper"></param>
+        /// <returns></returns>
+        public Choice<T1, T2, T3, T4> MapT3(Func<T3, T3> mapper) =>
+            Match(FromT1, FromT2, t3 => FromT3(mapper(t3)), FromT4);
+
+        /// <summary>
+        /// If <see cref="Choice{T1,T2,T3,T4}"/> is T1, evaluates the t1 delegate and returns a new Choice with the result,
+        /// otherwise evaluates the t2 delegate and returns a new Choice with the result.
+        /// </summary>
+        /// <param name="mapper"></param>
+        /// <returns></returns>
+        public Choice<T1, T2, T3, T4> MapT4(Func<T4, T4> mapper) =>
+            Match(FromT1, FromT2, FromT3, t4 => FromT4(mapper(t4)));
 
         /// <summary>
         /// Safely retrieves the value if the Choice is in T1 state.
@@ -149,38 +253,6 @@ namespace Danom {
             value = IsT4 ? _t4 : default!;
             return IsT4;
         }
-
-        /// <summary>
-        /// Creates a new <see cref="Choice{T1, T2, T3, T4}"/> from the specified T1 value.
-        /// </summary>
-        /// <param name="t1"></param>
-        /// <returns></returns>
-        public static Choice<T1, T2, T3, T4> FromT1(T1 t1) =>
-            new Choice<T1, T2, T3, T4>(t1);
-
-        /// <summary>
-        /// Creates a new <see cref="Choice{T1, T2, T3, T4}"/> from the specified T2 value.
-        /// </summary>
-        /// <param name="t2"></param>
-        /// <returns></returns>
-        public static Choice<T1, T2, T3, T4> FromT2(T2 t2) =>
-            new Choice<T1, T2, T3, T4>(t2);
-
-        /// <summary>
-        /// Creates a new <see cref="Choice{T1, T2, T3, T4}"/> from the specified T3 value.
-        /// </summary>
-        /// <param name="t3"></param>
-        /// <returns></returns>
-        public static Choice<T1, T2, T3, T4> FromT3(T3 t3) =>
-            new Choice<T1, T2, T3, T4>(t3);
-
-        /// <summary>
-        /// Creates a new <see cref="Choice{T1, T2, T3, T4}"/> from the specified T4 value.
-        /// </summary>
-        /// <param name="t4"></param>
-        /// <returns></returns>
-        public static Choice<T1, T2, T3, T4> FromT4(T4 t4) =>
-            new Choice<T1, T2, T3, T4>(t4);
 
         /// <summary>
         /// Returns true if the specified <see cref="Choice{T1, T2, T3, T4}"/>s are equal.

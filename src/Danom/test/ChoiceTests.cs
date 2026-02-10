@@ -39,6 +39,66 @@ public sealed class ChoiceTests {
     }
 
     [Fact]
+    public void BindT1_BindsOnlyT1() {
+        var a = Choice<int, string>.FromT1(10);
+        var b = a.BindT1(x => Choice<int, string>.FromT1(x + 1));
+        Assert.True(b.IsT1);
+        Assert.Equal(11, b.Match(x => x, _ => -1));
+
+        var c = a.BindT1(x => Choice<int, string>.FromT2($"err:{x}"));
+        Assert.True(c.IsT2);
+        Assert.Equal("err:10", c.Match(_ => "", e => e));
+
+        var d = Choice<int, string>.FromT2("boom");
+        var e = d.BindT1(x => Choice<int, string>.FromT1(x + 1));
+        Assert.True(e.IsT2);
+        Assert.Equal("boom", e.Match(_ => "", s => s));
+    }
+
+    [Fact]
+    public void BindT2_BindsOnlyT2() {
+        var a = Choice<int, string>.FromT2("x");
+        var b = a.BindT2(s => Choice<int, string>.FromT2(s + "y"));
+        Assert.True(b.IsT2);
+        Assert.Equal("xy", b.Match(_ => "", e => e));
+
+        var c = a.BindT2(s => Choice<int, string>.FromT1(s.Length));
+        Assert.True(c.IsT1);
+        Assert.Equal(1, c.Match(x => x, _ => -1));
+
+        var d = Choice<int, string>.FromT1(7);
+        var e = d.BindT2(s => Choice<int, string>.FromT2(s + "!"));
+        Assert.True(e.IsT1);
+        Assert.Equal(7, e.Match(x => x, _ => -1));
+    }
+
+    [Fact]
+    public void MapT1_MapsOnlyT1() {
+        var a = Choice<int, string>.FromT1(5);
+        var b = a.MapT1(x => x * 2);
+        Assert.True(b.IsT1);
+        Assert.Equal(10, b.Match(x => x, _ => -1));
+
+        var c = Choice<int, string>.FromT2("e");
+        var d = c.MapT1(x => x * 2);
+        Assert.True(d.IsT2);
+        Assert.Equal("e", d.Match(_ => "", s => s));
+    }
+
+    [Fact]
+    public void MapT2_MapsOnlyT2() {
+        var a = Choice<int, string>.FromT2("ab");
+        var b = a.MapT2(s => s + "c");
+        Assert.True(b.IsT2);
+        Assert.Equal("abc", b.Match(_ => "", s => s));
+
+        var c = Choice<int, string>.FromT1(3);
+        var d = c.MapT2(s => s + "c");
+        Assert.True(d.IsT1);
+        Assert.Equal(3, d.Match(x => x, _ => -1));
+    }
+
+    [Fact]
     public void TryGet_BothArms() {
         var a = Choice<int, string>.FromT1(7);
         Assert.True(a.TryGetT1(out var v1));
@@ -49,6 +109,19 @@ public sealed class ChoiceTests {
         Assert.True(b.TryGetT2(out var v2));
         Assert.Equal("e", v2);
         Assert.False(b.TryGetT1(out _));
+    }
+
+    [Fact]
+    public void Swap_SwapsArmsAndValues() {
+        var a = Choice<int, string>.FromT1(42);
+        var b = a.Swap();
+        Assert.True(b.TryGetT2(out var v2));
+        Assert.Equal(42, v2);
+
+        var c = Choice<int, string>.FromT2("boom");
+        var d = c.Swap();
+        Assert.True(d.TryGetT1(out var v1));
+        Assert.Equal("boom", v1);
     }
 
     [Fact]

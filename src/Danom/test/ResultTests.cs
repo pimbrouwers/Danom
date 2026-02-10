@@ -18,36 +18,8 @@ public sealed class ResultTests {
     }
 
     [Fact]
-    public async Task OkAsyncFromTask() {
-        var result = await Result<int, string>.OkAsync(Task<int>.Factory.StartNew(() => 1));
-        AssertResult.IsOk(result);
-        Assert.False(result.IsError);
-    }
-
-    [Fact]
-    public async Task OkAsyncFromValueTask() {
-        var result = await Result<int, string>.OkAsync(new ValueTask<int>(1));
-        AssertResult.IsOk(result);
-        Assert.False(result.IsError);
-    }
-
-    [Fact]
     public void Error() {
         var result = Result<int, string>.Error("Error");
-        AssertResult.IsError(result);
-        Assert.False(result.IsOk);
-    }
-
-    [Fact]
-    public async Task ErrorAsyncFromTask() {
-        var result = await Result<int, string>.ErrorAsync(Task<string>.Factory.StartNew(() => "Error"));
-        AssertResult.IsError(result);
-        Assert.False(result.IsOk);
-    }
-
-    [Fact]
-    public async Task ErrorAsyncFromValueTask() {
-        var result = await Result<int, string>.ErrorAsync(new ValueTask<string>("Error"));
         AssertResult.IsError(result);
         Assert.False(result.IsOk);
     }
@@ -134,6 +106,27 @@ public sealed class ResultTests {
         called = false;
         Result<int, string>.Error("Error").Iter(_ => called = true);
         Assert.False(called);
+    }
+
+    [Fact]
+    public void Tap() {
+        var executed = false;
+        var capturedValue = 0;
+
+        var tapped = Result<int, string>.Ok(42).Tap(x => {
+            executed = true;
+            capturedValue = x;
+        });
+
+        Assert.True(executed);
+        Assert.Equal(42, capturedValue);
+        AssertResult.IsOk(42, tapped);
+
+        executed = false;
+        tapped = Result<int, string>.Error("Error").Tap(x => executed = true);
+
+        Assert.False(executed);
+        AssertResult.IsError(tapped);
     }
 
     [Fact]
@@ -261,6 +254,43 @@ public sealed class ResultTests {
     }
 
     [Fact]
+    public void GetHashCode_() {
+        Assert.Equal(42.GetHashCode(), Result<int, string>.Ok(42).GetHashCode());
+        Assert.Equal("Error".GetHashCode(), Result<int, string>.Error("Error").GetHashCode());
+        Assert.Equal(0, Result<string?, int>.Ok(null).GetHashCode());
+        Assert.Equal(0, Result<int, string?>.Error(null).GetHashCode());
+    }
+
+    [Fact]
+    public void Equals_Object_WithDifferentType_ReturnsFalse() {
+        var result = Result<int, string>.Ok(42);
+        Assert.False(result.Equals("not a result"));
+    }
+
+    [Fact]
+    public void Equals_WithNullValues() {
+        var result1 = Result<string?, int>.Ok(null);
+        var result2 = Result<string?, int>.Ok(null);
+        Assert.True(result1.Equals(result2));
+
+        var error1 = Result<int, string?>.Error(null);
+        var error2 = Result<int, string?>.Error(null);
+        Assert.True(error1.Equals(error2));
+    }
+
+    [Fact]
+    public void ToString_OkWithNull_ReturnsOkEmpty() {
+        var result = Result<string?, int>.Ok(null);
+        Assert.Equal("Ok()", result.ToString());
+    }
+
+    [Fact]
+    public void ToString_ErrorWithNull_ReturnsErrorEmpty() {
+        var result = Result<int, string?>.Error(null);
+        Assert.Equal("Error()", result.ToString());
+    }
+
+    [Fact]
     public void ToString_Ok() {
         var result = Result<int, string>.Ok(1);
         Assert.Equal("Ok(1)", result.ToString());
@@ -280,13 +310,6 @@ public sealed class ResultTTests {
         AssertResult.IsOk(result);
         Assert.False(result.IsError);
         Assert.Equal("Ok(1)", result.ToString());
-    }
-
-    [Fact]
-    public async Task OkAsyncFromTask() {
-        var result = await Result<int>.OkAsync(Task<int>.Factory.StartNew(() => 1));
-        AssertResult.IsOk(result);
-        Assert.False(result.IsError);
     }
 
     [Fact]
@@ -406,22 +429,6 @@ public sealed class ResultTTests {
     }
 
     [Fact]
-    public async Task OkAsyncFromValueTask() {
-        var result = await Result<int, string>.OkAsync(new ValueTask<int>(1));
-        AssertResult.IsOk(result);
-        Assert.False(result.IsError);
-        Assert.Equal("Ok(1)", result.ToString());
-    }
-
-    [Fact]
-    public async Task ErrorAsyncFromValueTask() {
-        var result = await Result<int, string>.ErrorAsync(new ValueTask<string>("Error"));
-        AssertResult.IsError(result);
-        Assert.False(result.IsOk);
-        Assert.Equal("Error(Error)", result.ToString());
-    }
-
-    [Fact]
     public void Map_SelectorExceptionPropagates() {
         Assert.Throws<InvalidOperationException>(() =>
             Result<int, string>.Ok(1).Map<int>(_ => throw new InvalidOperationException()));
@@ -453,141 +460,31 @@ public sealed class ResultTTests {
         Assert.Equal(d, default);
         Assert.Equal(d.GetHashCode(), default(Result<int, string>).GetHashCode());
     }
+
+    [Fact]
+    public void ErrorFromParams() {
+        var result = Result<int>.Error("error1", "error2");
+        AssertResult.IsError(result);
+        Assert.False(result.IsOk);
+    }
 }
 
 public sealed class ResultStaticTests {
     [Fact]
-    public void Match_AllOk_InvokesOk_WhenOkDelegateProvided() {
+    public void Match_AllOk_InvokesOk() {
         var test = Result.Match(Result.Ok(1), Result.Ok(2),
             ok: (r1, r2) => {
                 Assert.Equal(1, r1);
                 Assert.Equal(2, r2);
                 return Result.Ok(r1 + r2);
             },
-            defaultWith: () => {
+            error: _ => {
                 Assert.Fail("Expected Ok results but got Error.");
                 return Result<int>.Error("Should not reach here");
-            }
-        );
+            });
 
         Assert.True(test.TryGet(out var value));
         Assert.Equal(3, value);
-    }
-
-    [Fact]
-    public void Match_AllOk_ReturnsDefault_WhenOkDelegateNotProvided() {
-        var test = Result.Match(Result.Ok(1), Result.Ok(2),
-            defaultWith: () => Result.Ok(42));
-        Assert.True(test.TryGet(out var value));
-        Assert.Equal(42, value);
-    }
-
-    [Fact]
-    public void Match_Ok1_InvokesOk1_WhenOk1DelegateProvided() {
-        var test = Result.Match(Result.Ok(1), Result<int>.Error("2"),
-            ok1: r1 => {
-                Assert.Equal(1, r1);
-                return Result.Ok(r1);
-            },
-            defaultWith: () => {
-                Assert.Fail("Expected Ok results but got Error.");
-                return Result<int>.Error("Should not reach here");
-            }
-        );
-
-        Assert.True(test.TryGet(out var value));
-        Assert.Equal(1, value);
-    }
-
-    [Fact]
-    public void Match_Ok1_ReturnsDefault_WhenOk1DelegateNotProvided() {
-        var test = Result.Match(Result.Ok(1), Result<int>.Error("2"),
-            defaultWith: () => Result.Ok(42));
-        Assert.True(test.TryGet(out var value));
-        Assert.Equal(42, value);
-    }
-
-    [Fact]
-    public void Match_Ok2_InvokesOk2_WhenOk2DelegateProvided() {
-        var test = Result.Match(Result<int>.Error("1"), Result.Ok(2),
-            ok2: r2 => {
-                Assert.Equal(2, r2);
-                return Result.Ok(r2);
-            },
-            defaultWith: () => {
-                Assert.Fail("Expected Ok results but got Error.");
-                return Result<int>.Error("Should not reach here");
-            }
-        );
-
-        Assert.True(test.TryGet(out var value));
-        Assert.Equal(2, value);
-    }
-
-    [Fact]
-    public void Match_Ok2_ReturnsDefault_WhenOk2DelegateNotProvided() {
-        var test = Result.Match(Result<int>.Error("1"), Result.Ok(2),
-            defaultWith: () => Result.Ok(42));
-        Assert.True(test.TryGet(out var value));
-        Assert.Equal(42, value);
-    }
-
-    [Fact]
-    public void Match_NoOk_ReturnsDefault() {
-        var test = Result.Match(Result<int>.Error("1"), Result<int>.Error("2"),
-            defaultWith: () => Result.Ok(42));
-        Assert.True(test.TryGet(out var value));
-        Assert.Equal(42, value);
-    }
-
-    [Fact]
-    public void Match_Error1_InvokesError1_WhenError1DelegateProvided() {
-        var test = Result.Match(Result<int>.Error("1"), Result.Ok(2),
-            error1: r1 => {
-                Assert.Equal("[ 1 ]", r1.ToString());
-                return Result<int>.Ok(1);
-            },
-            defaultWith: () => {
-                Assert.Fail("Expected Ok results but got Error.");
-                return Result<int>.Error("Should not reach here");
-            }
-        );
-
-        Assert.True(test.TryGet(out var value));
-        Assert.Equal(1, value);
-    }
-
-    [Fact]
-    public void Match_Error1_ReturnsDefault_WhenError1DelegateNotProvided() {
-        var test = Result.Match(Result<int>.Error("1"), Result.Ok(2),
-            defaultWith: () => Result.Ok(42));
-        Assert.True(test.TryGet(out var value));
-        Assert.Equal(42, value);
-    }
-
-    [Fact]
-    public void Match_Error2_InvokesError2_WhenError2DelegateProvided() {
-        var test = Result.Match(Result.Ok(1), Result<int>.Error("2"),
-            error2: r2 => {
-                Assert.Equal("[ 2 ]", r2.ToString());
-                return Result<int>.Ok(2);
-            },
-            defaultWith: () => {
-                Assert.Fail("Expected Ok results but got Error.");
-                return Result<int>.Error("Should not reach here");
-            }
-        );
-
-        Assert.True(test.TryGet(out var value));
-        Assert.Equal(2, value);
-    }
-
-    [Fact]
-    public void Match_Error2_ReturnsDefault_WhenError2DelegateNotProvided() {
-        var test = Result.Match(Result.Ok(1), Result<int>.Error("2"),
-            defaultWith: () => Result<int>.Ok(42));
-        Assert.True(test.TryGet(out var value));
-        Assert.Equal(42, value);
     }
 
     [Fact]
@@ -731,5 +628,291 @@ public sealed class ResultStaticTests {
         result.Match(
             ok => Assert.Fail("Expected Error result but got Ok."),
             error => Assert.Equal("Error 1; Error 3", error));
+    }
+
+
+    [Fact]
+    public void OkUnit_ReturnsOkWithUnitValue() {
+        var result = Result.Ok();
+        AssertResult.IsOk(result);
+        result.Match(
+            ok: u => Assert.Equal(Unit.Value, u),
+            error: _ => Assert.Fail("Expected Ok"));
+    }
+
+    [Fact]
+    public void Error_FromResultErrors() {
+        var errors = new ResultErrors("key", "error1", "error2");
+        var result = Result.Error(errors);
+        AssertResult.IsError(result);
+    }
+
+    [Fact]
+    public void Error_FromKeyAndErrors() {
+        var result = Result.Error("key", "error1", "error2");
+        AssertResult.IsError(result);
+    }
+
+    [Fact]
+    public void Error_FromKeyAndSingleError() {
+        var result = Result.Error("key", "error");
+        AssertResult.IsError(result);
+    }
+
+    [Fact]
+    public void Error_FromSingleString() {
+        var result = Result.Error("error");
+        AssertResult.IsError(result);
+    }
+
+    [Fact]
+    public void Error_FromStringArray() {
+        var result = Result.Error("error1", "error2");
+        AssertResult.IsError(result);
+    }
+
+    [Fact]
+    public void Bind_SingleResult() {
+        var result = Result<int, string>.Ok(42);
+        var bound = Result.Bind(result, x => Result<int, string>.Ok(x + 1));
+        AssertResult.IsOk(43, bound);
+
+        var error = Result<int, string>.Error("err");
+        var boundError = Result.Bind(error, x => Result<int, string>.Ok(x + 1));
+        AssertResult.IsError(boundError);
+    }
+
+    [Fact]
+    public void Map_SingleResult() {
+        var result = Result<int, string>.Ok(42);
+        var mapped = Result.Map(result, x => x + 1);
+        AssertResult.IsOk(43, mapped);
+
+        var error = Result<int, string>.Error("err");
+        var mappedError = Result.Map(error, x => x + 1);
+        AssertResult.IsError(mappedError);
+    }
+
+    [Fact]
+    public void MapError_Static() {
+        var ok = Result<int, string>.Ok(1);
+        var mappedOk = Result.MapError(ok, e => e.ToUpperInvariant());
+        AssertResult.IsOk(1, mappedOk);
+
+        var err = Result<int, string>.Error("bad");
+        var mappedErr = Result.MapError(err, e => e.ToUpperInvariant());
+        AssertResult.IsError(mappedErr);
+        mappedErr.Match(_ => Assert.Fail("Expected error"), e => Assert.Equal("BAD", e));
+    }
+
+    [Fact]
+    public void Match_TwoResults_BothOk() {
+        var result = Result.Match(
+            Result<int, string>.Ok(21),
+            Result<int, string>.Ok(21),
+            ok: (v1, v2) => v1 + v2,
+            error: _ => -1);
+        Assert.Equal(42, result);
+    }
+
+    [Fact]
+    public void Match_TwoResults_FirstError() {
+        var result = Result.Match(
+            Result<int, string>.Error("err1"),
+            Result<int, string>.Ok(21),
+            ok: (v1, v2) => v1 + v2,
+            error: errors => errors.Count());
+        Assert.Equal(1, result);
+    }
+
+    [Fact]
+    public void Match_TwoResults_SecondError() {
+        var result = Result.Match(
+            Result<int, string>.Ok(21),
+            Result<int, string>.Error("err2"),
+            ok: (v1, v2) => v1 + v2,
+            error: errors => errors.Count());
+        Assert.Equal(1, result);
+    }
+
+    [Fact]
+    public void Match_TwoResults_BothError() {
+        var result = Result.Match(
+            Result<int, string>.Error("err1"),
+            Result<int, string>.Error("err2"),
+            ok: (v1, v2) => v1 + v2,
+            error: errors => errors.Count());
+        Assert.Equal(2, result);
+    }
+
+    [Fact]
+    public void Match_TwoResults_OkIsNull() {
+        var result = Result.Match(
+            Result<int, string>.Ok(21),
+            Result<int, string>.Ok(21),
+            ok: null!,
+            error: _ => -1);
+        Assert.Equal(-1, result);
+    }
+
+    [Fact]
+    public void Match_ThreeResults_AllOk() {
+        var result = Result.Match(
+            Result<int, string>.Ok(14),
+            Result<int, string>.Ok(14),
+            Result<int, string>.Ok(14),
+            ok: (v1, v2, v3) => v1 + v2 + v3,
+            error: _ => -1);
+        Assert.Equal(42, result);
+    }
+
+    [Fact]
+    public void Match_ThreeResults_FirstError() {
+        var result = Result.Match(
+            Result<int, string>.Error("err1"),
+            Result<int, string>.Ok(14),
+            Result<int, string>.Ok(14),
+            ok: (v1, v2, v3) => v1 + v2 + v3,
+            error: errors => errors.Count());
+        Assert.Equal(1, result);
+    }
+
+    [Fact]
+    public void Match_ThreeResults_SecondError() {
+        var result = Result.Match(
+            Result<int, string>.Ok(14),
+            Result<int, string>.Error("err2"),
+            Result<int, string>.Ok(14),
+            ok: (v1, v2, v3) => v1 + v2 + v3,
+            error: errors => errors.Count());
+        Assert.Equal(1, result);
+    }
+
+    [Fact]
+    public void Match_ThreeResults_ThirdError() {
+        var result = Result.Match(
+            Result<int, string>.Ok(14),
+            Result<int, string>.Ok(14),
+            Result<int, string>.Error("err3"),
+            ok: (v1, v2, v3) => v1 + v2 + v3,
+            error: errors => errors.Count());
+        Assert.Equal(1, result);
+    }
+
+    [Fact]
+    public void Match_ThreeResults_MultipleErrors() {
+        var result = Result.Match(
+            Result<int, string>.Error("err1"),
+            Result<int, string>.Error("err2"),
+            Result<int, string>.Ok(14),
+            ok: (v1, v2, v3) => v1 + v2 + v3,
+            error: errors => errors.Count());
+        Assert.Equal(2, result);
+    }
+
+    [Fact]
+    public void Match_ThreeResults_AllErrors() {
+        var result = Result.Match(
+            Result<int, string>.Error("err1"),
+            Result<int, string>.Error("err2"),
+            Result<int, string>.Error("err3"),
+            ok: (v1, v2, v3) => v1 + v2 + v3,
+            error: errors => errors.Count());
+        Assert.Equal(3, result);
+    }
+
+    [Fact]
+    public void Match_ThreeResults_OkIsNull() {
+        var result = Result.Match(
+            Result<int, string>.Ok(14),
+            Result<int, string>.Ok(14),
+            Result<int, string>.Ok(14),
+            ok: null!,
+            error: _ => -1);
+        Assert.Equal(-1, result);
+    }
+
+    [Fact]
+    public void Traverse_WithResultErrors() {
+        var items = new[] { 1, 2, 3 };
+        var result = Result.Traverse(
+            items,
+            x => x % 2 == 0
+                ? Result<int>.Error($"Error {x}")
+                : Result<int>.Ok(x));
+
+        AssertResult.IsError(result);
+    }
+
+    [Fact]
+    public void Sequence_WithResultErrors() {
+        var results = new[] {
+        Result<int>.Ok(1),
+        Result<int>.Error("Error 2"),
+        Result<int>.Ok(3)
+    };
+
+        var result = Result.Sequence(results);
+        AssertResult.IsError(result);
+    }
+
+    [Fact]
+    public void Zip_TwoResults_BothOk() {
+        var result = Result.Zip(
+            Result<int, string>.Ok(42),
+            Result<string, string>.Ok("Hello"));
+
+        AssertResult.IsOk(result);
+        result.Match(
+            ok: tuple => {
+                Assert.Equal(42, tuple.Item1);
+                Assert.Equal("Hello", tuple.Item2);
+            },
+            error: _ => Assert.Fail("Expected Ok"));
+    }
+
+    [Fact]
+    public void Zip_TwoResults_FirstError() {
+        var result = Result.Zip(
+            Result<int, string>.Error("err"),
+            Result<string, string>.Ok("Hello"));
+
+        AssertResult.IsError(result);
+    }
+
+    [Fact]
+    public void Zip_TwoResults_SecondError() {
+        var result = Result.Zip(
+            Result<int, string>.Ok(42),
+            Result<string, string>.Error("err"));
+
+        AssertResult.IsError(result);
+    }
+
+    [Fact]
+    public void Zip_ThreeResults_AllOk() {
+        var result = Result.Zip(
+            Result<int, string>.Ok(1),
+            Result<int, string>.Ok(2),
+            Result<int, string>.Ok(3));
+
+        AssertResult.IsOk(result);
+        result.Match(
+            ok: tuple => {
+                Assert.Equal(1, tuple.Item1);
+                Assert.Equal(2, tuple.Item2);
+                Assert.Equal(3, tuple.Item3);
+            },
+            error: _ => Assert.Fail("Expected Ok"));
+    }
+
+    [Fact]
+    public void Zip_ThreeResults_WithError() {
+        var result = Result.Zip(
+            Result<int, string>.Ok(1),
+            Result<int, string>.Error("err"),
+            Result<int, string>.Ok(3));
+
+        AssertResult.IsError(result);
     }
 }

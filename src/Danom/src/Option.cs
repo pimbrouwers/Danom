@@ -3,8 +3,6 @@ namespace Danom {
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
-    using System.Threading;
-    using System.Threading.Tasks;
 
     /// <summary>
     /// Represents the existence, or not, of a value. Provides greater safety than
@@ -49,36 +47,6 @@ namespace Danom {
         public static Option<T> Some(T value) =>
             new Option<T>(value);
 
-        // must remove this because it creates false positive CA1849 warnings
-        // public static Task<Option<T>> SomeAsync(T value) =>
-        //     Task.FromResult(Some(value));
-
-        /// <summary>
-        /// Creates a new <see cref="Option{T}"/> with the value of the awaited Task.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        public static async Task<Option<T>> SomeAsync(
-            Task<T> value,
-            CancellationToken? cancellationToken = null) {
-            var result = await value.WaitOrCancel(cancellationToken);
-            return Some(result);
-        }
-
-        /// <summary>
-        /// Creates a new <see cref="Option{T}"/> with the value of the awaited ValueTask.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        public static async ValueTask<Option<T>> SomeAsync(
-            ValueTask<T> value,
-            CancellationToken? cancellationToken = null) {
-            var result = await value.WaitOrCancel(cancellationToken);
-            return Some(result);
-        }
-
         /// <summary>
         /// An Option of <see cref="Option{T}"/> with no value.
         /// </summary>
@@ -92,13 +60,6 @@ namespace Danom {
         /// <returns></returns>
         public static Option<T> None() =>
             NoneValue;
-
-        /// <summary>
-        /// Creates a new <see cref="Option{T}"/> with no value wrapped in a completed Task.
-        /// </summary>
-        /// <returns></returns>
-        public static Task<Option<T>> NoneAsync() =>
-            Task.FromResult(NoneValue);
 
         /// <summary>
         /// If <see cref="Option{T}"/> is Some evaluate the some delegate, otherwise none.
@@ -159,14 +120,6 @@ namespace Danom {
             Bind(x => fn.Map(i => i.Invoke(x)));
 
         /// <summary>
-        /// If <see cref="Option{T}"/> is Some evaluate the some delegate, otherwise do nothing.
-        /// </summary>
-        /// <param name="some"></param>
-        public void Iter(
-            Action<T> some) =>
-            Match(some, () => { });
-
-        /// <summary>
         /// Returns the value of <see cref="Option{T}"/> if it is T otherwise return default.
         /// </summary>
         /// <param name="defaultValue"></param>
@@ -203,14 +156,32 @@ namespace Danom {
             Match(Option<T>.Some, ifNoneWith);
 
         /// <summary>
-        /// Safely retrieve the value using procedural code.
+        /// If <see cref="Option{T}"/> is Some, invoke the tap action and return the original Option.
         /// </summary>
-        /// <param name="value"></param>
+        /// <param name="tap"></param>
         /// <returns></returns>
-        public bool TryGet([MaybeNullWhen(false)] out T value) {
-            value = IsSome ? _some : default!;
-            return IsSome;
-        }
+        public Option<T> Tap(Action<T> tap) =>
+            Map(x => {
+                tap(x);
+                return x;
+            });
+
+        /// <summary>
+        /// If <see cref="Option{T}"/> is Some evaluate the some delegate, otherwise do nothing.
+        /// </summary>
+        /// <param name="some"></param>
+        public void Iter(
+            Action<T> some) =>
+            Match(some, () => { });
+
+        /// <summary>
+        /// Returns a new <see cref="Option{T}"/> containing the value if it satisfies the predicate, otherwise None.
+        /// </summary>
+        /// <param name="predicate"></param>
+        /// <returns></returns>
+        public Option<T> Filter(
+            Func<T, bool> predicate) =>
+            Bind(x => predicate(x) ? Option.Some(x) : Option<T>.None());
 
         /// <summary>
         /// Returns true if any value in the <see cref="Option{T}"/> satisfies the predicate.
@@ -244,6 +215,16 @@ namespace Danom {
         public T[] ToArray() =>
             Map(x => new T[] { x })
                 .DefaultWith(() => Array.Empty<T>());
+
+        /// <summary>
+        /// Safely retrieve the value using procedural code.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public bool TryGet([MaybeNullWhen(false)] out T value) {
+            value = IsSome ? _some : default!;
+            return IsSome;
+        }
 
         /// <summary>
         /// Returns true if the specified <see cref="Option{T}"/> are equal.
@@ -353,6 +334,7 @@ namespace Danom {
         /// </summary>
         /// <returns></returns>
         public override string ToString() => _state switch {
+            1 when _some is Unit => "Some()",
             1 when _some != null => $"Some({_some})",
             _ => "None"
         };
@@ -396,13 +378,6 @@ namespace Danom {
             NoneValue;
 
         /// <summary>
-        /// Creates a new <see cref="Option{T}"/> with no value wrapped in a completed Task.
-        /// </summary>
-        /// <returns></returns>
-        public static Task<Option<Unit>> NoneAsync() =>
-            Task.FromResult(NoneValue);
-
-        /// <summary>
         /// Creates a new <see cref="Option{T}"/> with <see cref="Unit"/> value.
         /// </summary>
         /// <returns></returns>
@@ -418,79 +393,6 @@ namespace Danom {
         public static Option<T> Some<T>(T value) =>
             // Provides type inference for Option.Some(value) syntax
             new Option<T>(value);
-
-        // must remove this because it creates false positive CA1849 warnings
-        // public static Task<Option<T>> SomeAsync<T>(T value) =>
-        //     // Provides type inference for Option.Some(value) syntax
-        // Option<T>.SomeAsync(value);
-
-        /// <summary>
-        /// Creates a new <see cref="Option{T}"/> with the value of the awaited Task.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        public static Task<Option<T>> SomeAsync<T>(
-            Task<T> value,
-            CancellationToken? cancellationToken = null) =>
-            // Provides type inference for Option.Some(value) syntax
-            Option<T>.SomeAsync(value, cancellationToken);
-
-        /// <summary>
-        /// Creates a new <see cref="Option{T}"/> with the value of the awaited ValueTask.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="value"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        public static ValueTask<Option<T>> SomeAsync<T>(
-            ValueTask<T> value,
-            CancellationToken? cancellationToken = null) =>
-            // Provides type inference for Option.Some(value) syntax
-            Option<T>.SomeAsync(value, cancellationToken);
-
-        /// <summary>
-        /// Matches two <see cref="Option{T}"/> and invokes the appropriate delegate.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <typeparam name="T2"></typeparam>
-        /// <typeparam name="U"></typeparam>
-        /// <param name="o1"></param>
-        /// <param name="o2"></param>
-        /// <param name="none"></param>
-        /// <param name="some"></param>
-        /// <param name="some1"></param>
-        /// <param name="some2"></param>
-        /// <returns></returns>
-        public static U Match<T, T2, U>(
-            Option<T> o1,
-            Option<T2> o2,
-            Func<U> none,
-            Func<T, T2, U>? some = default,
-            Func<T, U>? some1 = default,
-            Func<T2, U>? some2 = default) {
-            if (o1.IsNone && o2.IsNone) {
-                return none();
-            }
-
-            if (some == null && some1 == null && some2 == null) {
-                return none();
-            }
-
-            if (o1.TryGet(out var v1) && o2.TryGet(out var v2) && some != null) {
-                return some(v1, v2);
-            }
-
-            if (some1 != null && o1.TryGet(out v1)) {
-                return some1(v1);
-            }
-
-            if (some2 != null && o2.TryGet(out v2)) {
-                return some2(v2);
-            }
-
-            return none();
-        }
 
         /// <summary>
         /// Matches an enumerable of <see cref="Option{T}"/> and invokes the appropriate delegate.
@@ -520,6 +422,45 @@ namespace Danom {
         }
 
         /// <summary>
+        /// Matches two <see cref="Option{T}"/> and invokes the appropriate delegate.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T2"></typeparam>
+        /// <typeparam name="U"></typeparam>
+        /// <param name="o1"></param>
+        /// <param name="o2"></param>
+        /// <param name="none"></param>
+        /// <param name="some"></param>
+        /// <returns></returns>
+        public static U Match<T, T2, U>(
+            Option<T> o1,
+            Option<T2> o2,
+            Func<T, T2, U> some,
+            Func<U> none) =>
+            o1.Match(v1 => o2.Match(v2 => some(v1, v2), none), none);
+
+        /// <summary>
+        /// Matches three <see cref="Option{T}"/> and invokes the appropriate delegate.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T2"></typeparam>
+        /// <typeparam name="T3"></typeparam>
+        /// <typeparam name="U"></typeparam>
+        /// <param name="o1"></param>
+        /// <param name="o2"></param>
+        /// <param name="o3"></param>
+        /// <param name="none"></param>
+        /// <param name="some"></param>
+        /// <returns></returns>
+        public static U Match<T, T2, T3, U>(
+            Option<T> o1,
+            Option<T2> o2,
+            Option<T3> o3,
+            Func<T, T2, T3, U> some,
+            Func<U> none) =>
+            Match(o1, o2, (v1, v2) => o3.Match(v3 => some(v1, v2, v3), none), none);
+
+        /// <summary>
         /// Binds two <see cref="Option{T}"/> to a new <see cref="Option{U}"/> using the provided bind function.
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -532,12 +473,8 @@ namespace Danom {
         public static Option<U> Bind<T, T2, U>(
             Option<T> o1,
             Option<T2> o2,
-            Func<T, T2, Option<U>> bind) {
-            if (o1.TryGet(out var v1) && o2.TryGet(out var v2)) {
-                return bind(v1, v2);
-            }
-            return Option<U>.NoneValue;
-        }
+            Func<T, T2, Option<U>> bind) =>
+            o1.Bind(v1 => o2.Bind(v2 => bind(v1, v2)));
 
         /// <summary>
         /// Binds three <see cref="Option{T}"/> to a new <see cref="Option{U}"/> using the provided bind function.
@@ -555,12 +492,8 @@ namespace Danom {
             Option<T> o1,
             Option<T2> o2,
             Option<T3> o3,
-            Func<T, T2, T3, Option<U>> bind) {
-            if (o1.TryGet(out var v1) && o2.TryGet(out var v2) && o3.TryGet(out var v3)) {
-                return bind(v1, v2, v3);
-            }
-            return Option<U>.NoneValue;
-        }
+            Func<T, T2, T3, Option<U>> bind) =>
+            Bind(o1, o2, (v1, v2) => o3.Bind(v3 => bind(v1, v2, v3)));
 
         /// <summary>
         /// Maps two <see cref="Option{T}"/> to a new <see cref="Option{U}"/> using the provided map function.
@@ -576,7 +509,7 @@ namespace Danom {
             Option<T> o1,
             Option<T2> o2,
             Func<T, T2, U> map) =>
-            Bind(o1, o2, (v1, v2) => Option<U>.Some(map(v1, v2)));
+            Bind(o1, o2, (v1, v2) => Some(map(v1, v2)));
 
         /// <summary>
         /// Maps three <see cref="Option{T}"/> to a new <see cref="Option{U}"/> using the provided map function.
@@ -598,11 +531,34 @@ namespace Danom {
             Bind(o1, o2, o3, (v1, v2, v3) => Option<U>.Some(map(v1, v2, v3)));
 
         /// <summary>
+        /// Flattens a nested <see cref="Option{T}"/>.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="option"></param>
+        /// <returns></returns>
+        public static Option<T> Flatten<T>(
+            Option<Option<T>> option) =>
+            option.Bind(x => x);
+
+        /// <summary>
+        /// Flattens an enumerable of <see cref="Option{T}"/>, returning an enumerable of the values contained in the Some options.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        public static IEnumerable<T> Flatten<T>(
+            IEnumerable<Option<T>> options) {
+            foreach (var option in options) {
+                if (option.TryGet(out var v)) {
+                    yield return v;
+                }
+            }
+        }
+
+        /// <summary>
         /// Traverses the specified items, applying the func to each item and aggregating the results.
         /// If all applications of func are some, returns a Option containing an IEnumerable of the results.
         /// If any application of func are none, returns None.
-        ///
-        /// Note: this implementation is applicative and not monadic, meaning that all func applications are evaluated.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <typeparam name="U"></typeparam>
@@ -638,5 +594,29 @@ namespace Danom {
         public static Option<IEnumerable<T>> Sequence<T>(
             IEnumerable<Option<T>> options) =>
             Traverse(options, x => x);
+
+        /// <summary>
+        /// Zips two <see cref="Option{T}"/> into a new <see cref="Option{T}"/> containing a tuple of the values.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T2"></typeparam>
+        /// <param name="o1"></param>
+        /// <param name="o2"></param>
+        /// <returns></returns>
+        public static Option<(T, T2)> Zip<T, T2>(Option<T> o1, Option<T2> o2) =>
+            o1.Bind(v1 => o2.Map(v2 => (v1, v2)));
+
+        /// <summary>
+        /// Zips three <see cref="Option{T}"/> into a new <see cref="Option{T}"/> containing a tuple of the values.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T2"></typeparam>
+        /// <typeparam name="T3"></typeparam>
+        /// <param name="o1"></param>
+        /// <param name="o2"></param>
+        /// <param name="o3"></param>
+        /// <returns></returns>
+        public static Option<(T, T2, T3)> Zip<T, T2, T3>(Option<T> o1, Option<T2> o2, Option<T3> o3) =>
+            o1.Bind(v1 => o2.Bind(v2 => o3.Map(v3 => (v1, v2, v3))));
     }
 }

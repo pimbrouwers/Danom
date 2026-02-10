@@ -20,20 +20,6 @@ public sealed class OptionTests {
     }
 
     [Fact]
-    public async Task SomeAsyncFromTask() {
-        var option = await Option<int>.SomeAsync(Task<int>.Factory.StartNew(() => 1));
-        AssertOption.IsSome(option);
-        Assert.False(option.IsNone);
-    }
-
-    [Fact]
-    public async Task SomeAsyncFromValueTask() {
-        var option = await Option<int>.SomeAsync(new ValueTask<int>(1));
-        AssertOption.IsSome(option);
-        Assert.False(option.IsNone);
-    }
-
-    [Fact]
     public void None() {
         AssertOption.IsNone(Option<int>.NoneValue);
         var option = Option<int>.NoneValue;
@@ -46,20 +32,11 @@ public sealed class OptionTests {
     }
 
     [Fact]
-    public async Task NoneAsync() {
-        var option = await Option<int>.NoneAsync();
-        AssertOption.IsNone(option);
-        Assert.False(option.IsSome);
-    }
-
-    [Fact]
     public void NoneValue() {
         var option = Option<int>.NoneValue;
         AssertOption.IsNone(option);
         Assert.False(option.IsSome);
     }
-
-
 
     [Fact]
     public void NullShouldProduceNone() {
@@ -160,10 +137,7 @@ public sealed class OptionTests {
     public void DefaultWith() {
         Assert.Equal(1, Option<int>.NoneValue.DefaultWith(() => 1));
         Assert.Equal(2, Option<int>.Some(2).DefaultWith(() => 1));
-    }
 
-    [Fact]
-    public void DefaultWith_IsLazy() {
         var called = false;
         var noneResult = Option<int>.NoneValue.DefaultWith(() => { called = true; return 5; });
         Assert.True(called);
@@ -185,10 +159,7 @@ public sealed class OptionTests {
     public void OrElseWith() {
         AssertOption.IsSome(1, Option<int>.NoneValue.OrElseWith(() => Option<int>.Some(1)));
         AssertOption.IsSome(2, Option<int>.Some(2).OrElseWith(() => Option<int>.Some(1)));
-    }
 
-    [Fact]
-    public void OrElseWith_IsLazy() {
         var called = false;
         var noneOrElse = Option<int>.NoneValue.OrElseWith(() => { called = true; return Option<int>.Some(9); });
         Assert.True(called);
@@ -229,6 +200,7 @@ public sealed class OptionTests {
         else {
             Assert.Equal(default(int), vi);
         }
+
         // reference type
         if (Option<string>.NoneValue.TryGet(out var vs)) {
             Assert.Fail("Expected None");
@@ -273,6 +245,31 @@ public sealed class OptionTests {
     }
 
     [Fact]
+    public void ToStringStandard() {
+        Assert.Equal("Some(1)", Option<int>.Some(1).ToString());
+        Assert.Equal("None", Option<int>.NoneValue.ToString());
+        Assert.Equal("Some()", Option.Some().ToString());
+    }
+
+    [Fact]
+    public void ToStringOverload() {
+        Assert.Equal("1", Option<int>.Some(1).ToString(""));
+        Assert.Equal("Here", Option<int>.NoneValue.ToString("Here"));
+        Assert.Equal("12345.68", Option<double>.Some(12345.6789).ToString("", "F2"));
+        Assert.Equal("1967-01-01", Option<DateTime>.Some(new DateTime(1967, 1, 1)).ToString("", "yyyy-MM-dd"));
+
+        var culture = new CultureInfo("en-US");
+        Assert.Equal("1967-01-01", Option<DateTime>.Some(new DateTime(1967, 1, 1)).ToString("", "yyyy-MM-dd", culture));
+
+        culture = new CultureInfo("fr-FR");
+        Assert.Equal("None", Option<int>.NoneValue.ToString("None", "F2", culture));
+        Assert.Equal("None", Option<DateTime>.NoneValue.ToString("None", "yyyy-MM-dd", culture));
+
+        culture = new CultureInfo("fr-FR");
+        Assert.Equal("12 345,68", Option<double>.Some(12345.6789).ToString("", "N2", culture));
+    }
+
+    [Fact]
     public void Equality() {
         Assert.Equal(Option<int>.NoneValue, Option<int>.NoneValue);
         Assert.Equal(Option<int>.Some(1), Option<int>.Some(1));
@@ -286,7 +283,30 @@ public sealed class OptionTests {
     }
 
     [Fact]
-    public void EqualityOperator() {
+    public void GetHashCode_ForSomeUsesValueHash() {
+        var some = Option<string>.Some("abc");
+        Assert.Equal("abc".GetHashCode(), some.GetHashCode());
+    }
+
+    [Fact]
+    public void GetHashCode_ForNoneIsStable() {
+        var none1 = Option<string>.NoneValue;
+        var none2 = Option<string>.NoneValue;
+        Assert.Equal(none1.GetHashCode(), none2.GetHashCode());
+    }
+
+    [Fact]
+    public void CompareTo() {
+        Assert.Equal(0, Option<int>.NoneValue.CompareTo(Option<int>.NoneValue));
+        Assert.Equal(0, Option<int>.Some(1).CompareTo(Option<int>.Some(1)));
+        Assert.True(Option<int>.Some(1).CompareTo(Option<int>.Some(2)) < 0);
+        Assert.True(Option<int>.Some(2).CompareTo(Option<int>.Some(1)) > 0);
+        Assert.True(Option<int>.NoneValue.CompareTo(Option<int>.Some(1)) < 0);
+        Assert.True(Option<int>.Some(1).CompareTo(Option<int>.NoneValue) > 0);
+    }
+
+    [Fact]
+    public void Operator_Equality() {
         Assert.True(Option<int>.NoneValue == Option<int>.NoneValue);
         Assert.True(Option<int>.Some(1) == Option<int>.Some(1));
         Assert.False(Option<int>.Some(1) == Option<int>.Some(2));
@@ -294,7 +314,7 @@ public sealed class OptionTests {
     }
 
     [Fact]
-    public void InequalityOperator() {
+    public void Operator_Inequality() {
         Assert.False(Option<int>.NoneValue != Option<int>.NoneValue);
         Assert.False(Option<int>.Some(1) != Option<int>.Some(1));
         Assert.True(Option<int>.Some(1) != Option<int>.Some(2));
@@ -302,37 +322,43 @@ public sealed class OptionTests {
     }
 
     [Fact]
-    public void ToStringOverloads() {
-        Assert.Equal("1", Option<int>.Some(1).ToString(""));
-        Assert.Equal("Here", Option<int>.NoneValue.ToString("Here"));
-        Assert.Equal("12345.68", Option<double>.Some(12345.6789).ToString("", "F2"));
-        Assert.Equal("1967-01-01", Option<DateTime>.Some(new DateTime(1967, 1, 1)).ToString("", "yyyy-MM-dd"));
-
-        var culture = new CultureInfo("en-US");
-        Assert.Equal("1967-01-01", Option<DateTime>.Some(new DateTime(1967, 1, 1)).ToString("", "yyyy-MM-dd", culture));
+    public void Operator_LessThan() {
+        Assert.True(Option<int>.NoneValue < Option<int>.Some(1));
+        Assert.False(Option<int>.Some(1) < Option<int>.NoneValue);
+        Assert.False(Option<int>.Some(1) < Option<int>.Some(1));
+        Assert.True(Option<int>.Some(1) < Option<int>.Some(2));
+        Assert.False(Option<int>.Some(2) < Option<int>.Some(1));
     }
 
     [Fact]
-    public void ToString_None_IgnoresFormatAndProvider() {
-        var culture = new CultureInfo("fr-FR");
-        Assert.Equal("None", Option<int>.NoneValue.ToString("None", "F2", culture));
-        Assert.Equal("None", Option<DateTime>.NoneValue.ToString("None", "yyyy-MM-dd", culture));
+    public void Operator_LessThanOrEqual() {
+        Assert.True(Option<int>.NoneValue <= Option<int>.Some(1));
+        Assert.False(Option<int>.Some(1) <= Option<int>.NoneValue);
+        Assert.True(Option<int>.Some(1) <= Option<int>.Some(1));
+        Assert.True(Option<int>.Some(1) <= Option<int>.Some(2));
+        Assert.False(Option<int>.Some(2) <= Option<int>.Some(1));
     }
 
     [Fact]
-    public void ToString_NumberFormattingWithCulture() {
-        var culture = new CultureInfo("fr-FR");
-        Assert.Equal("12 345,68", Option<double>.Some(12345.6789).ToString("", "N2", culture));
+    public void Operator_GreaterThan() {
+        Assert.False(Option<int>.NoneValue > Option<int>.Some(1));
+        Assert.True(Option<int>.Some(1) > Option<int>.NoneValue);
+        Assert.False(Option<int>.Some(1) > Option<int>.Some(1));
+        Assert.False(Option<int>.Some(1) > Option<int>.Some(2));
+        Assert.True(Option<int>.Some(2) > Option<int>.Some(1));
     }
 
     [Fact]
-    public void GetHashCode_ForSomeUsesValueHash() {
-        var some = Option<string>.Some("abc");
-        Assert.Equal("abc".GetHashCode(), some.GetHashCode());
+    public void Operator_GreaterThanOrEqual() {
+        Assert.False(Option<int>.NoneValue >= Option<int>.Some(1));
+        Assert.True(Option<int>.Some(1) >= Option<int>.NoneValue);
+        Assert.True(Option<int>.Some(1) >= Option<int>.Some(1));
+        Assert.False(Option<int>.Some(1) >= Option<int>.Some(2));
+        Assert.True(Option<int>.Some(2) >= Option<int>.Some(1));
     }
 }
 
-public sealed class OptionStaticTests {
+public sealed class OptionModuleTests {
     [Fact]
     public void NoneValue() {
         AssertOption.IsNone(Option.NoneValue);
@@ -346,13 +372,6 @@ public sealed class OptionStaticTests {
     }
 
     [Fact]
-    public async Task NoneAsync() {
-        var option = await Option.NoneAsync();
-        AssertOption.IsNone(option);
-        Assert.Equal(Option<Unit>.NoneValue, option);
-    }
-
-    [Fact]
     public void Some() {
         var option = Option.Some(1);
         AssertOption.IsSome(option);
@@ -361,76 +380,11 @@ public sealed class OptionStaticTests {
     }
 
     [Fact]
-    public async Task SomeAsyncFromTask() {
-        var option = await Option.SomeAsync(Task<int>.Factory.StartNew(() => 1));
+    public void SomeUnit() {
+        var option = Option.Some();
         AssertOption.IsSome(option);
         Assert.False(option.IsNone);
-    }
-
-    [Fact]
-    public async Task SomeAsyncFromValueTask() {
-        var option = await Option.SomeAsync(new ValueTask<int>(1));
-        AssertOption.IsSome(option);
-        Assert.False(option.IsNone);
-    }
-
-    [Fact]
-    public void Match() {
-        var result = Option.Match(Option.Some(21), Option.Some(21), none: () => -1,
-            some: (o1, o2) => o1 + o2,
-            some1: _ => -1,
-            some2: _ => -1);
-
-        Assert.Equal(42, result);
-    }
-
-    [Fact]
-    public void Match_None1() {
-        var result = Option.Match(Option<int>.NoneValue, Option.Some(21), none: () => -1,
-            some: (o1, o2) => o1 + o2,
-            some1: _ => -1,
-            some2: _ => -1);
-
-        Assert.Equal(-1, result);
-    }
-
-    [Fact]
-    public void Match_None2() {
-        Assert.Equal(-1,
-            Option.Match(Option.Some(21), Option<int>.NoneValue, none: () => -1,
-            some: (o1, o2) => o1 + o2,
-            some1: _ => -1,
-            some2: _ => -1));
-    }
-
-    [Fact]
-    public void Match_BothNone() {
-        var result = Option.Match(Option<int>.NoneValue, Option<int>.NoneValue, none: () => -1,
-            some: (o1, o2) => o1 + o2,
-            some1: _ => -1,
-            some2: _ => -1);
-
-        Assert.Equal(-1, result);
-    }
-
-    [Fact]
-    public void Match_Some1() {
-        var result = Option.Match(Option.Some(21), Option<int>.NoneValue, none: () => -1,
-            some: (o1, o2) => o1 + o2,
-            some1: o1 => o1 * 2,
-            some2: _ => -1);
-
-        Assert.Equal(42, result);
-    }
-
-    [Fact]
-    public void Match_Some2() {
-        var result = Option.Match(Option<int>.NoneValue, Option.Some(21), none: () => -1,
-            some: (o1, o2) => o1 + o2,
-            some1: _ => -1,
-            some2: o2 => o2 * 2);
-
-        Assert.Equal(42, result);
+        Assert.Equal("Some()", option.ToString());
     }
 
     [Fact]
@@ -457,14 +411,24 @@ public sealed class OptionStaticTests {
     }
 
     [Fact]
-    public void Bind2() {
-        AssertOption.IsSome(3, Option.Bind(Option.Some(1), Option.Some(2), (x, y) => Option.Some(x + y)));
-        AssertOption.IsNone(Option.Bind(Option<int>.NoneValue, Option.Some(2), (x, y) => Option.Some(x + y)));
-        AssertOption.IsNone(Option.Bind(Option.Some(1), Option<int>.NoneValue, (x, y) => Option.Some(x + y)));
+    public void Match() {
+        Assert.Equal(42, Option.Match(Option.Some(21), Option.Some(21), some: (o1, o2) => o1 + o2, none: () => -1));
+        Assert.Equal(-1, Option.Match(Option<int>.NoneValue, Option.Some(21), some: (o1, o2) => o1 + o2, none: () => -1));
+        Assert.Equal(-1, Option.Match(Option.Some(21), Option<int>.NoneValue, some: (o1, o2) => o1 + o2, none: () => -1));
+        Assert.Equal(-1, Option.Match(Option<int>.NoneValue, Option<int>.NoneValue, some: (o1, o2) => o1 + o2, none: () => -1));
+
+        Assert.Equal(42, Option.Match(Option.Some(14), Option.Some(14), Option.Some(14), some: (o1, o2, o3) => o1 + o2 + o3, none: () => -1));
+        Assert.Equal(-1, Option.Match(Option<int>.NoneValue, Option.Some(14), Option.Some(14), some: (o1, o2, o3) => o1 + o2 + o3, none: () => -1));
+        Assert.Equal(-1, Option.Match(Option.Some(14), Option<int>.NoneValue, Option.Some(14), some: (o1, o2, o3) => o1 + o2 + o3, none: () => -1));
+        Assert.Equal(-1, Option.Match(Option.Some(14), Option.Some(14), Option<int>.NoneValue, some: (o1, o2, o3) => o1 + o2 + o3, none: () => -1));
     }
 
     [Fact]
-    public void Bind3() {
+    public void Bind() {
+        AssertOption.IsSome(3, Option.Bind(Option.Some(1), Option.Some(2), (x, y) => Option.Some(x + y)));
+        AssertOption.IsNone(Option.Bind(Option<int>.NoneValue, Option.Some(2), (x, y) => Option.Some(x + y)));
+        AssertOption.IsNone(Option.Bind(Option.Some(1), Option<int>.NoneValue, (x, y) => Option.Some(x + y)));
+
         AssertOption.IsSome(6, Option.Bind(Option.Some(1), Option.Some(2), Option.Some(3), (x, y, z) => Option.Some(x + y + z)));
         AssertOption.IsNone(Option.Bind(Option<int>.NoneValue, Option.Some(2), Option.Some(3), (x, y, z) => Option.Some(x + y + z)));
         AssertOption.IsNone(Option.Bind(Option.Some(1), Option<int>.NoneValue, Option.Some(3), (x, y, z) => Option.Some(x + y + z)));
@@ -472,18 +436,27 @@ public sealed class OptionStaticTests {
     }
 
     [Fact]
-    public void Map2() {
+    public void Map() {
         AssertOption.IsSome(3, Option.Map(Option.Some(1), Option.Some(2), (x, y) => x + y));
         AssertOption.IsNone(Option.Map(Option<int>.NoneValue, Option.Some(2), (x, y) => x + y));
         AssertOption.IsNone(Option.Map(Option.Some(1), Option<int>.NoneValue, (x, y) => x + y));
-    }
 
-    [Fact]
-    public void Map3() {
         AssertOption.IsSome(6, Option.Map(Option.Some(1), Option.Some(2), Option.Some(3), (x, y, z) => x + y + z));
         AssertOption.IsNone(Option.Map(Option<int>.NoneValue, Option.Some(2), Option.Some(3), (x, y, z) => x + y + z));
         AssertOption.IsNone(Option.Map(Option.Some(1), Option<int>.NoneValue, Option.Some(3), (x, y, z) => x + y + z));
         AssertOption.IsNone(Option.Map(Option.Some(1), Option.Some(2), Option<int>.NoneValue, (x, y, z) => x + y + z));
+    }
+
+    [Fact]
+    public void Flatten() {
+        AssertOption.IsSome(1, Option.Flatten(Option.Some(Option.Some(1))));
+        AssertOption.IsNone(Option.Flatten(Option.Some(Option<int>.NoneValue)));
+    }
+
+    [Fact]
+    public void Flatten_IEnumerable() {
+        Assert.Empty(Option.Flatten([Option<int>.NoneValue]));
+        Assert.Equal(2, Option.Flatten([Option.Some(1), Option.Some(2)]).Count());
     }
 
     [Fact]
@@ -502,11 +475,8 @@ public sealed class OptionStaticTests {
             x => x == 2 ? Option<int>.NoneValue : Option.Some(x * 2));
 
         AssertOption.IsNone(optionWithNone);
-    }
 
-    [Fact]
-    public void Traverse_EmptyCollection_ReturnsSomeWithEmptyCollection() {
-        var option = Option.Traverse(
+        option = Option.Traverse(
             Array.Empty<int>(),
             x => Option.Some(x * 2));
 
@@ -529,13 +499,21 @@ public sealed class OptionStaticTests {
             [Option.Some(1), Option<int>.NoneValue, Option.Some(3)]);
 
         AssertOption.IsNone(optionWithNone);
-    }
 
-    [Fact]
-    public void Sequence_EmptyCollection_ReturnsSomeWithEmptyCollection() {
-        var option = Option.Sequence(
+        option = Option.Sequence(
             Array.Empty<Option<int>>());
 
         AssertOption.IsSome([], option);
+    }
+
+    [Fact]
+    public void Zip() {
+        AssertOption.IsSome((1, "a"), Option.Zip(Option.Some(1), Option.Some("a")));
+        AssertOption.IsNone(Option.Zip(Option<int>.NoneValue, Option.Some("a")));
+        AssertOption.IsNone(Option.Zip(Option.Some(1), Option<string>.NoneValue));
+        AssertOption.IsSome((1, "a", 2.0), Option.Zip(Option.Some(1), Option.Some("a"), Option.Some(2.0)));
+        AssertOption.IsNone(Option.Zip(Option<int>.NoneValue, Option.Some("a"), Option.Some(2.0)));
+        AssertOption.IsNone(Option.Zip(Option.Some(1), Option<string>.NoneValue, Option.Some(2.0)));
+        AssertOption.IsNone(Option.Zip(Option.Some(1), Option.Some("a"), Option<double>.NoneValue));
     }
 }

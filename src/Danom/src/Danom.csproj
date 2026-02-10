@@ -11,7 +11,7 @@
     <NeutralLanguage>en-CA</NeutralLanguage>
 
     <!-- Build config -->
-    <TargetFrameworks>netstandard2.1;net6.0;net8.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.1;net6.0;net8.0;net10.0</TargetFrameworks>
     <Nullable>enable</Nullable>
     <DebugType>embedded</DebugType>
     <OutputType>Library</OutputType>
@@ -27,7 +27,7 @@
     <PackageProjectUrl>https://github.com/pimbrouwers/Danom</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>icon.png</PackageIcon>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageReadmeFile>../README.md</PackageReadmeFile>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/pimbrouwers/Danom</RepositoryUrl>
@@ -43,7 +43,6 @@
       <Pack>true</Pack>
       <PackagePath>$(PackageIconUrl)</PackagePath>
     </None>
-    <None Include="../README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <ItemGroup>
