@@ -14,7 +14,7 @@ Danom provides Option, Result and Choice types for C#, inspired by F#. It’s de
 
 - Implementation of common monads: [Option](#option), [Result](#result) and [Choice](#choice).
 - Exhaustive matching to prevent null reference exceptions.
-- Fluent API for chaining operations, including async support.
+- Fluent API for chaining operations.
 - Built-in error handling with [ResultErrors](#built-in-error-type).
 - An API for [parsing strings](#string-parsing) into .NET primitives and value types.
 - `Unit` type to represent the absence of a value.
@@ -22,12 +22,10 @@ Danom provides Option, Result and Choice types for C#, inspired by F#. It’s de
 ## Design Goals
 
 - `netstandard2.1` compatible.
-- Simplify and enhance functional programming in C#.
-- Support both synchronous and asynchronous operations.
-- Provide opionated monads to encourage consistent use.
+- Enhance functional programming in C#.
+- Provide opinionated monads to encourage consistent use.
 - Help reduce (or eliminate) null reference exceptions.
 - Minimize overhead by creating efficients implementations.
-- Enforce exhaustive matching.
 
 ## Getting Started
 
@@ -324,7 +322,7 @@ if (choice.TryGetT2(out var stringValue)) {
 
 ## Unit
 
-Danom provides a `Unit` type to represent the absence of a value. This type is useful in functional programming as a way to represent the absence of a meaningful value. It acts as a placeholder when a function needs to return something, but there is no actual data to return—similar to `void` in C#, but as a real type that can be used in generic code, composed in monads like `Option` and `Result`, or passed as a value. This enables more consistent and expressive APIs, especially when working with functional patterns, pipelines, or asynchronous workflows where a type is always required.
+Danom provides a `Unit` type to represent the absence of a value. This type is useful in functional programming as a way to represent the absence of a meaningful value. It acts as a placeholder when a function needs to return something, but there is no actual data to return—similar to `void` in C#, but as a real type that can be used in generic code, composed in monads like `Option` and `Result`, or passed as a value. This enables more consistent and expressive APIs, especially when working with functional patterns, pipelines, or workflows where a type is always required.
 
 ```csharp
 using Danom;

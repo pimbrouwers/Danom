@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Danom\src\Danom.csproj" />
+    <ProjectReference Include="..\Danom\Danom.csproj" />
   </ItemGroup>
 
 </Project>

@@ -25,7 +25,7 @@ jobs:
           cache-dependency-path: |
             **
             **/NuGet.config
-            **/*.sln
+            **/*.slnx
             **/*.csproj
 
       - name: Restore (solution)

@@ -46,7 +46,7 @@ Choice<int, string, double>.FromT2("Hello")
 
 - Implementation of common monads: [Option](src/Danom/README.md#option), [Result](src/Danom/README.md#result) and [Choice](src/Danom/README.md#choice).
 - Exhaustive matching to prevent null reference exceptions.
-- Fluent API for chaining operations, including async support.
+- Fluent API for chaining operations.
 - Built-in error handling with [ResultErrors](src/Danom/README.md#built-in-error-type).
 - An API for [parsing strings](src/Danom/README.md#string-parsing) into .NET primitives and value types.
 - [Unit](src/Danom/README.md#unit) type to represent the absence of a value.
@@ -56,9 +56,10 @@ Choice<int, string, double>.FromT2("Hello")
 ## Design Goals
 
 - `netstandard2.1` compatible.
-- Simplify and enhance functional programming in C#.
-- Support both synchronous and asynchronous operations.
-- Provide opionated monads to encourage consistent use.
+- Enhance functional programming in C#.
+- Provide opinionated monads to encourage consistent use.
+- Help reduce (or eliminate) null reference exceptions.
+- Minimize overhead by creating efficients implementations.
 
 ## Getting Started
 

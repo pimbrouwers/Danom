@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <AssemblyName>Danom</AssemblyName>
-    <Version>2.1.0</Version>
+    <Version>3.0.0-alpha1</Version>
 
     <!-- General info -->
     <Description>Option, Result, and Choice types for C# to simplify and enhance functional programming.</Description>
@@ -11,6 +11,7 @@
     <NeutralLanguage>en-CA</NeutralLanguage>
 
     <!-- Build config -->
+    <LangVersion>9.0</LangVersion>
     <TargetFrameworks>netstandard2.1;net6.0;net8.0;net10.0</TargetFrameworks>
     <Nullable>enable</Nullable>
     <DebugType>embedded</DebugType>
@@ -23,7 +24,7 @@
 
     <!-- NuGet config -->
     <PackageId>Danom</PackageId>
-    <PackageTags>monads;error-handling;option-type;option;result;railway-oriented-programming;result-type</PackageTags>
+    <PackageTags>monads;error-handling;option-type;option;result;railway-oriented-programming;result-type;discriminated-unions;unions</PackageTags>
     <PackageProjectUrl>https://github.com/pimbrouwers/Danom</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>icon.png</PackageIcon>
@@ -39,7 +40,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="../../../assets/icon.png">
+    <None Include="../../assets/icon.png">
       <Pack>true</Pack>
       <PackagePath>$(PackageIconUrl)</PackagePath>
     </None>

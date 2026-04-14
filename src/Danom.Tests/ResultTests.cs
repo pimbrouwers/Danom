@@ -454,11 +454,11 @@ public sealed class ResultTTests {
         Assert.Equal(default, e);
 
         // ToString uses Error(e) with default error
-        Assert.Equal("Error()", d.ToString());
+        Assert.Throws<InvalidOperationException>(() => d.ToString());
 
         // HashCode/equality: default equals default
-        Assert.Equal(d, default);
-        Assert.Equal(d.GetHashCode(), default(Result<int, string>).GetHashCode());
+        Assert.Throws<InvalidOperationException>(() => d.Equals(default));
+        Assert.Throws<InvalidOperationException>(() => d.GetHashCode());
     }
 
     [Fact]

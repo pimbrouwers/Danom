@@ -56,8 +56,12 @@ namespace Danom.Validation {
                         }
 
                         foreach (var error in errors) {
+                            var key = string.IsNullOrWhiteSpace(error.Key)
+                                ? rule.Key
+                                : error.Key;
+
                             foreach (var errorMessage in error.Errors) {
-                                resultErrors.Add(rule.Key, fieldRule.Message ?? errorMessage);
+                                resultErrors.Add(key, fieldRule.Message ?? errorMessage);
                             }
                         }
                     }
@@ -244,7 +248,7 @@ namespace Danom.Validation {
 
     internal sealed class ValidationContext<T> {
         private const string DefaultField = "Value";
-        private const string DefaultKey = "";
+        private const string DefaultKey = DefaultField;
 
         public ValidationContext() {
             Rules = new Dictionary<string, List<FieldRule>>();

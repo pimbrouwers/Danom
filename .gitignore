@@ -11,6 +11,7 @@
 *.userosscache
 *.sln.docstates
 *.LICENSE.txt
+Directory.Build.local.props
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs

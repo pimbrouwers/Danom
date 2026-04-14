@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../../src/Danom.MinimalApi.csproj" />
+    <ProjectReference Include="../Danom.MinimalApi/Danom.MinimalApi.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -15,11 +15,12 @@ public sealed class ValidationTests {
     }
 
     [Fact]
-    public void VerifyResultErrors() {
+    public void ReturnsExpectedResultErrors_WhenValidationFails() {
         var result = Validate<TestInput>.Using<TestInputValidator>(TestInput.InvalidInput);
         if (result.TryGetError(out var errors)) {
             Assert.NotEmpty(errors);
-            Assert.Single(errors["TestInputId"].Errors);
+            Assert.Single(errors["TestInputId.Id"].Errors);
+            Assert.Contains("'Id'", errors["TestInputId.Id"].Errors[0]);
 
             Assert.Equal(2, errors["Label"].Errors.Count);
             Assert.Contains("'Label'", errors["Label"].Errors[0]);
@@ -30,16 +31,16 @@ public sealed class ValidationTests {
             Assert.Contains("'IntValue'", errors["IntValue"].Errors[1]);
             Assert.Equal("This is not an acceptable response for 'IntValue'", errors["IntValue"].Errors[2]);
 
-            Assert.Equal(2, errors[""].Errors.Count);
-            Assert.Contains("'Value'", errors[""].Errors[0]);
-            Assert.Contains("'Value'", errors[""].Errors[1]);
+            Assert.Equal(2, errors["Value"].Errors.Count);
+            Assert.Contains("'Value'", errors["Value"].Errors[0]);
+            Assert.Contains("'Value'", errors["Value"].Errors[1]);
 
             Assert.Single(errors["Email"].Errors);
             Assert.Contains("'Email'", errors["Email"].Errors[0]);
 
             Assert.Equal(2, errors["Phones"].Errors.Count);
-            Assert.Contains("'Phones'", errors["Phones"].Errors[0]);
-            Assert.Contains("'Phones'", errors["Phones"].Errors[1]);
+            Assert.Contains("'Phones[0]'", errors["Phones"].Errors[0]);
+            Assert.Contains("'Phones[1]'", errors["Phones"].Errors[1]);
         }
         else {
             Assert.Fail("Expected validation to fail, but it succeeded.");

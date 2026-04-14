@@ -4,20 +4,54 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-> Version 3.0.0 introduces a major simplification by removing the async API. This change focuses the library on its core purpose—providing functional constructs for synchronous workflows—while reducing complexity and maintenance overhead. Users relying on async methods will need to refactor their code to handle async workflows externally. See the migration guide for details.
+> Version 3.0.0 introduces a major simplification by removing the async API. This change focuses the library on its core purpose—providing functional constructs for synchronous workflows—while reducing complexity and maintenance overhead. Users relying on async methods will need to [refactor their code](migrating-from-v2-to-v3.md) to handle async workflows externally. See the migration guide for details.
 
 ## Added
 
-- New `Option` method:
-    - `Option.Match<T, T2, U>(Option<T> o1, Option<T2> o2, // ...)`
-    - `Option.Match<T, U>(IEnumerable<Option<T> options, // ...)`
-    - `Option.Bind<T, T2, U>(Option<T> o1, Option<T2> o2, // ...)`
+- New `Option<T>` properties/methods:
+    - `Count` (returns 1 if some, 0 if none)
+    - `Apply<U>(Option<Func<T, U>> fn)`
+    - `Tap(Action<T> tap)`
+    - `Filter(Func<T, bool> predicate)`
+    - `Exists(Func<T, bool> predicate)`
+    - `Contains(T value)`
+    - `ToList()`
+    - `ToArray()`
 - New `Option` static methods:
-    -
-- New `Result` method:
-    -
+    - `Option.Match<T, T2, U>(Option<T> o1, Option<T2> o2, // ...)`
+    - `Option.Match<T, T2, T3, U>(Option<T> o1, Option<T2> o2, Option<T3> o3, // ...)`
+    - `Option.Match<T, U>(IEnumerable<Option<T>> options, // ...)`
+    - `Option.Bind<T, T2, U>(Option<T> o1, Option<T2> o2, // ...)`
+    - `Option.Bind<T, T2, T3, U>(Option<T> o1, Option<T2> o2, Option<T3> o3, // ...)`
+    - `Option.Map<T, T2, U>(Option<T> o1, Option<T2> o2, // ...)`
+    - `Option.Map<T, T2, T3, U>(Option<T> o1, Option<T2> o2, Option<T3> o3, // ...)`
+    - `Option.Flatten<T>(Option<Option<T>> option)`
+    - `Option.Flatten<T>(IEnumerable<Option<T>> options)`
+    - `Option.Traverse<T, U>(IEnumerable<T> items, Func<T, Option<U>> apply)`
+    - `Option.Sequence<T>(IEnumerable<Option<T>> options)`
+    - `Option.Zip<T, T2>(Option<T> o1, Option<T2> o2)`
+    - `Option.Zip<T, T2, T3>(Option<T> o1, Option<T2> o2, Option<T3> o3)`
+- New `Result<T, TError>` properties/methods:
+    - `Count` (returns 1 if ok, 0 if error)
+    - `Apply<U>(Result<Func<T, U>, TError> fn)`
+    - `Tap(Action<T> tap)`
+    - `Filter(Func<T, bool> predicate)`
+    - `Exists(Func<T, bool> predicate)`
+    - `Contains(T value)`
+    - `ToList()`
+    - `ToArray()`
 - New `Result` static methods:
-    -
+    - `Result.Match<T, T2, TError, U>(Result<T, TError> r1, Result<T2, TError> r2, // ...)`
+    - `Result.Match<T, T2, T3, TError, U>(Result<T, TError> r1, Result<T2, TError> r2, Result<T3, TError> r3, // ...)`
+    - `Result.Bind<T, T2, TError, U>(Result<T, TError> r1, Result<T2, TError> r2, // ...)`
+    - `Result.Bind<T, T2, T3, TError, U>(Result<T, TError> r1, Result<T2, TError> r2, Result<T3, TError> r3, // ...)`
+    - `Result.Map<T, T2, TError, U>(Result<T, TError> r1, Result<T2, TError> r2, // ...)`
+    - `Result.Map<T, T2, T3, TError, U>(Result<T, TError> r1, Result<T2, TError> r2, Result<T3, TError> r3, // ...)`
+    - `Result.Traverse<T, U, TError>(IEnumerable<T> items, Func<T, Result<U, TError>> apply)`
+    - `Result.Sequence<T, TError>(IEnumerable<Result<T, TError>> results, Func<TError, TError, TError> errorFunc)`
+    - `Result.Sequence<T, TError>(IEnumerable<Result<T, TError>> results)`
+    - `Result.Zip<T, T2, TError>(Result<T, TError> r1, Result<T2, TError> r2)`
+    - `Result.Zip<T, T2, T3, TError>(Result<T, TError> r1, Result<T2, TError> r2, Result<T3, TError> r3)`
 - ResultErrors.Merge method and keyed accessor (ex: `ResultErrors.Merge([r1, r2, r3])`, `resultErrors["key"]`).
 - Pipe extension method, allowing for functional piping of values (ex: `value.Pipe(func)`).
 

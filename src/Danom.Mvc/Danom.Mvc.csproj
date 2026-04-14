@@ -1,15 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <AssemblyName>Danom.MinimalApi</AssemblyName>
-    <Version>2.1.1</Version>
+    <AssemblyName>Danom.Mvc</AssemblyName>
+    <Version>3.0.0-alpha1</Version>
 
     <!-- General info -->
-    <Description>ASP.NET Core Minimal API support for Danom.</Description>
+    <Description>ASP.NET Core MVC and Razor Pages support for Danom.</Description>
     <Copyright>Copyright 2025 Pim Brouwers</Copyright>
     <Authors>Pim Brouwers</Authors>
     <NeutralLanguage>en-CA</NeutralLanguage>
-    <IsAotCompatible>true</IsAotCompatible>
 
     <!-- Build config -->
     <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
@@ -20,9 +19,8 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
 
-
     <!-- NuGet config -->
-    <PackageId>Danom.MinimalApi</PackageId>
+    <PackageId>Danom.Mvc</PackageId>
     <PackageTags>aspnetcore;mvc;validation;danom;</PackageTags>
     <PackageProjectUrl>https://github.com/pimbrouwers/Danom</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -39,11 +37,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="../../../assets/icon.png">
+    <None Include="../../assets/icon.png">
       <Pack>true</Pack>
       <PackagePath>$(PackageIconUrl)</PackagePath>
     </None>
-    <None Include="../README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <ItemGroup>

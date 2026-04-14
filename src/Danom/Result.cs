@@ -74,9 +74,9 @@ namespace Danom {
         };
 
         /// <summary>
-        /// If <see cref="Result{T,TError}"/> is Some, evaluates the ok delegate,
+        /// If <see cref="Result{T,TError}"/> is Ok, evaluates the ok delegate,
         /// otherwise evaluates
-        /// the none delegate.
+        /// the error delegate.
         /// </summary>
         public void Match(Action<T> ok, Action<TError> error) {
             Match(
@@ -96,8 +96,7 @@ namespace Danom {
         /// <typeparam name="U"></typeparam>
         /// <param name="bind"></param>
         /// <returns></returns>
-        public Result<U, TError> Bind<U>(
-            Func<T, Result<U, TError>> bind) =>
+        public Result<U, TError> Bind<U>(Func<T, Result<U, TError>> bind) =>
             Match(bind, Result<U, TError>.Error);
 
         /// <summary>
@@ -106,8 +105,7 @@ namespace Danom {
         /// <typeparam name="U"></typeparam>
         /// <param name="map"></param>
         /// <returns></returns>
-        public Result<U, TError> Map<U>(
-            Func<T, U> map) =>
+        public Result<U, TError> Map<U>(Func<T, U> map) =>
             Bind(x => Result<U, TError>.Ok(map(x)));
 
         /// <summary>
@@ -116,8 +114,7 @@ namespace Danom {
         /// <typeparam name="UError"></typeparam>
         /// <param name="mapError"></param>
         /// <returns></returns>
-        public Result<T, UError> MapError<UError>(
-            Func<TError, UError> mapError) =>
+        public Result<T, UError> MapError<UError>(Func<TError, UError> mapError) =>
             Match(Result<T, UError>.Ok, e => Result<T, UError>.Error(mapError(e)));
 
         /// <summary>
@@ -126,8 +123,7 @@ namespace Danom {
         /// <typeparam name="U"></typeparam>
         /// <param name="fn"></param>
         /// <returns></returns>
-        public Result<U, TError> Apply<U>(
-            Result<Func<T, U>, TError> fn) =>
+        public Result<U, TError> Apply<U>(Result<Func<T, U>, TError> fn) =>
             Bind(x => fn.Map(i => i.Invoke(x)));
 
         /// <summary>
@@ -135,8 +131,7 @@ namespace Danom {
         /// </summary>
         /// <param name="action"></param>
         /// <returns></returns>
-        public Result<T, TError> Tap(
-            Action<T> action) =>
+        public Result<T, TError> Tap(Action<T> action) =>
             Map(x => {
                 action(x);
                 return x;
@@ -146,8 +141,7 @@ namespace Danom {
         /// Executes the ok action if <see cref="Result{T, TError}"/> is Ok.
         /// </summary>
         /// <param name="ok"></param>
-        public void Iter(
-            Action<T> ok) =>
+        public void Iter(Action<T> ok) =>
             Match(ok, _ => { });
 
         /// <summary>
@@ -156,8 +150,7 @@ namespace Danom {
         /// </summary>
         /// <param name="defaultValue"></param>
         /// <returns></returns>
-        public T DefaultValue(
-             T defaultValue) =>
+        public T DefaultValue(T defaultValue) =>
              Match(ok => ok, _ => defaultValue);
 
         /// <summary>
@@ -165,8 +158,7 @@ namespace Danom {
         /// </summary>
         /// <param name="defaultWith"></param>
         /// <returns></returns>
-        public T DefaultWith(
-            Func<T> defaultWith) =>
+        public T DefaultWith(Func<T> defaultWith) =>
             Match(ok => ok, _ => defaultWith());
 
         /// <summary>
@@ -174,8 +166,7 @@ namespace Danom {
         /// </summary>
         /// <param name="ifError"></param>
         /// <returns></returns>
-        public Result<T, TError> OrElse(
-            Result<T, TError> ifError) =>
+        public Result<T, TError> OrElse(Result<T, TError> ifError) =>
             Match(Result<T, TError>.Ok, _ => ifError);
 
         /// <summary>
@@ -183,8 +174,7 @@ namespace Danom {
         /// </summary>
         /// <param name="ifErrorWith"></param>
         /// <returns></returns>
-        public Result<T, TError> OrElseWith(
-            Func<Result<T, TError>> ifErrorWith) =>
+        public Result<T, TError> OrElseWith(Func<Result<T, TError>> ifErrorWith) =>
             Match(Result<T, TError>.Ok, _ => ifErrorWith());
 
         /// <summary>
@@ -193,13 +183,11 @@ namespace Danom {
         /// <param name="predicate"></param>
         /// <param name="error"></param>
         /// <returns></returns>
-        public Result<T, TError> Filter(
-            Func<T, bool> predicate,
-            TError error) =>
+        public Result<T, TError> Filter(Func<T, bool> predicate, TError error) =>
             Bind(ok => predicate(ok) ? Result<T, TError>.Ok(ok) : Result<T, TError>.Error(error));
 
         /// <summary>
-        /// Returns true if any value in the <see cref="Option{T}"/> satisfies the predicate.
+        /// Returns true if any value in the <see cref="Result{T, TError}"/> satisfies the predicate.
         /// </summary>
         /// <param name="predicate"></param>
         /// <returns></returns>
@@ -208,7 +196,7 @@ namespace Danom {
                 .DefaultWith(() => false);
 
         /// <summary>
-        /// Returns true if the <see cref="Option{T}"/> contains the specified value.
+        /// Returns true if the <see cref="Result{T, TError}"/> contains the specified value.
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
@@ -216,7 +204,7 @@ namespace Danom {
             Exists(x => EqualityComparer<T>.Default.Equals(x, value));
 
         /// <summary>
-        /// Converts the <see cref="Option{T}"/> to a List.
+        /// Converts the <see cref="Result{T, TError}"/> to a List.
         /// </summary>
         /// <returns></returns>
         public List<T> ToList() =>
@@ -224,7 +212,7 @@ namespace Danom {
                 .DefaultWith(() => new List<T>());
 
         /// <summary>
-        /// Converts the <see cref="Option{T}"/> to an Array.
+        /// Converts the <see cref="Result{T, TError}"/> to an Array.
         /// </summary>
         /// <returns></returns>
         public T[] ToArray() =>
@@ -287,21 +275,21 @@ namespace Danom {
                 return false;
             }
 
-            if (_state == 0 && other._state == 0) {
-                return true;
+            if (_state == 0 || other._state == 0) {
+                throw new InvalidOperationException("Invalid Result state.");
             }
 
             return _state switch {
                 1 => _ok is null ? other._ok is null : _ok.Equals(other._ok),
                 2 => _error is null ? other._error is null : _error.Equals(other._error),
-                _ => false
+                _ => throw new InvalidOperationException("Invalid Result state.")
             };
 
         }
 
         /// <summary>
-        /// Converts the <see cref="Result{T, TError}"/> to an <see cref="Option{T}"/>.
-        /// If the Result is Ok, it returns Some with the value, otherwise None.
+        /// Converts the <see cref="Result{T, TError}"/> to an <see cref="Result{T, TError}"/>.
+        /// If the Result is Ok, it returns Ok with the value, otherwise None.
         /// </summary>
         /// <returns></returns>
         public Option<T> ToOption() =>
@@ -316,7 +304,7 @@ namespace Danom {
         public override int GetHashCode() => _state switch {
             1 => _ok is null ? 0 : _ok.GetHashCode(),
             2 => _error is null ? 0 : _error.GetHashCode(),
-            _ => 0
+            _ => throw new InvalidOperationException($"Invalid Result state.")
         };
 
         /// <summary>
@@ -328,7 +316,7 @@ namespace Danom {
             2 => IsError && _error is TError errVal
                 ? (errVal is null ? "Error()" : $"Error({errVal})")
                 : "Error()",
-            _ => "Error()"
+            _ => throw new InvalidOperationException($"Invalid Result state.")
         };
     }
 

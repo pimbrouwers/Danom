@@ -95,8 +95,7 @@ namespace Danom {
         /// <typeparam name="U"></typeparam>
         /// <param name="bind"></param>
         /// <returns></returns>
-        public Option<U> Bind<U>(
-            Func<T, Option<U>> bind) =>
+        public Option<U> Bind<U>(Func<T, Option<U>> bind) =>
             Match(bind, Option<U>.None);
 
         /// <summary>
@@ -105,8 +104,7 @@ namespace Danom {
         /// <typeparam name="U"></typeparam>
         /// <param name="map"></param>
         /// <returns></returns>
-        public Option<U> Map<U>(
-            Func<T, U> map) =>
+        public Option<U> Map<U>(Func<T, U> map) =>
             Bind(x => Option<U>.Some(map(x)));
 
         /// <summary>
@@ -115,8 +113,7 @@ namespace Danom {
         /// <typeparam name="U"></typeparam>
         /// <param name="fn"></param>
         /// <returns></returns>
-        public Option<U> Apply<U>(
-            Option<Func<T, U>> fn) =>
+        public Option<U> Apply<U>(Option<Func<T, U>> fn) =>
             Bind(x => fn.Map(i => i.Invoke(x)));
 
         /// <summary>
@@ -124,8 +121,7 @@ namespace Danom {
         /// </summary>
         /// <param name="defaultValue"></param>
         /// <returns></returns>
-        public T DefaultValue(
-             T defaultValue) =>
+        public T DefaultValue(T defaultValue) =>
              Match(some => some, () => defaultValue);
 
         /// <summary>
@@ -133,8 +129,7 @@ namespace Danom {
         /// </summary>
         /// <param name="defaultWith"></param>
         /// <returns></returns>
-        public T DefaultWith(
-            Func<T> defaultWith) =>
+        public T DefaultWith(Func<T> defaultWith) =>
             Match(some => some, () => defaultWith());
 
         /// <summary>
@@ -142,8 +137,7 @@ namespace Danom {
         /// </summary>
         /// <param name="ifNone"></param>
         /// <returns></returns>
-        public Option<T> OrElse(
-            Option<T> ifNone) =>
+        public Option<T> OrElse(Option<T> ifNone) =>
             Match(Option<T>.Some, () => ifNone);
 
         /// <summary>
@@ -151,8 +145,7 @@ namespace Danom {
         /// </summary>
         /// <param name="ifNoneWith"></param>
         /// <returns></returns>
-        public Option<T> OrElseWith(
-            Func<Option<T>> ifNoneWith) =>
+        public Option<T> OrElseWith(Func<Option<T>> ifNoneWith) =>
             Match(Option<T>.Some, ifNoneWith);
 
         /// <summary>
@@ -170,8 +163,7 @@ namespace Danom {
         /// If <see cref="Option{T}"/> is Some evaluate the some delegate, otherwise do nothing.
         /// </summary>
         /// <param name="some"></param>
-        public void Iter(
-            Action<T> some) =>
+        public void Iter(Action<T> some) =>
             Match(some, () => { });
 
         /// <summary>
@@ -179,8 +171,7 @@ namespace Danom {
         /// </summary>
         /// <param name="predicate"></param>
         /// <returns></returns>
-        public Option<T> Filter(
-            Func<T, bool> predicate) =>
+        public Option<T> Filter(Func<T, bool> predicate) =>
             Bind(x => predicate(x) ? Option.Some(x) : Option<T>.None());
 
         /// <summary>
@@ -536,8 +527,7 @@ namespace Danom {
         /// <typeparam name="T"></typeparam>
         /// <param name="option"></param>
         /// <returns></returns>
-        public static Option<T> Flatten<T>(
-            Option<Option<T>> option) =>
+        public static Option<T> Flatten<T>(Option<Option<T>> option) =>
             option.Bind(x => x);
 
         /// <summary>
@@ -546,8 +536,7 @@ namespace Danom {
         /// <typeparam name="T"></typeparam>
         /// <param name="options"></param>
         /// <returns></returns>
-        public static IEnumerable<T> Flatten<T>(
-            IEnumerable<Option<T>> options) {
+        public static IEnumerable<T> Flatten<T>(IEnumerable<Option<T>> options) {
             foreach (var option in options) {
                 if (option.TryGet(out var v)) {
                     yield return v;
@@ -591,8 +580,7 @@ namespace Danom {
         /// <typeparam name="T"></typeparam>
         /// <param name="options"></param>
         /// <returns></returns>
-        public static Option<IEnumerable<T>> Sequence<T>(
-            IEnumerable<Option<T>> options) =>
+        public static Option<IEnumerable<T>> Sequence<T>(IEnumerable<Option<T>> options) =>
             Traverse(options, x => x);
 
         /// <summary>

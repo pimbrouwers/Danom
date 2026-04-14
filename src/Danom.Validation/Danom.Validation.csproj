@@ -1,18 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <AssemblyName>Danom.Mvc</AssemblyName>
-    <Version>2.1.0</Version>
+    <AssemblyName>Danom.Validation</AssemblyName>
+    <Version>3.0.0-alpha1</Version>
 
     <!-- General info -->
-    <Description>ASP.NET Core MVC and Razor Pages support for Danom.</Description>
+    <Description>Validators and validation helpers for Danom.</Description>
     <Copyright>Copyright 2025 Pim Brouwers</Copyright>
     <Authors>Pim Brouwers</Authors>
     <NeutralLanguage>en-CA</NeutralLanguage>
 
     <!-- Build config -->
-    <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
-    <ImplicitUsings>enable</ImplicitUsings>
+
+    <TargetFrameworks>netstandard2.1</TargetFrameworks>
     <Nullable>enable</Nullable>
     <DebugType>embedded</DebugType>
     <OutputType>Library</OutputType>
@@ -20,8 +20,8 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
 
     <!-- NuGet config -->
-    <PackageId>Danom.Mvc</PackageId>
-    <PackageTags>aspnetcore;mvc;validation;danom;</PackageTags>
+    <PackageId>Danom.Validation</PackageId>
+    <PackageTags>validation;validation-result;danom;</PackageTags>
     <PackageProjectUrl>https://github.com/pimbrouwers/Danom</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>icon.png</PackageIcon>
@@ -37,19 +37,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="../../../assets/icon.png">
+    <None Include="../../assets/icon.png">
       <Pack>true</Pack>
       <PackagePath>$(PackageIconUrl)</PackagePath>
     </None>
-    <None Include="../README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
-  <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  <ItemGroup Condition="'$(UseLocalDanom)' == 'true'">
+    <ProjectReference Include="../Danom/Danom.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Danom" Version="2.1.*" />
+  <ItemGroup Condition="'$(UseLocalDanom)' != 'true'">
+    <PackageReference Include="Danom" Version="3.0.0-alpha1" />
   </ItemGroup>
-
 </Project>

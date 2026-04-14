@@ -241,6 +241,10 @@ Check.IsValid(validator)
 Rule("Address", x => x.Address, Check.IsValid(new AddressValidator()));
 ```
 
+When nested validation fails, the parent field is prefixed into the error key.
+
+For example, if `AddressValidator` returns an error with key `Street`, the parent validator reports it under `Address.Street`.
+
 ### String Rules
 
 ```csharp
@@ -260,6 +264,12 @@ Check.String.IsUrl
 Check.String.IsE164
 Check.String.IsEmailAddress
 ```
+
+`Check.String.IsUrl` validates absolute HTTP(S) URLs only (`http://` and `https://`).
+
+For sign-based numeric checks (`IsPositive<T>`, `IsNegative<T>`, `IsZero<T>`):
+- On .NET 7+ targets, generic math constraints are used where available.
+- On lower targets, runtime numeric-type validation is used.
 
 **Example:**
 ```csharp
@@ -299,6 +309,10 @@ ForEach("Tags", x => x.Tags, [
     Check.String.IsNotEmpty,
     Check.String.IsLengthOrGreaterThan(3) ]);
 ```
+
+`ForEach`-based errors include item index context in the error key.
+
+For example, validation errors are surfaced as `Tags[0]`, `Tags[1]`, and so on.
 
 ### Inline Rules
 
@@ -404,6 +418,12 @@ if (result.TryGet(out var user))
 else if (result.TryGetError(out var errors))
 {
     // Handle errors
+
+    // Nested keys
+    var streetErrors = errors["Address.Street"].Errors;
+
+    // Collection keys
+    var firstTagErrors = errors["Tags[0]"].Errors;
 }
 ```
 

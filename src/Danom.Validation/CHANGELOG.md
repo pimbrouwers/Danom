@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Changed
+
+- `Check.String.IsUrl` now validates absolute HTTP(S) URLs only.
+- `Check.IsPositive<T>`, `Check.IsNegative<T>`, and `Check.IsZero<T>` now use framework-conditional behavior:
+	- generic math constraints on .NET 7+ targets where available,
+	- runtime numeric-type guard fallback on lower targets.
+- Refactored `Check.Enumerable.ForEach(...)` overloads to use shared internal iteration/evaluation logic.
+
 ## [2.1.0] - 2025-12-30
 
 ## Added
