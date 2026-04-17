@@ -1,779 +1,778 @@
-namespace Danom {
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
-    using System.Linq;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+
+namespace Danom;
+/// <summary>
+/// Represents a result of an operation that can be either successful or not. It
+/// is typically used in monadic error handling.
+/// </summary>
+/// <typeparam name="T"></typeparam>
+/// <typeparam name="TError"></typeparam>
+public readonly struct Result<T, TError>
+    : IEquatable<Result<T, TError>> {
+    private readonly byte _state; // 1 = Ok, 2 = Error
+    private readonly T _ok;
+    private readonly TError _error;
+
+    private Result(T t) {
+        _state = 1;
+        _ok = t;
+        _error = default!;
+    }
+
+    private Result(TError tError) {
+        _state = 2;
+        _ok = default!;
+        _error = tError;
+    }
 
     /// <summary>
-    /// Represents a result of an operation that can be either successful or not. It
-    /// is typically used in monadic error handling.
+    /// Returns true if <see cref="Result{T, TError}"/> is Ok, false otherwise.
+    /// </summary>
+    public bool IsOk => _state == 1;
+
+    /// <summary>
+    /// Returns true if <see cref="Result{T, TError}"/> is Error, false otherwise.
+    /// </summary>
+    public bool IsError => _state == 2;
+
+    /// <summary>
+    /// Returns 1 if <see cref="Result{T, TError}"/> is Ok, 0 otherwise.
+    /// </summary>
+    public int Count => IsOk ? 1 : 0;
+
+    /// <summary>
+    /// Creates a new <see cref="Result{T, TError}"/> with the specified value.
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public static Result<T, TError> Ok(T value) =>
+        new(value);
+
+    /// <summary>
+    /// Creates a new <see cref="Result{T, TError}"/> with the specified error.
+    /// </summary>
+    /// <param name="error"></param>
+    /// <returns></returns>
+    public static Result<T, TError> Error(TError error) =>
+        new(error);
+
+    /// <summary>
+    /// If <see cref="Result{T, TError}"/> is Ok evaluate the ok delegate,
+    /// otherwise error.
+    /// </summary>
+    /// <typeparam name="U"></typeparam>
+    /// <param name="ok"></param>
+    /// <param name="error"></param>
+    /// <returns></returns>
+    public U Match<U>(Func<T, U> ok, Func<TError, U> error) => _state switch {
+        1 when _ok is T t => ok(t),
+        2 when _error is TError tError => error(tError),
+        _ => throw new InvalidOperationException("Result error has not been initialized."),
+    };
+
+    /// <summary>
+    /// If <see cref="Result{T,TError}"/> is Ok, evaluates the ok delegate,
+    /// otherwise evaluates
+    /// the error delegate.
+    /// </summary>
+    public void Match(Action<T> ok, Action<TError> error) {
+        Match(
+            ok: x => {
+                ok(x);
+                return Unit.Value;
+            },
+            error: e => {
+                error(e);
+                return Unit.Value;
+            });
+    }
+
+    /// <summary>
+    /// Evaluates the bind delegate if <see cref="Result{T, TError}"/> is Ok otherwise return Error.
+    /// </summary>
+    /// <typeparam name="U"></typeparam>
+    /// <param name="bind"></param>
+    /// <returns></returns>
+    public Result<U, TError> Bind<U>(Func<T, Result<U, TError>> bind) =>
+        Match(bind, Result<U, TError>.Error);
+
+    /// <summary>
+    /// Evaluates the map delegate if <see cref="Result{T, TError}"/> is Ok otherwise return Error.
+    /// </summary>
+    /// <typeparam name="U"></typeparam>
+    /// <param name="map"></param>
+    /// <returns></returns>
+    public Result<U, TError> Map<U>(Func<T, U> map) =>
+        Bind(x => Result<U, TError>.Ok(map(x)));
+
+    /// <summary>
+    /// Evaluates the mapError delegate if <see cref="Result{T, TError}"/> is Error otherwise return Ok.
+    /// </summary>
+    /// <typeparam name="UError"></typeparam>
+    /// <param name="mapError"></param>
+    /// <returns></returns>
+    public Result<T, UError> MapError<UError>(Func<TError, UError> mapError) =>
+        Match(Result<T, UError>.Ok, e => Result<T, UError>.Error(mapError(e)));
+
+    /// <summary>
+    /// Applies the function contained in the Result to the value contained in this Result if both are Ok.
+    /// </summary>
+    /// <typeparam name="U"></typeparam>
+    /// <param name="fn"></param>
+    /// <returns></returns>
+    public Result<U, TError> Apply<U>(Result<Func<T, U>, TError> fn) =>
+        Bind(x => fn.Map(i => i.Invoke(x)));
+
+    /// <summary>
+    /// Executes the action if <see cref="Result{T, TError}"/> is Ok.
+    /// </summary>
+    /// <param name="action"></param>
+    /// <returns></returns>
+    public Result<T, TError> Tap(Action<T> action) =>
+        Map(x => {
+            action(x);
+            return x;
+        });
+
+    /// <summary>
+    /// Executes the ok action if <see cref="Result{T, TError}"/> is Ok.
+    /// </summary>
+    /// <param name="ok"></param>
+    public void Iter(Action<T> ok) =>
+        Match(ok, _ => { });
+
+    /// <summary>
+    /// Returns the value of <see cref="Result{T, TError}"/> if it is T, otherwise returns the
+    /// specified default value.
+    /// </summary>
+    /// <param name="defaultValue"></param>
+    /// <returns></returns>
+    public T DefaultValue(T defaultValue) =>
+         Match(ok => ok, _ => defaultValue);
+
+    /// <summary>
+    /// Returns the value of <see cref="Result{T, TError}"/> if it is T, otherwise returns the
+    /// </summary>
+    /// <param name="defaultWith"></param>
+    /// <returns></returns>
+    public T DefaultWith(Func<T> defaultWith) =>
+        Match(ok => ok, _ => defaultWith());
+
+    /// <summary>
+    /// Returns this Result if it is Ok, otherwise returns the specified ifError Result.
+    /// </summary>
+    /// <param name="ifError"></param>
+    /// <returns></returns>
+    public Result<T, TError> OrElse(Result<T, TError> ifError) =>
+        Match(Result<T, TError>.Ok, _ => ifError);
+
+    /// <summary>
+    /// Returns this Result if it is Ok, otherwise evaluates and returns the specified ifError Result.
+    /// </summary>
+    /// <param name="ifErrorWith"></param>
+    /// <returns></returns>
+    public Result<T, TError> OrElseWith(Func<Result<T, TError>> ifErrorWith) =>
+        Match(Result<T, TError>.Ok, _ => ifErrorWith());
+
+    /// <summary>
+    /// Returns this Result if it is Error and the predicate is satisfied,
+    /// </summary>
+    /// <param name="predicate"></param>
+    /// <param name="error"></param>
+    /// <returns></returns>
+    public Result<T, TError> Filter(Func<T, bool> predicate, TError error) =>
+        Bind(ok => predicate(ok) ? Result<T, TError>.Ok(ok) : Result<T, TError>.Error(error));
+
+    /// <summary>
+    /// Returns true if any value in the <see cref="Result{T, TError}"/> satisfies the predicate.
+    /// </summary>
+    /// <param name="predicate"></param>
+    /// <returns></returns>
+    public bool Exists(Func<T, bool> predicate) =>
+        Map(x => predicate(x))
+            .DefaultWith(() => false);
+
+    /// <summary>
+    /// Returns true if the <see cref="Result{T, TError}"/> contains the specified value.
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public bool Contains(T value) =>
+        Exists(x => EqualityComparer<T>.Default.Equals(x, value));
+
+    /// <summary>
+    /// Converts the <see cref="Result{T, TError}"/> to a List.
+    /// </summary>
+    /// <returns></returns>
+    public List<T> ToList() =>
+        Map(x => new List<T> { x })
+            .DefaultWith(() => []);
+
+    /// <summary>
+    /// Converts the <see cref="Result{T, TError}"/> to an Array.
+    /// </summary>
+    /// <returns></returns>
+    public T[] ToArray() =>
+        Map(x => new T[] { x })
+            .DefaultWith(() => []);
+
+    /// <summary>
+    /// Safely retrieves the value if the Result is in Ok state.
+    /// </summary>
+    /// <param name="value">The value if in Ok state, default otherwise.</param>
+    /// <returns>True if the Result is in Ok state, false otherwise.</returns>
+    public bool TryGet([MaybeNullWhen(false)] out T value) {
+        value = IsOk ? _ok : default!;
+        return IsOk;
+    }
+
+    /// <summary>
+    /// Safely retrieves the error if the Result is in Error state.
+    /// </summary>
+    /// <param name="error">The error if in Error state, default otherwise.</param>
+    /// <returns>True if the Result is in Error state, false otherwise.</returns>
+    public bool TryGetError([MaybeNullWhen(false)] out TError error) {
+        error = IsError ? _error : default!;
+        return IsError;
+    }
+
+    /// <summary>
+    /// Returns true if the specified Result is equal to the current <see cref="Result{T, TError}"/>.
+    /// </summary>
+    /// <param name="left"></param>
+    /// <param name="right"></param>
+    /// <returns></returns>
+    public static bool operator ==(Result<T, TError> left, Result<T, TError> right) =>
+        left.Equals(right);
+
+    /// <summary>
+    /// Returns true if the specified Result is not equal to the current <see cref="Result{T, TError}"/>.
+    /// </summary>
+    /// <param name="left"></param>
+    /// <param name="right"></param>
+    /// <returns></returns>
+    public static bool operator !=(Result<T, TError> left, Result<T, TError> right) =>
+        !(left == right);
+
+    /// <summary>
+    /// Returns true if the specified Result is equal to the current <see cref="Result{T, TError}"/>.
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <returns></returns>
+    public override bool Equals(object? obj) =>
+        obj is Result<T, TError> o && Equals(o);
+
+    /// <summary>
+    /// Returns true if the specified Result is equal to the current <see cref="Result{T, TError}"/>.
+    /// </summary>
+    /// <param name="other"></param>
+    /// <returns></returns>
+    public bool Equals(Result<T, TError> other) {
+        if (_state != other._state) {
+            return false;
+        }
+
+        if (_state == 0 || other._state == 0) {
+            throw new InvalidOperationException("Invalid Result state.");
+        }
+
+        return _state switch {
+            1 => _ok is null ? other._ok is null : _ok.Equals(other._ok),
+            2 => _error is null ? other._error is null : _error.Equals(other._error),
+            _ => throw new InvalidOperationException("Invalid Result state.")
+        };
+
+    }
+
+    /// <summary>
+    /// Converts the <see cref="Result{T, TError}"/> to an <see cref="Result{T, TError}"/>.
+    /// If the Result is Ok, it returns Ok with the value, otherwise None.
+    /// </summary>
+    /// <returns></returns>
+    public Option<T> ToOption() =>
+        Match(
+            ok: x => Option.Some(x),
+            error: _ => Option<T>.NoneValue);
+
+    /// <summary>
+    /// Returns the hash code for the <see cref="Result{T, TError}"/>.
+    /// </summary>
+    /// <returns></returns>
+    public override int GetHashCode() => _state switch {
+        1 => _ok is null ? 0 : _ok.GetHashCode(),
+        2 => _error is null ? 0 : _error.GetHashCode(),
+        _ => throw new InvalidOperationException($"Invalid Result state.")
+    };
+
+    /// <summary>
+    /// Returns a string representation of the <see cref="Result{T, TError}"/>.
+    /// </summary>
+    /// <returns></returns>
+    public override string ToString() => _state switch {
+        1 => IsOk && _ok is T okVal ? $"Ok({okVal})" : "Ok()",
+        2 => IsError && _error is TError errVal
+            ? (errVal is null ? "Error()" : $"Error({errVal})")
+            : "Error()",
+        _ => throw new InvalidOperationException($"Invalid Result state.")
+    };
+}
+
+
+/// <summary>
+/// The <see cref="Result{T, ResultErrors}"/> with <see cref="ResultErrors"/>
+/// as the predefined error type.
+/// </summary>
+/// <typeparam name="T"></typeparam>
+public static class Result<T> {
+    /// <summary>
+    /// Creates a new <see cref="Result{T, ResultErrors}"/> with the specified value.
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public static Result<T, ResultErrors> Ok(T value) =>
+        Result<T, ResultErrors>.Ok(value);
+
+    /// <summary>
+    /// Creates a new <see cref="Result{T, ResultErrors}"/> with the specified error.
+    /// </summary>
+    /// <param name="errors"></param>
+    /// <returns></returns>
+    public static Result<T, ResultErrors> Error(ResultErrors errors) =>
+        Result<T, ResultErrors>.Error(errors);
+
+    /// <summary>
+    /// Create <see cref="Result{T, ResultErrors}"/> with the specified error.
+    /// </summary>
+    /// <param name="key"></param>
+    /// <param name="errors"></param>
+    /// <returns></returns>
+    public static Result<T, ResultErrors> Error(string key, params string[] errors) =>
+        Error(new ResultErrors(key, errors));
+
+    /// <summary>
+    /// Creates a new <see cref="Result{T, ResultErrors}"/> with the specified error.
+    /// </summary>
+    /// <param name="key"></param>
+    /// <param name="error"></param>
+    /// <returns></returns>
+    public static Result<T, ResultErrors> Error(string key, string error) =>
+        Error(new ResultErrors(key, error));
+
+    /// <summary>
+    /// Create <see cref="Result{T, ResultErrors}"/> with the specified error.
+    /// </summary>
+    /// <param name="error"></param>
+    /// <returns></returns>
+    public static Result<T, ResultErrors> Error(string error) =>
+        Error(new ResultErrors(error));
+
+    /// <summary>
+    /// Create <see cref="Result{T, ResultErrors}"/> with the specified error.
+    /// </summary>
+    /// <param name="errors"></param>
+    /// <returns></returns>
+    public static Result<T, ResultErrors> Error(params string[] errors) =>
+        Error(new ResultErrors(errors));
+}
+
+/// <summary>
+/// The <see cref="Result{T, ResultErrors}"/> with <see cref="ResultErrors"/>
+/// as the predefined error type.
+/// </summary>
+public static class Result {
+    /// <summary>
+    /// Creates a new <see cref="Result{Unit, ResultErrors}"/> with <see cref="Unit"/> value.
+    /// </summary>
+    /// <returns></returns>
+    public static Result<Unit, ResultErrors> Ok() =>
+        Result<Unit, ResultErrors>.Ok(Unit.Value);
+
+    /// <summary>
+    /// Creates a new <see cref="Result{T, ResultErrors}"/> with the specified value.
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public static Result<T, ResultErrors> Ok<T>(T value) =>
+        Result<T, ResultErrors>.Ok(value);
+
+    /// <summary>
+    /// Creates a new <see cref="Result{Unit, ResultErrors}"/> with the specified error.
+    /// </summary>
+    /// <param name="errors"></param>
+    /// <returns></returns>
+    public static Result<Unit, ResultErrors> Error(ResultErrors errors) =>
+        Result<Unit, ResultErrors>.Error(errors);
+
+    /// <summary>
+    /// Create <see cref="Result{Unit, ResultErrors}"/> with the specified error.
+    /// </summary>
+    /// <param name="key"></param>
+    /// <param name="errors"></param>
+    /// <returns></returns>
+    public static Result<Unit, ResultErrors> Error(string key, params string[] errors) =>
+        Error(new ResultErrors(key, errors));
+
+    /// <summary>
+    /// Creates a new <see cref="Result{Unit, ResultErrors}"/> with the specified error.
+    /// </summary>
+    /// <param name="key"></param>
+    /// <param name="error"></param>
+    /// <returns></returns>
+    public static Result<Unit, ResultErrors> Error(string key, string error) =>
+        Error(new ResultErrors(key, error));
+
+    /// <summary>
+    /// Create <see cref="Result{Unit, ResultErrors}"/> with the specified error.
+    /// </summary>
+    /// <param name="error"></param>
+    /// <returns></returns>
+    public static Result<Unit, ResultErrors> Error(string error) =>
+        Error(new ResultErrors(error));
+
+    /// <summary>
+    /// Create <see cref="Result{Unit, ResultErrors}"/> with the specified error.
+    /// </summary>
+    /// <param name="errors"></param>
+    /// <returns></returns>
+    public static Result<Unit, ResultErrors> Error(params string[] errors) =>
+        Error(new ResultErrors(errors));
+
+    /// <summary>
+    /// Matches a collection of Results and invokes the appropriate delegate based on their states.
+    ///
+    /// Note: this implementation is applicative and not monadic, meaning that all Results are evaluated.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TError"></typeparam>
-    public readonly struct Result<T, TError>
-        : IEquatable<Result<T, TError>> {
-        private readonly byte _state; // 1 = Ok, 2 = Error
-        private readonly T _ok;
-        private readonly TError _error;
-
-        private Result(T t) {
-            _state = 1;
-            _ok = t;
-            _error = default!;
-        }
-
-        private Result(TError tError) {
-            _state = 2;
-            _ok = default!;
-            _error = tError;
-        }
-
-        /// <summary>
-        /// Returns true if <see cref="Result{T, TError}"/> is Ok, false otherwise.
-        /// </summary>
-        public bool IsOk => _state == 1;
-
-        /// <summary>
-        /// Returns true if <see cref="Result{T, TError}"/> is Error, false otherwise.
-        /// </summary>
-        public bool IsError => _state == 2;
-
-        /// <summary>
-        /// Returns 1 if <see cref="Result{T, TError}"/> is Ok, 0 otherwise.
-        /// </summary>
-        public int Count => IsOk ? 1 : 0;
-
-        /// <summary>
-        /// Creates a new <see cref="Result{T, TError}"/> with the specified value.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public static Result<T, TError> Ok(T value) =>
-            new Result<T, TError>(value);
-
-        /// <summary>
-        /// Creates a new <see cref="Result{T, TError}"/> with the specified error.
-        /// </summary>
-        /// <param name="error"></param>
-        /// <returns></returns>
-        public static Result<T, TError> Error(TError error) =>
-            new Result<T, TError>(error);
-
-        /// <summary>
-        /// If <see cref="Result{T, TError}"/> is Ok evaluate the ok delegate,
-        /// otherwise error.
-        /// </summary>
-        /// <typeparam name="U"></typeparam>
-        /// <param name="ok"></param>
-        /// <param name="error"></param>
-        /// <returns></returns>
-        public U Match<U>(Func<T, U> ok, Func<TError, U> error) => _state switch {
-            1 when _ok is T t => ok(t),
-            2 when _error is TError tError => error(tError),
-            _ => throw new InvalidOperationException("Result error has not been initialized."),
-        };
-
-        /// <summary>
-        /// If <see cref="Result{T,TError}"/> is Ok, evaluates the ok delegate,
-        /// otherwise evaluates
-        /// the error delegate.
-        /// </summary>
-        public void Match(Action<T> ok, Action<TError> error) {
-            Match(
-                ok: x => {
-                    ok(x);
-                    return Unit.Value;
-                },
-                error: e => {
-                    error(e);
-                    return Unit.Value;
-                });
-        }
-
-        /// <summary>
-        /// Evaluates the bind delegate if <see cref="Result{T, TError}"/> is Ok otherwise return Error.
-        /// </summary>
-        /// <typeparam name="U"></typeparam>
-        /// <param name="bind"></param>
-        /// <returns></returns>
-        public Result<U, TError> Bind<U>(Func<T, Result<U, TError>> bind) =>
-            Match(bind, Result<U, TError>.Error);
-
-        /// <summary>
-        /// Evaluates the map delegate if <see cref="Result{T, TError}"/> is Ok otherwise return Error.
-        /// </summary>
-        /// <typeparam name="U"></typeparam>
-        /// <param name="map"></param>
-        /// <returns></returns>
-        public Result<U, TError> Map<U>(Func<T, U> map) =>
-            Bind(x => Result<U, TError>.Ok(map(x)));
-
-        /// <summary>
-        /// Evaluates the mapError delegate if <see cref="Result{T, TError}"/> is Error otherwise return Ok.
-        /// </summary>
-        /// <typeparam name="UError"></typeparam>
-        /// <param name="mapError"></param>
-        /// <returns></returns>
-        public Result<T, UError> MapError<UError>(Func<TError, UError> mapError) =>
-            Match(Result<T, UError>.Ok, e => Result<T, UError>.Error(mapError(e)));
-
-        /// <summary>
-        /// Applies the function contained in the Result to the value contained in this Result if both are Ok.
-        /// </summary>
-        /// <typeparam name="U"></typeparam>
-        /// <param name="fn"></param>
-        /// <returns></returns>
-        public Result<U, TError> Apply<U>(Result<Func<T, U>, TError> fn) =>
-            Bind(x => fn.Map(i => i.Invoke(x)));
-
-        /// <summary>
-        /// Executes the action if <see cref="Result{T, TError}"/> is Ok.
-        /// </summary>
-        /// <param name="action"></param>
-        /// <returns></returns>
-        public Result<T, TError> Tap(Action<T> action) =>
-            Map(x => {
-                action(x);
-                return x;
-            });
-
-        /// <summary>
-        /// Executes the ok action if <see cref="Result{T, TError}"/> is Ok.
-        /// </summary>
-        /// <param name="ok"></param>
-        public void Iter(Action<T> ok) =>
-            Match(ok, _ => { });
-
-        /// <summary>
-        /// Returns the value of <see cref="Result{T, TError}"/> if it is T, otherwise returns the
-        /// specified default value.
-        /// </summary>
-        /// <param name="defaultValue"></param>
-        /// <returns></returns>
-        public T DefaultValue(T defaultValue) =>
-             Match(ok => ok, _ => defaultValue);
-
-        /// <summary>
-        /// Returns the value of <see cref="Result{T, TError}"/> if it is T, otherwise returns the
-        /// </summary>
-        /// <param name="defaultWith"></param>
-        /// <returns></returns>
-        public T DefaultWith(Func<T> defaultWith) =>
-            Match(ok => ok, _ => defaultWith());
-
-        /// <summary>
-        /// Returns this Result if it is Ok, otherwise returns the specified ifError Result.
-        /// </summary>
-        /// <param name="ifError"></param>
-        /// <returns></returns>
-        public Result<T, TError> OrElse(Result<T, TError> ifError) =>
-            Match(Result<T, TError>.Ok, _ => ifError);
-
-        /// <summary>
-        /// Returns this Result if it is Ok, otherwise evaluates and returns the specified ifError Result.
-        /// </summary>
-        /// <param name="ifErrorWith"></param>
-        /// <returns></returns>
-        public Result<T, TError> OrElseWith(Func<Result<T, TError>> ifErrorWith) =>
-            Match(Result<T, TError>.Ok, _ => ifErrorWith());
-
-        /// <summary>
-        /// Returns this Result if it is Error and the predicate is satisfied,
-        /// </summary>
-        /// <param name="predicate"></param>
-        /// <param name="error"></param>
-        /// <returns></returns>
-        public Result<T, TError> Filter(Func<T, bool> predicate, TError error) =>
-            Bind(ok => predicate(ok) ? Result<T, TError>.Ok(ok) : Result<T, TError>.Error(error));
-
-        /// <summary>
-        /// Returns true if any value in the <see cref="Result{T, TError}"/> satisfies the predicate.
-        /// </summary>
-        /// <param name="predicate"></param>
-        /// <returns></returns>
-        public bool Exists(Func<T, bool> predicate) =>
-            Map(x => predicate(x))
-                .DefaultWith(() => false);
-
-        /// <summary>
-        /// Returns true if the <see cref="Result{T, TError}"/> contains the specified value.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public bool Contains(T value) =>
-            Exists(x => EqualityComparer<T>.Default.Equals(x, value));
-
-        /// <summary>
-        /// Converts the <see cref="Result{T, TError}"/> to a List.
-        /// </summary>
-        /// <returns></returns>
-        public List<T> ToList() =>
-            Map(x => new List<T> { x })
-                .DefaultWith(() => new List<T>());
-
-        /// <summary>
-        /// Converts the <see cref="Result{T, TError}"/> to an Array.
-        /// </summary>
-        /// <returns></returns>
-        public T[] ToArray() =>
-            Map(x => new T[] { x })
-                .DefaultWith(() => Array.Empty<T>());
-
-        /// <summary>
-        /// Safely retrieves the value if the Result is in Ok state.
-        /// </summary>
-        /// <param name="value">The value if in Ok state, default otherwise.</param>
-        /// <returns>True if the Result is in Ok state, false otherwise.</returns>
-        public bool TryGet([MaybeNullWhen(false)] out T value) {
-            value = IsOk ? _ok : default!;
-            return IsOk;
-        }
-
-        /// <summary>
-        /// Safely retrieves the error if the Result is in Error state.
-        /// </summary>
-        /// <param name="error">The error if in Error state, default otherwise.</param>
-        /// <returns>True if the Result is in Error state, false otherwise.</returns>
-        public bool TryGetError([MaybeNullWhen(false)] out TError error) {
-            error = IsError ? _error : default!;
-            return IsError;
-        }
-
-        /// <summary>
-        /// Returns true if the specified Result is equal to the current <see cref="Result{T, TError}"/>.
-        /// </summary>
-        /// <param name="left"></param>
-        /// <param name="right"></param>
-        /// <returns></returns>
-        public static bool operator ==(Result<T, TError> left, Result<T, TError> right) =>
-            left.Equals(right);
-
-        /// <summary>
-        /// Returns true if the specified Result is not equal to the current <see cref="Result{T, TError}"/>.
-        /// </summary>
-        /// <param name="left"></param>
-        /// <param name="right"></param>
-        /// <returns></returns>
-        public static bool operator !=(Result<T, TError> left, Result<T, TError> right) =>
-            !(left == right);
-
-        /// <summary>
-        /// Returns true if the specified Result is equal to the current <see cref="Result{T, TError}"/>.
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
-        public override bool Equals(object? obj) =>
-            obj is Result<T, TError> o && Equals(o);
-
-        /// <summary>
-        /// Returns true if the specified Result is equal to the current <see cref="Result{T, TError}"/>.
-        /// </summary>
-        /// <param name="other"></param>
-        /// <returns></returns>
-        public bool Equals(Result<T, TError> other) {
-            if (_state != other._state) {
-                return false;
+    /// <typeparam name="U"></typeparam>
+    /// <param name="results"></param>
+    /// <param name="ok"></param>
+    /// <param name="error"></param>
+    /// <returns></returns>
+    public static U Match<T, TError, U>(
+        IEnumerable<Result<T, TError>> results,
+        Func<IEnumerable<T>, U> ok,
+        Func<IEnumerable<TError>, U> error) {
+        var values = new List<T>();
+        var errors = new List<TError>();
+        foreach (var result in results) {
+            if (result.TryGet(out var v)) {
+                values.Add(v);
             }
-
-            if (_state == 0 || other._state == 0) {
-                throw new InvalidOperationException("Invalid Result state.");
+            else if (result.TryGetError(out var e)) {
+                errors.Add(e);
             }
-
-            return _state switch {
-                1 => _ok is null ? other._ok is null : _ok.Equals(other._ok),
-                2 => _error is null ? other._error is null : _error.Equals(other._error),
-                _ => throw new InvalidOperationException("Invalid Result state.")
-            };
-
         }
 
-        /// <summary>
-        /// Converts the <see cref="Result{T, TError}"/> to an <see cref="Result{T, TError}"/>.
-        /// If the Result is Ok, it returns Ok with the value, otherwise None.
-        /// </summary>
-        /// <returns></returns>
-        public Option<T> ToOption() =>
-            Match(
-                ok: x => Option.Some(x),
-                error: _ => Option<T>.NoneValue);
+        if (errors.Count > 0) {
+            return error(errors);
+        }
 
-        /// <summary>
-        /// Returns the hash code for the <see cref="Result{T, TError}"/>.
-        /// </summary>
-        /// <returns></returns>
-        public override int GetHashCode() => _state switch {
-            1 => _ok is null ? 0 : _ok.GetHashCode(),
-            2 => _error is null ? 0 : _error.GetHashCode(),
-            _ => throw new InvalidOperationException($"Invalid Result state.")
-        };
-
-        /// <summary>
-        /// Returns a string representation of the <see cref="Result{T, TError}"/>.
-        /// </summary>
-        /// <returns></returns>
-        public override string ToString() => _state switch {
-            1 => IsOk && _ok is T okVal ? $"Ok({okVal})" : "Ok()",
-            2 => IsError && _error is TError errVal
-                ? (errVal is null ? "Error()" : $"Error({errVal})")
-                : "Error()",
-            _ => throw new InvalidOperationException($"Invalid Result state.")
-        };
+        return ok(values);
     }
 
-
     /// <summary>
-    /// The <see cref="Result{T, ResultErrors}"/> with <see cref="ResultErrors"/>
-    /// as the predefined error type.
+    /// Maps two Results together using the specified map function if both are Ok.
+    /// Returns the aggregated errors if either or both Result is Error.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public static class Result<T> {
-        /// <summary>
-        /// Creates a new <see cref="Result{T, ResultErrors}"/> with the specified value.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public static Result<T, ResultErrors> Ok(T value) =>
-            Result<T, ResultErrors>.Ok(value);
+    /// <typeparam name="T2"></typeparam>
+    /// <typeparam name="TError"></typeparam>
+    /// <typeparam name="U"></typeparam>
+    /// <param name="r1"></param>
+    /// <param name="r2"></param>
+    /// <param name="ok"></param>
+    /// <param name="error"></param>
+    /// <returns></returns>
+    public static U Match<T, T2, TError, U>(
+        Result<T, TError> r1,
+        Result<T2, TError> r2,
+        Func<T, T2, U> ok,
+        Func<IEnumerable<TError>, U> error) {
+        if (ok != null && r1.TryGet(out var v1) && r2.TryGet(out var v2)) {
+            return ok(v1, v2);
+        }
 
-        /// <summary>
-        /// Creates a new <see cref="Result{T, ResultErrors}"/> with the specified error.
-        /// </summary>
-        /// <param name="errors"></param>
-        /// <returns></returns>
-        public static Result<T, ResultErrors> Error(ResultErrors errors) =>
-            Result<T, ResultErrors>.Error(errors);
+        var errors = new List<TError>();
 
-        /// <summary>
-        /// Create <see cref="Result{T, ResultErrors}"/> with the specified error.
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="errors"></param>
-        /// <returns></returns>
-        public static Result<T, ResultErrors> Error(string key, params string[] errors) =>
-            Error(new ResultErrors(key, errors));
+        if (r1.TryGetError(out var e1)) {
+            errors.Add(e1);
+        }
 
-        /// <summary>
-        /// Creates a new <see cref="Result{T, ResultErrors}"/> with the specified error.
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="error"></param>
-        /// <returns></returns>
-        public static Result<T, ResultErrors> Error(string key, string error) =>
-            Error(new ResultErrors(key, error));
+        if (r2.TryGetError(out var e2)) {
+            errors.Add(e2);
+        }
 
-        /// <summary>
-        /// Create <see cref="Result{T, ResultErrors}"/> with the specified error.
-        /// </summary>
-        /// <param name="error"></param>
-        /// <returns></returns>
-        public static Result<T, ResultErrors> Error(string error) =>
-            Error(new ResultErrors(error));
-
-        /// <summary>
-        /// Create <see cref="Result{T, ResultErrors}"/> with the specified error.
-        /// </summary>
-        /// <param name="errors"></param>
-        /// <returns></returns>
-        public static Result<T, ResultErrors> Error(params string[] errors) =>
-            Error(new ResultErrors(errors));
+        return error(errors);
     }
 
     /// <summary>
-    /// The <see cref="Result{T, ResultErrors}"/> with <see cref="ResultErrors"/>
-    /// as the predefined error type.
+    /// Maps three Results together using the specified map function if all are Ok.
     /// </summary>
-    public static class Result {
-        /// <summary>
-        /// Creates a new <see cref="Result{Unit, ResultErrors}"/> with <see cref="Unit"/> value.
-        /// </summary>
-        /// <returns></returns>
-        public static Result<Unit, ResultErrors> Ok() =>
-            Result<Unit, ResultErrors>.Ok(Unit.Value);
-
-        /// <summary>
-        /// Creates a new <see cref="Result{T, ResultErrors}"/> with the specified value.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public static Result<T, ResultErrors> Ok<T>(T value) =>
-            Result<T, ResultErrors>.Ok(value);
-
-        /// <summary>
-        /// Creates a new <see cref="Result{Unit, ResultErrors}"/> with the specified error.
-        /// </summary>
-        /// <param name="errors"></param>
-        /// <returns></returns>
-        public static Result<Unit, ResultErrors> Error(ResultErrors errors) =>
-            Result<Unit, ResultErrors>.Error(errors);
-
-        /// <summary>
-        /// Create <see cref="Result{Unit, ResultErrors}"/> with the specified error.
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="errors"></param>
-        /// <returns></returns>
-        public static Result<Unit, ResultErrors> Error(string key, params string[] errors) =>
-            Error(new ResultErrors(key, errors));
-
-        /// <summary>
-        /// Creates a new <see cref="Result{Unit, ResultErrors}"/> with the specified error.
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="error"></param>
-        /// <returns></returns>
-        public static Result<Unit, ResultErrors> Error(string key, string error) =>
-            Error(new ResultErrors(key, error));
-
-        /// <summary>
-        /// Create <see cref="Result{Unit, ResultErrors}"/> with the specified error.
-        /// </summary>
-        /// <param name="error"></param>
-        /// <returns></returns>
-        public static Result<Unit, ResultErrors> Error(string error) =>
-            Error(new ResultErrors(error));
-
-        /// <summary>
-        /// Create <see cref="Result{Unit, ResultErrors}"/> with the specified error.
-        /// </summary>
-        /// <param name="errors"></param>
-        /// <returns></returns>
-        public static Result<Unit, ResultErrors> Error(params string[] errors) =>
-            Error(new ResultErrors(errors));
-
-        /// <summary>
-        /// Matches a collection of Results and invokes the appropriate delegate based on their states.
-        ///
-        /// Note: this implementation is applicative and not monadic, meaning that all Results are evaluated.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <typeparam name="TError"></typeparam>
-        /// <typeparam name="U"></typeparam>
-        /// <param name="results"></param>
-        /// <param name="ok"></param>
-        /// <param name="error"></param>
-        /// <returns></returns>
-        public static U Match<T, TError, U>(
-            IEnumerable<Result<T, TError>> results,
-            Func<IEnumerable<T>, U> ok,
-            Func<IEnumerable<TError>, U> error) {
-            var values = new List<T>();
-            var errors = new List<TError>();
-            foreach (var result in results) {
-                if (result.TryGet(out var v)) {
-                    values.Add(v);
-                }
-                else if (result.TryGetError(out var e)) {
-                    errors.Add(e);
-                }
-            }
-
-            if (errors.Count > 0) {
-                return error(errors);
-            }
-
-            return ok(values);
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="T2"></typeparam>
+    /// <typeparam name="T3"></typeparam>
+    /// <typeparam name="TError"></typeparam>
+    /// <typeparam name="U"></typeparam>
+    /// <param name="r1"></param>
+    /// <param name="r2"></param>
+    /// <param name="r3"></param>
+    /// <param name="ok"></param>
+    /// <param name="error"></param>
+    /// <returns></returns>
+    public static U Match<T, T2, T3, TError, U>(
+        Result<T, TError> r1,
+        Result<T2, TError> r2,
+        Result<T3, TError> r3,
+        Func<T, T2, T3, U> ok,
+        Func<IEnumerable<TError>, U> error) {
+        if (ok != null
+            && r1.TryGet(out var v1)
+            && r2.TryGet(out var v2)
+            && r3.TryGet(out var v3)) {
+            return ok(v1, v2, v3);
         }
 
-        /// <summary>
-        /// Maps two Results together using the specified map function if both are Ok.
-        /// Returns the aggregated errors if either or both Result is Error.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <typeparam name="T2"></typeparam>
-        /// <typeparam name="TError"></typeparam>
-        /// <typeparam name="U"></typeparam>
-        /// <param name="r1"></param>
-        /// <param name="r2"></param>
-        /// <param name="ok"></param>
-        /// <param name="error"></param>
-        /// <returns></returns>
-        public static U Match<T, T2, TError, U>(
-            Result<T, TError> r1,
-            Result<T2, TError> r2,
-            Func<T, T2, U> ok,
-            Func<IEnumerable<TError>, U> error) {
-            if (ok != null && r1.TryGet(out var v1) && r2.TryGet(out var v2)) {
-                return ok(v1, v2);
-            }
+        var errors = new List<TError>();
 
-            var errors = new List<TError>();
-
-            if (r1.TryGetError(out var e1)) {
-                errors.Add(e1);
-            }
-
-            if (r2.TryGetError(out var e2)) {
-                errors.Add(e2);
-            }
-
-            return error(errors);
+        if (r1.TryGetError(out var e1)) {
+            errors.Add(e1);
         }
 
-        /// <summary>
-        /// Maps three Results together using the specified map function if all are Ok.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <typeparam name="T2"></typeparam>
-        /// <typeparam name="T3"></typeparam>
-        /// <typeparam name="TError"></typeparam>
-        /// <typeparam name="U"></typeparam>
-        /// <param name="r1"></param>
-        /// <param name="r2"></param>
-        /// <param name="r3"></param>
-        /// <param name="ok"></param>
-        /// <param name="error"></param>
-        /// <returns></returns>
-        public static U Match<T, T2, T3, TError, U>(
-            Result<T, TError> r1,
-            Result<T2, TError> r2,
-            Result<T3, TError> r3,
-            Func<T, T2, T3, U> ok,
-            Func<IEnumerable<TError>, U> error) {
-            if (ok != null
-                && r1.TryGet(out var v1)
-                && r2.TryGet(out var v2)
-                && r3.TryGet(out var v3)) {
-                return ok(v1, v2, v3);
-            }
-
-            var errors = new List<TError>();
-
-            if (r1.TryGetError(out var e1)) {
-                errors.Add(e1);
-            }
-
-            if (r2.TryGetError(out var e2)) {
-                errors.Add(e2);
-            }
-
-            if (r3.TryGetError(out var e3)) {
-                errors.Add(e3);
-            }
-
-            return error(errors);
+        if (r2.TryGetError(out var e2)) {
+            errors.Add(e2);
         }
 
-        /// <summary>
-        /// Binds the specified Result using the specified bind function if it is Ok.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <typeparam name="TError"></typeparam>
-        /// <typeparam name="U"></typeparam>
-        /// <param name="result"></param>
-        /// <param name="bind"></param>
-        /// <returns></returns>
-        public static Result<U, TError> Bind<T, TError, U>(
-            Result<T, TError> result,
-            Func<T, Result<U, TError>> bind) =>
-            result.Bind(bind);
+        if (r3.TryGetError(out var e3)) {
+            errors.Add(e3);
+        }
 
-        /// <summary>
-        /// Binds two Results together using the specified bind function if both are Ok.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <typeparam name="T2"></typeparam>
-        /// <typeparam name="TError"></typeparam>
-        /// <typeparam name="U"></typeparam>
-        /// <param name="r1"></param>
-        /// <param name="r2"></param>
-        /// <param name="bind"></param>
-        /// <returns></returns>
-        public static Result<U, TError> Bind<T, T2, TError, U>(
-            Result<T, TError> r1,
-            Result<T2, TError> r2,
-            Func<T, T2, Result<U, TError>> bind) =>
-            Bind(r1, v1 => Bind(r2, v2 => bind(v1, v2)));
-
-        /// <summary>
-        /// Binds three Results together using the specified bind function if all are Ok.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <typeparam name="T2"></typeparam>
-        /// <typeparam name="T3"></typeparam>
-        /// <typeparam name="TError"></typeparam>
-        /// <typeparam name="U"></typeparam>
-        /// <param name="r1"></param>
-        /// <param name="r2"></param>
-        /// <param name="r3"></param>
-        /// <param name="bind"></param>
-        /// <returns></returns>
-        public static Result<U, TError> Bind<T, T2, T3, TError, U>(
-            Result<T, TError> r1,
-            Result<T2, TError> r2,
-            Result<T3, TError> r3,
-            Func<T, T2, T3, Result<U, TError>> bind) =>
-            Bind(r1, v1 => Bind(r2, v2 => Bind(r3, v3 => bind(v1, v2, v3))));
-
-        /// <summary>
-        /// Maps the specified Result using the specified map function if it is Ok.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <typeparam name="TError"></typeparam>
-        /// <typeparam name="U"></typeparam>
-        /// <param name="result"></param>
-        /// <param name="map"></param>
-        /// <returns></returns>
-        public static Result<U, TError> Map<T, TError, U>(
-            Result<T, TError> result,
-            Func<T, U> map) =>
-            result.Map(map);
-
-        /// <summary>
-        /// Maps two Results together using the specified map function if both are Ok.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <typeparam name="T2"></typeparam>
-        /// <typeparam name="TError"></typeparam>
-        /// <typeparam name="U"></typeparam>
-        /// <param name="r1"></param>
-        /// <param name="r2"></param>
-        /// <param name="map"></param>
-        /// <returns></returns>
-        public static Result<U, TError> Map<T, T2, TError, U>(
-            Result<T, TError> r1,
-            Result<T2, TError> r2,
-            Func<T, T2, U> map) =>
-            Bind(r1, v1 => Map(r2, v2 => map(v1, v2)));
-
-        /// <summary>
-        /// Maps three Results together using the specified map function if all are Ok.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <typeparam name="T2"></typeparam>
-        /// <typeparam name="T3"></typeparam>
-        /// <typeparam name="TError"></typeparam>
-        /// <typeparam name="U"></typeparam>
-        /// <param name="r1"></param>
-        /// <param name="r2"></param>
-        /// <param name="r3"></param>
-        /// <param name="map"></param>
-        /// <returns></returns>
-        public static Result<U, TError> Map<T, T2, T3, TError, U>(
-            Result<T, TError> r1,
-            Result<T2, TError> r2,
-            Result<T3, TError> r3,
-            Func<T, T2, T3, U> map) =>
-            Bind(r1, v1 => Bind(r2, v2 => Map(r3, v3 => map(v1, v2, v3))));
-
-        /// <summary>
-        /// Maps the specified Result's error using the specified mapError function if it is Error.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <typeparam name="TError"></typeparam>
-        /// <typeparam name="UError"></typeparam>
-        /// <param name="result"></param>
-        /// <param name="mapError"></param>
-        /// <returns></returns>
-        public static Result<T, UError> MapError<T, TError, UError>(
-            Result<T, TError> result,
-            Func<TError, UError> mapError) =>
-            result.MapError(mapError);
-
-        /// <summary>
-        /// Traverses the specified items, applying the func to each item and aggregating the results.
-        /// If all applications of func are successful, returns a Result containing an IEnumerable of the results.
-        /// If any application of func fails, returns a Result containing the aggregated error using errorFunc.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <typeparam name="TError"></typeparam>
-        /// <typeparam name="U"></typeparam>
-        /// <param name="items"></param>
-        /// <param name="func"></param>
-        /// <param name="errorFunc"></param>
-        /// <returns></returns>
-        public static Result<IEnumerable<U>, TError> Traverse<T, TError, U>(
-            IEnumerable<T> items,
-            Func<T, Result<U, TError>> func,
-            Func<TError, TError, TError> errorFunc) =>
-            items.Aggregate(
-                Result<IEnumerable<U>, TError>.Ok(Enumerable.Empty<U>()),
-                (acc, x) => {
-                    var funcResult = func(x);
-
-                    if (acc.TryGet(out var a)
-                        && funcResult.TryGet(out var i)) {
-                        return Result<IEnumerable<U>, TError>.Ok(a.Concat(new[] { i }));
-                    }
-
-                    if (funcResult.TryGetError(out var iErr)
-                        && acc.TryGetError(out var aErr)) {
-                        return Result<IEnumerable<U>, TError>.Error(errorFunc(aErr, iErr));
-                    }
-
-                    if (funcResult.TryGetError(out iErr)) {
-                        return Result<IEnumerable<U>, TError>.Error(iErr);
-                    }
-
-                    return acc;
-                });
-
-        /// <summary>
-        /// Traverses the specified items, applying the func to each item and aggregating the results.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="items"></param>
-        /// <param name="func"></param>
-        /// <returns></returns>
-        public static Result<IEnumerable<T>, ResultErrors> Traverse<T>(
-            IEnumerable<T> items,
-            Func<T, Result<T, ResultErrors>> func) =>
-            Traverse(items, func, (e1, e2) => ResultErrors.Merge(e1, e2));
-
-        /// <summary>
-        /// Sequences the specified results, aggregating the successful values or errors.
-        /// If all results are successful, returns a Result containing an IEnumerable of the values.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <typeparam name="TError"></typeparam>
-        /// <param name="results"></param>
-        /// <param name="errorFunc"></param>
-        /// <returns></returns>
-        public static Result<IEnumerable<T>, TError> Sequence<T, TError>(
-            IEnumerable<Result<T, TError>> results,
-            Func<TError, TError, TError> errorFunc) =>
-            Traverse(results, x => x, errorFunc);
-
-
-        /// <summary>
-        /// Sequences the specified results, aggregating the successful values or errors.
-        /// If all results are successful, returns a Result containing an IEnumerable of the values.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="results"></param>
-        /// <returns></returns>
-        public static Result<IEnumerable<T>, ResultErrors> Sequence<T>(
-            IEnumerable<Result<T, ResultErrors>> results) =>
-            Sequence(results, (e1, e2) => ResultErrors.Merge(e1, e2));
-
-        /// <summary>
-        /// Zips two Results into a Result containing a tuple of their values if both are Ok.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <typeparam name="T2"></typeparam>
-        /// <typeparam name="TError"></typeparam>
-        /// <param name="r1"></param>
-        /// <param name="r2"></param>
-        /// <returns></returns>
-        public static Result<(T, T2), TError> Zip<T, T2, TError>(
-            Result<T, TError> r1,
-            Result<T2, TError> r2) =>
-            Bind(r1, v1 => Map(r2, v2 => (v1, v2)));
-
-        /// <summary>
-        /// Zips three Results into a Result containing a tuple of their values if all are Ok.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <typeparam name="T2"></typeparam>
-        /// <typeparam name="T3"></typeparam>
-        /// <typeparam name="TError"></typeparam>
-        /// <param name="r1"></param>
-        /// <param name="r2"></param>
-        /// <param name="r3"></param>
-        /// <returns></returns>
-        public static Result<(T, T2, T3), TError> Zip<T, T2, T3, TError>(
-            Result<T, TError> r1,
-            Result<T2, TError> r2,
-            Result<T3, TError> r3) =>
-            Bind(r1, v1 => Bind(r2, v2 => Map(r3, v3 => (v1, v2, v3))));
+        return error(errors);
     }
+
+    /// <summary>
+    /// Binds the specified Result using the specified bind function if it is Ok.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TError"></typeparam>
+    /// <typeparam name="U"></typeparam>
+    /// <param name="result"></param>
+    /// <param name="bind"></param>
+    /// <returns></returns>
+    public static Result<U, TError> Bind<T, TError, U>(
+        Result<T, TError> result,
+        Func<T, Result<U, TError>> bind) =>
+        result.Bind(bind);
+
+    /// <summary>
+    /// Binds two Results together using the specified bind function if both are Ok.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="T2"></typeparam>
+    /// <typeparam name="TError"></typeparam>
+    /// <typeparam name="U"></typeparam>
+    /// <param name="r1"></param>
+    /// <param name="r2"></param>
+    /// <param name="bind"></param>
+    /// <returns></returns>
+    public static Result<U, TError> Bind<T, T2, TError, U>(
+        Result<T, TError> r1,
+        Result<T2, TError> r2,
+        Func<T, T2, Result<U, TError>> bind) =>
+        Bind(r1, v1 => Bind(r2, v2 => bind(v1, v2)));
+
+    /// <summary>
+    /// Binds three Results together using the specified bind function if all are Ok.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="T2"></typeparam>
+    /// <typeparam name="T3"></typeparam>
+    /// <typeparam name="TError"></typeparam>
+    /// <typeparam name="U"></typeparam>
+    /// <param name="r1"></param>
+    /// <param name="r2"></param>
+    /// <param name="r3"></param>
+    /// <param name="bind"></param>
+    /// <returns></returns>
+    public static Result<U, TError> Bind<T, T2, T3, TError, U>(
+        Result<T, TError> r1,
+        Result<T2, TError> r2,
+        Result<T3, TError> r3,
+        Func<T, T2, T3, Result<U, TError>> bind) =>
+        Bind(r1, v1 => Bind(r2, v2 => Bind(r3, v3 => bind(v1, v2, v3))));
+
+    /// <summary>
+    /// Maps the specified Result using the specified map function if it is Ok.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TError"></typeparam>
+    /// <typeparam name="U"></typeparam>
+    /// <param name="result"></param>
+    /// <param name="map"></param>
+    /// <returns></returns>
+    public static Result<U, TError> Map<T, TError, U>(
+        Result<T, TError> result,
+        Func<T, U> map) =>
+        result.Map(map);
+
+    /// <summary>
+    /// Maps two Results together using the specified map function if both are Ok.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="T2"></typeparam>
+    /// <typeparam name="TError"></typeparam>
+    /// <typeparam name="U"></typeparam>
+    /// <param name="r1"></param>
+    /// <param name="r2"></param>
+    /// <param name="map"></param>
+    /// <returns></returns>
+    public static Result<U, TError> Map<T, T2, TError, U>(
+        Result<T, TError> r1,
+        Result<T2, TError> r2,
+        Func<T, T2, U> map) =>
+        Bind(r1, v1 => Map(r2, v2 => map(v1, v2)));
+
+    /// <summary>
+    /// Maps three Results together using the specified map function if all are Ok.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="T2"></typeparam>
+    /// <typeparam name="T3"></typeparam>
+    /// <typeparam name="TError"></typeparam>
+    /// <typeparam name="U"></typeparam>
+    /// <param name="r1"></param>
+    /// <param name="r2"></param>
+    /// <param name="r3"></param>
+    /// <param name="map"></param>
+    /// <returns></returns>
+    public static Result<U, TError> Map<T, T2, T3, TError, U>(
+        Result<T, TError> r1,
+        Result<T2, TError> r2,
+        Result<T3, TError> r3,
+        Func<T, T2, T3, U> map) =>
+        Bind(r1, v1 => Bind(r2, v2 => Map(r3, v3 => map(v1, v2, v3))));
+
+    /// <summary>
+    /// Maps the specified Result's error using the specified mapError function if it is Error.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TError"></typeparam>
+    /// <typeparam name="UError"></typeparam>
+    /// <param name="result"></param>
+    /// <param name="mapError"></param>
+    /// <returns></returns>
+    public static Result<T, UError> MapError<T, TError, UError>(
+        Result<T, TError> result,
+        Func<TError, UError> mapError) =>
+        result.MapError(mapError);
+
+    /// <summary>
+    /// Traverses the specified items, applying the func to each item and aggregating the results.
+    /// If all applications of func are successful, returns a Result containing an IEnumerable of the results.
+    /// If any application of func fails, returns a Result containing the aggregated error using errorFunc.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TError"></typeparam>
+    /// <typeparam name="U"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="func"></param>
+    /// <param name="errorFunc"></param>
+    /// <returns></returns>
+    public static Result<IEnumerable<U>, TError> Traverse<T, TError, U>(
+        IEnumerable<T> items,
+        Func<T, Result<U, TError>> func,
+        Func<TError, TError, TError> errorFunc) =>
+        items.Aggregate(
+            Result<IEnumerable<U>, TError>.Ok([]),
+            (acc, x) => {
+                var funcResult = func(x);
+
+                if (acc.TryGet(out var a)
+                    && funcResult.TryGet(out var i)) {
+                    return Result<IEnumerable<U>, TError>.Ok(a.Concat([i]));
+                }
+
+                if (funcResult.TryGetError(out var iErr)
+                    && acc.TryGetError(out var aErr)) {
+                    return Result<IEnumerable<U>, TError>.Error(errorFunc(aErr, iErr));
+                }
+
+                if (funcResult.TryGetError(out iErr)) {
+                    return Result<IEnumerable<U>, TError>.Error(iErr);
+                }
+
+                return acc;
+            });
+
+    /// <summary>
+    /// Traverses the specified items, applying the func to each item and aggregating the results.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="func"></param>
+    /// <returns></returns>
+    public static Result<IEnumerable<T>, ResultErrors> Traverse<T>(
+        IEnumerable<T> items,
+        Func<T, Result<T, ResultErrors>> func) =>
+        Traverse(items, func, (e1, e2) => ResultErrors.Merge(e1, e2));
+
+    /// <summary>
+    /// Sequences the specified results, aggregating the successful values or errors.
+    /// If all results are successful, returns a Result containing an IEnumerable of the values.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TError"></typeparam>
+    /// <param name="results"></param>
+    /// <param name="errorFunc"></param>
+    /// <returns></returns>
+    public static Result<IEnumerable<T>, TError> Sequence<T, TError>(
+        IEnumerable<Result<T, TError>> results,
+        Func<TError, TError, TError> errorFunc) =>
+        Traverse(results, x => x, errorFunc);
+
+
+    /// <summary>
+    /// Sequences the specified results, aggregating the successful values or errors.
+    /// If all results are successful, returns a Result containing an IEnumerable of the values.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="results"></param>
+    /// <returns></returns>
+    public static Result<IEnumerable<T>, ResultErrors> Sequence<T>(
+        IEnumerable<Result<T, ResultErrors>> results) =>
+        Sequence(results, (e1, e2) => ResultErrors.Merge(e1, e2));
+
+    /// <summary>
+    /// Zips two Results into a Result containing a tuple of their values if both are Ok.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="T2"></typeparam>
+    /// <typeparam name="TError"></typeparam>
+    /// <param name="r1"></param>
+    /// <param name="r2"></param>
+    /// <returns></returns>
+    public static Result<(T, T2), TError> Zip<T, T2, TError>(
+        Result<T, TError> r1,
+        Result<T2, TError> r2) =>
+        Bind(r1, v1 => Map(r2, v2 => (v1, v2)));
+
+    /// <summary>
+    /// Zips three Results into a Result containing a tuple of their values if all are Ok.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="T2"></typeparam>
+    /// <typeparam name="T3"></typeparam>
+    /// <typeparam name="TError"></typeparam>
+    /// <param name="r1"></param>
+    /// <param name="r2"></param>
+    /// <param name="r3"></param>
+    /// <returns></returns>
+    public static Result<(T, T2, T3), TError> Zip<T, T2, T3, TError>(
+        Result<T, TError> r1,
+        Result<T2, TError> r2,
+        Result<T3, TError> r3) =>
+        Bind(r1, v1 => Bind(r2, v2 => Map(r3, v3 => (v1, v2, v3))));
 }
