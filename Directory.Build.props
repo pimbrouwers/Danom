@@ -1,3 +1,7 @@
 <Project>
+  <PropertyGroup>
+    <Copyright>Copyright $([System.DateTime]::Now.Year) Pim Brouwers</Copyright>
+  </PropertyGroup>
+
   <Import Project="Directory.Build.local.props" Condition="Exists('Directory.Build.local.props')" />
 </Project>

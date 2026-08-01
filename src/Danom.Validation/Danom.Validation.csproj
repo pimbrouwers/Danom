@@ -2,11 +2,10 @@
 
   <PropertyGroup>
     <AssemblyName>Danom.Validation</AssemblyName>
-    <Version>3.0.0-alpha1</Version>
+    <Version>3.0.0-beta1</Version>
 
     <!-- General info -->
     <Description>Validators and validation helpers for Danom.</Description>
-    <Copyright>Copyright 2025 Pim Brouwers</Copyright>
     <Authors>Pim Brouwers</Authors>
     <NeutralLanguage>en-CA</NeutralLanguage>
 
@@ -26,7 +25,7 @@
     <PackageProjectUrl>https://github.com/pimbrouwers/Danom</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>icon.png</PackageIcon>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageReadmeFile>./README.md</PackageReadmeFile>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/pimbrouwers/Danom</RepositoryUrl>
@@ -42,13 +41,17 @@
       <Pack>true</Pack>
       <PackagePath>$(PackageIconUrl)</PackagePath>
     </None>
+    <None Include="README.md">
+      <Pack>true</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
-  <ItemGroup Condition="'$(UseLocalDanom)' == 'true'">
+  <ItemGroup Condition="'$(Configuration)' == 'Debug' And '$(UseLocalDanom)' == 'true'">
     <ProjectReference Include="../Danom/Danom.csproj" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(UseLocalDanom)' != 'true'">
-    <PackageReference Include="Danom" Version="3.0.0-alpha1" />
+  <ItemGroup Condition="'$(Configuration)' != 'Debug' Or '$(UseLocalDanom)' != 'true'">
+    <PackageReference Include="Danom" Version="3.0.0-beta1" />
   </ItemGroup>
 </Project>
