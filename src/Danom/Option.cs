@@ -4,7 +4,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace Danom;
-/// <summary>
+
+///<summary>
 /// Represents the existence, or not, of a value. Provides greater safety than
 /// using nulls, and allows for more expressive code with exhaustive matching.
 /// </summary>

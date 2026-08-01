@@ -4,7 +4,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace Danom;
-/// <summary>
+
+///<summary>
 /// Represents a result of an operation that can be either successful or not. It
 /// is typically used in monadic error handling.
 /// </summary>

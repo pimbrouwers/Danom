@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace Danom;
-/// <summary>
+
+///<summary>
 /// Represents a collection of <see cref="ResultError"/> instances.
 /// </summary>
 public sealed class ResultErrors : IEnumerable<ResultError> {

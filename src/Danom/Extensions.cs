@@ -1,7 +1,8 @@
 using System;
 
 namespace Danom;
-/// <summary>
+
+///<summary>
 /// Contains extension methods for functional programming.
 /// </summary>
 public static class FunctionalExtensions {

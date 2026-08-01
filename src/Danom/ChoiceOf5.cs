@@ -2,7 +2,8 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Danom;
-/// <summary>
+
+///<summary>
 /// Represents a choice between four types, T1, T2, T3 and T4.
 /// </summary>
 /// <typeparam name="T1"></typeparam>

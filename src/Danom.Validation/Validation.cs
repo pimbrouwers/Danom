@@ -2,7 +2,8 @@ using System;
 using System.Collections.Generic;
 
 namespace Danom.Validation;
-/// <summary>
+
+///<summary>
 /// Represents an <see cref="IValidator{T}" /> as a
 /// <see cref="Result{T, ResultErrors}" />.
 /// <typeparam name="T"></typeparam>

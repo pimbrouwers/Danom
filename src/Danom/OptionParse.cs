@@ -2,7 +2,8 @@ using System;
 using System.Globalization;
 
 namespace Danom;
-/// <summary>
+
+///<summary>
 /// boolOption
 /// </summary>
 public static class boolOption {
