@@ -58,7 +58,7 @@ Choice<int, string, double>.FromT2("Hello")
 - `netstandard2.1` compatible.
 - Simplify and enhance functional programming in C#.
 - Support both synchronous and asynchronous operations.
-- Provide opionated monads to encourage consistent use.
+- Provide opinionated monads to encourage consistent use.
 
 ## Getting Started
 
