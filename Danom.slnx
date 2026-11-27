@@ -1,4 +1,8 @@
 <Solution>
+  <Folder Name="/examples/" />
+  <Folder Name="/examples/Todo/">
+    <Project Path="examples/Todo/Danom.Examples.Todo.csproj" />
+  </Folder>
   <Folder Name="/src/">
     <Project Path="src/Danom.MinimalApi.Tests.App/Danom.MinimalApi.Tests.App.csproj" />
     <Project Path="src/Danom.MinimalApi.Tests/Danom.MinimalApi.Tests.csproj" />
@@ -6,6 +10,7 @@
     <Project Path="src/Danom.Mvc.Tests.App/Danom.Mvc.Tests.App.csproj" />
     <Project Path="src/Danom.Mvc.Tests/Danom.Mvc.Tests.csproj" />
     <Project Path="src/Danom.Mvc/Danom.Mvc.csproj" />
+    <Project Path="src/Danom.Operations.Tests/Danom.Operations.Tests.csproj" />
     <Project Path="src/Danom.Operations/Danom.Operations.csproj" />
     <Project Path="src/Danom.Tests/Danom.Tests.csproj" />
     <Project Path="src/Danom.Validation.Tests/Danom.Validation.Tests.csproj" />

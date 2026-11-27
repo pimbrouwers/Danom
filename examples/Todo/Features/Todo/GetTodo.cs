@@ -1,16 +1,31 @@
+using Danom.Operations;
+
 namespace Danom.Examples.Todo;
 
-using Danom;
-using Danom.Validation;
+public sealed class TodoId {
+    internal readonly int _value;
 
-public sealed record GetTodoQuery(
-    int TodoId);
+    private TodoId(int value) => _value = value;
+
+    public static explicit operator int(TodoId todoId) =>
+        todoId._value;
+
+    public static Option<TodoId> TryParse(int value) =>
+        value > 0
+            ? Option.Some(new TodoId(value))
+            : Option<TodoId>.None();
+}
+
+public sealed record Todo(
+    TodoId TodoId,
+    string Title,
+    Option<DateOnly> DueDate,
+    Option<DateTime> CompletedDate);
+
+public sealed class GetTodoQuery {
+    public int TodoId { get; set; }
+}
 
 public sealed class GetTodoQueryHandler(
-    Func<TodoId, Option<Todo>> getTodo) {
-    public Option<Todo> Handle(GetTodoQuery query) =>
-        ValidationResult<TodoId>
-            .From<TodoIdValidator>(new(query.TodoId))
-            .Map(getTodo)
-            .DefaultWith(Option<Todo>.None);
-}
+    IGetEntityAsync<Todo, TodoId> getTodo) :
+    GetEntityQueryHandlerAsync<Todo, TodoId>(getTodo) { }

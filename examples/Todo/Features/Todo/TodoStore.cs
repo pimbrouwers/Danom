@@ -1,16 +1,10 @@
-namespace Danom.Examples.Todo;
 
 using System.Data;
 using Danom;
 using Leger;
 
-public static class TodoReader {
-    public static Todo Map(IDataReader rd) =>
-        new(TodoId: new(rd.ReadInt("todo_id")),
-                Title: rd.ReadString("title"),
-                DueDate: rd.ReadNullableDateOnly("due_date").ToOption(),
-                CompletedDate: rd.ReadNullableDateTime("completed_date").ToOption());
-}
+namespace Danom.Examples.Todo;
+
 public sealed class TodoStore(
     IDbConnectionFactory db) {
     public IEnumerable<Todo> GetAll() =>
@@ -42,10 +36,9 @@ public sealed class TodoStore(
             INSERT INTO todo (title, due_date)
             VALUES (@title, @due_date);
             """,
-            new DbParams()
-            {
-                { "title", input.Title },
-                { "due_date", input.DueDate.ToNullable() }
+            new() {
+                ["title"] = input.Title,
+                ["due_date"] = input.DueDate.ToNullable() ?? default
             });
 
         return Unit.Value;
@@ -80,4 +73,12 @@ public sealed class TodoStore(
 
         return Unit.Value;
     }
+}
+
+public static class TodoReader {
+    public static Todo Map(IDataReader rd) =>
+        new(TodoId: new(rd.ReadInt("todo_id")),
+                Title: rd.ReadString("title"),
+                DueDate: rd.ReadNullableDateOnly("due_date").ToOption(),
+                CompletedDate: rd.ReadNullableDateTime("completed_date").ToOption());
 }

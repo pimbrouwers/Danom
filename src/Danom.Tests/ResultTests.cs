@@ -174,6 +174,21 @@ public sealed class ResultTests {
         }
     }
 
+    private sealed class TryGetTestType {
+        public int Value { get; set; }
+    }
+
+    [Fact]
+    public void TryGetReferenceType() {
+        var result = Result<TryGetTestType, string>.Ok(new TryGetTestType { Value = 1 });
+        if (result.TryGet(out var value)) {
+            Assert.Equal(1, value.Value);
+        }
+        else {
+            Assert.Fail("Expected Ok result but got Error.");
+        }
+    }
+
     [Fact]
     public void TryGetError() {
         var resultE = Result<int, string>.Error("Error");

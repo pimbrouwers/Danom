@@ -1,0 +1,55 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <AssemblyName>Danom.Operations</AssemblyName>
+    <Version>1.0.0</Version>
+
+    <!-- General info -->
+    <Description></Description>
+    <Authors>Pim Brouwers</Authors>
+    <NeutralLanguage>en-CA</NeutralLanguage>
+
+    <!-- Build config -->
+    <TargetFrameworks>netstandard2.1</TargetFrameworks>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <DebugType>embedded</DebugType>
+    <OutputType>Library</OutputType>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+
+    <!-- NuGet config -->
+    <PackageId>Danom.Operations</PackageId>
+    <PackageTags>cqs;cqrs;command;query;danom;</PackageTags>
+    <PackageProjectUrl>https://github.com/pimbrouwers/Danom</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageIcon>icon.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/pimbrouwers/Danom</RepositoryUrl>
+
+    <!-- SourceLink settings -->
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="../../assets/icon.png">
+      <Pack>true</Pack>
+      <PackagePath>$(PackageIconUrl)</PackagePath>
+    </None>
+    <None Include="../README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(UseLocalDanom)' == 'true'">
+    <ProjectReference Include="../Danom/Danom.csproj" />
+    <ProjectReference Include="../Danom.Validation/Danom.Validation.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(UseLocalDanom)' != 'true'">
+    <PackageReference Include="Danom" Version="3.0.0-alpha1" />
+    <PackageReference Include="Danom.Validation" Version="3.0.0-alpha1" />
+  </ItemGroup>
+</Project>
